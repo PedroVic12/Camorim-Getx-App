@@ -1,4 +1,4 @@
-import 'package:camorim_relatoios_os/models/relatorio_model.dart';
+import 'package:camorim_getx_app/models/relatorio_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 

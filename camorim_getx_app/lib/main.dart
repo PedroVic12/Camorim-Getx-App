@@ -1,4 +1,4 @@
-import 'package:camorim_relatoios_os/pages/home_view.dart';
+import 'package:camorim_getx_app/pages/home_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
