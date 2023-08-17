@@ -17,6 +17,7 @@ class CamScannerPage extends StatefulWidget {
 class _CamScannerPageState extends State<CamScannerPage> {
   File? file;
   ImagePicker image = ImagePicker();
+  String? customFileName; // To store the custom file name
 
 // Getters e Setters
   getImagemGaleria() async {
@@ -53,7 +54,8 @@ class _CamScannerPageState extends State<CamScannerPage> {
             child: pdf_widget.Column(
               children: [
                 pdf_widget.Text(
-                  'Imagem',
+                  customFileName ??
+                      'Imagem', // Use custom file name if provided
                   style: pdf_widget.TextStyle(
                     font: font,
                     fontSize: 20,
@@ -75,6 +77,7 @@ class _CamScannerPageState extends State<CamScannerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('CamScanner'),
+        backgroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
@@ -82,10 +85,36 @@ class _CamScannerPageState extends State<CamScannerPage> {
           children: [
             const Text('SCANNER DE PDF'),
             if (file != null) ...[
-              Image.file(file!),
+              Container(
+                width: 200, // specify width
+                height: 200, // specify height
+                child: Image.file(file!),
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
+                  // Ask for custom file name
+                  customFileName = await showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Enter File Name'),
+                        content: TextField(
+                          onChanged: (value) {
+                            customFileName = value;
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text('OK'),
+                            onPressed: () {
+                              Navigator.of(context).pop(customFileName);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                   final pdf = await gerarPdf(PdfPageFormat.a4, file);
                   await Printing.layoutPdf(
                       onLayout: (PdfPageFormat format) async => pdf);
