@@ -2,7 +2,7 @@ import 'package:camorim_getx_app/controllers/RelatorioController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomePage extends StatelessWidget {
+class RelatorioPage extends StatelessWidget {
   final RelatorioController controller = Get.put(RelatorioController());
 
   @override
