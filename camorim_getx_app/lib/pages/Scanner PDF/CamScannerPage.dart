@@ -1,11 +1,10 @@
-import 'dart:html' as html;
 import 'dart:typed_data';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:camorim_getx_app/widgets/CustomDrawer.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf_widget;
 import 'package:printing/printing.dart';
+import 'dart:html' as html;
 
 class CamScannerPage extends StatefulWidget {
   const CamScannerPage({super.key});
@@ -16,9 +15,8 @@ class CamScannerPage extends StatefulWidget {
 
 class _CamScannerPageState extends State<CamScannerPage> {
   Uint8List? imageData;
-  String? customFileName; // To store the custom file name
+  String? customFileName; // Para armazenar o nome personalizado do arquivo
 
-  // Função para capturar imagem
   _captureImage(bool fromCamera) async {
     final input = html.FileUploadInputElement()
       ..accept = fromCamera ? 'image/*;capture=camera' : 'image/*';
@@ -36,22 +34,22 @@ class _CamScannerPageState extends State<CamScannerPage> {
     });
   }
 
-  Future<Uint8List> gerarPdf(PdfPageFormat format) async {
+  Future<Uint8List> gerarPdf(Uint8List image) async {
     final pdf =
         pdf_widget.Document(version: PdfVersion.pdf_1_5, compress: true);
     final font = await PdfGoogleFonts.nunitoExtraLight();
 
-    final showImagem = pdf_widget.MemoryImage(imageData!);
+    final showImagem = pdf_widget.MemoryImage(image);
 
     pdf.addPage(
       pdf_widget.Page(
-        pageFormat: format,
         build: (context) {
           return pdf_widget.Center(
             child: pdf_widget.Column(
               children: [
                 pdf_widget.Text(
-                  customFileName ?? 'Imagem',
+                  customFileName ??
+                      'Imagem', // Use o nome personalizado do arquivo, se fornecido
                   style: pdf_widget.TextStyle(
                     font: font,
                     fontSize: 20,
@@ -70,17 +68,16 @@ class _CamScannerPageState extends State<CamScannerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CamScanner'),
-        backgroundColor: Colors.blue,
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('CamScanner'),
+        backgroundColor: CupertinoColors.activeBlue,
       ),
-      drawer: CustomDrawer(),
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('SCANNER DE PDF'),
+            const Text('SCANNER DE PDF', style: TextStyle(fontSize: 20)),
             if (imageData != null) ...[
               Container(
                 width: 200,
@@ -88,21 +85,21 @@ class _CamScannerPageState extends State<CamScannerPage> {
                 child: Image.memory(imageData!),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              CupertinoButton(
+                color: CupertinoColors.activeBlue,
                 onPressed: () async {
-                  // Ask for custom file name
-                  customFileName = await showDialog<String>(
+                  customFileName = await showCupertinoDialog<String>(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Digite o nome do arquivo'),
-                        content: TextField(
+                      return CupertinoAlertDialog(
+                        title: const Text('Enter File Name'),
+                        content: CupertinoTextField(
                           onChanged: (value) {
                             customFileName = value;
                           },
                         ),
                         actions: [
-                          TextButton(
+                          CupertinoDialogAction(
                             child: const Text('OK'),
                             onPressed: () {
                               Navigator.of(context).pop(customFileName);
@@ -112,27 +109,24 @@ class _CamScannerPageState extends State<CamScannerPage> {
                       );
                     },
                   );
-                  final pdf = await gerarPdf(PdfPageFormat.a4);
-                  final blob = html.Blob([pdf]);
-                  final url = html.Url.createObjectUrlFromBlob(blob);
-                  final anchor = html.AnchorElement(href: url)
-                    ..target = 'blank'
-                    ..download = customFileName ?? 'imagem.pdf'
-                    ..click();
-                  html.Url.revokeObjectUrl(url);
+                  final pdf = await gerarPdf(imageData!);
+                  await Printing.layoutPdf(
+                      onLayout: (PdfPageFormat format) async => pdf);
                 },
                 child: const Text('Gerar PDF'),
               ),
             ],
             const SizedBox(height: 20),
-            ElevatedButton(
+            CupertinoButton(
+              color: CupertinoColors.activeBlue,
               onPressed: () {
                 _captureImage(false);
               },
               child: const Text('Galeria'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            CupertinoButton(
+              color: CupertinoColors.activeBlue,
               onPressed: () {
                 _captureImage(true);
               },
