@@ -1,9 +1,8 @@
-import 'dart:io';
+import 'dart:html' as html;
 import 'dart:typed_data';
 
-import 'package:camorim_getx_app/widgets/CustomDrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:camorim_getx_app/widgets/CustomDrawer.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf_widget;
 import 'package:printing/printing.dart';
@@ -16,36 +15,33 @@ class CamScannerPage extends StatefulWidget {
 }
 
 class _CamScannerPageState extends State<CamScannerPage> {
-  File? file;
-  ImagePicker image = ImagePicker();
+  Uint8List? imageData;
   String? customFileName; // To store the custom file name
 
-// Getters e Setters
-  getImagemGaleria() async {
-    var img = await image.pickImage(source: ImageSource.gallery);
+  // Função para capturar imagem
+  _captureImage(bool fromCamera) async {
+    final input = html.FileUploadInputElement()
+      ..accept = fromCamera ? 'image/*;capture=camera' : 'image/*';
+    input.click();
 
-    setState(() {
-      file = File(img!.path);
+    input.onChange.listen((event) {
+      final file = input.files!.first;
+      final reader = html.FileReader();
+      reader.readAsDataUrl(file);
+      reader.onLoadEnd.listen((event) {
+        setState(() {
+          imageData = reader.result as Uint8List;
+        });
+      });
     });
   }
 
-  getImagemCamera() async {
-    try {
-      var img = await image.pickImage(source: ImageSource.camera);
-      setState(() {
-        file = File(img!.path);
-      });
-    } catch (e) {
-      print('Camera nao disponivel');
-    }
-  }
-
-  Future<Uint8List> gerarPdf(PdfPageFormat format, file) async {
+  Future<Uint8List> gerarPdf(PdfPageFormat format) async {
     final pdf =
         pdf_widget.Document(version: PdfVersion.pdf_1_5, compress: true);
     final font = await PdfGoogleFonts.nunitoExtraLight();
 
-    final showImagem = pdf_widget.MemoryImage(file.readAsBytesSync());
+    final showImagem = pdf_widget.MemoryImage(imageData!);
 
     pdf.addPage(
       pdf_widget.Page(
@@ -55,8 +51,7 @@ class _CamScannerPageState extends State<CamScannerPage> {
             child: pdf_widget.Column(
               children: [
                 pdf_widget.Text(
-                  customFileName ??
-                      'Imagem', // Use custom file name if provided
+                  customFileName ?? 'Imagem',
                   style: pdf_widget.TextStyle(
                     font: font,
                     fontSize: 20,
@@ -86,11 +81,11 @@ class _CamScannerPageState extends State<CamScannerPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('SCANNER DE PDF'),
-            if (file != null) ...[
+            if (imageData != null) ...[
               Container(
-                width: 200, // specify width
-                height: 200, // specify height
-                child: Image.file(file!),
+                width: 200,
+                height: 200,
+                child: Image.memory(imageData!),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -100,7 +95,7 @@ class _CamScannerPageState extends State<CamScannerPage> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Enter File Name'),
+                        title: const Text('Digite o nome do arquivo'),
                         content: TextField(
                           onChanged: (value) {
                             customFileName = value;
@@ -117,9 +112,14 @@ class _CamScannerPageState extends State<CamScannerPage> {
                       );
                     },
                   );
-                  final pdf = await gerarPdf(PdfPageFormat.a4, file);
-                  await Printing.layoutPdf(
-                      onLayout: (PdfPageFormat format) async => pdf);
+                  final pdf = await gerarPdf(PdfPageFormat.a4);
+                  final blob = html.Blob([pdf]);
+                  final url = html.Url.createObjectUrlFromBlob(blob);
+                  final anchor = html.AnchorElement(href: url)
+                    ..target = 'blank'
+                    ..download = customFileName ?? 'imagem.pdf'
+                    ..click();
+                  html.Url.revokeObjectUrl(url);
                 },
                 child: const Text('Gerar PDF'),
               ),
@@ -127,14 +127,14 @@ class _CamScannerPageState extends State<CamScannerPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                getImagemGaleria();
+                _captureImage(false);
               },
               child: const Text('Galeria'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                getImagemCamera();
+                _captureImage(true);
               },
               child: const Text('Camera'),
             ),
