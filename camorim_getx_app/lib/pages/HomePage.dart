@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/pages/CamScannerPage.dart';
+import 'package:camorim_getx_app/pages/Scanner%20PDF/CamScannerPage.dart';
 import 'package:camorim_getx_app/pages/ControleFerramentas.dart';
 import 'package:camorim_getx_app/pages/RelatoriosPage.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('HomePage')),
+        title: const Center(child: Text('HomePage')),
         backgroundColor: Colors.red,
       ),
       body: Container(
@@ -76,19 +76,19 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(
+              Padding(
+                padding: const EdgeInsets.only(
                   top: 20,
                   left: 25,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TextLabel(texto: 'Dashboard', cor: Colors.white),
-                    SizedBox(height: 10),
+                    const TextLabel(texto: 'Dashboard', cor: Colors.white),
+                    const SizedBox(height: 10),
                     Text(
-                      'Ultima atualização: ',
-                      style: TextStyle(
+                      'Ultima atualização: ${DateTime.now()}',
+                      style: const TextStyle(
                         color: Colors.white54,
                         letterSpacing: 1,
                         fontSize: 14,
@@ -126,11 +126,11 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if (index == 1) {
-                    Get.to(ControleFerramentasPage());
+                    Get.to(const ControleFerramentasPage());
                   }
                   if (index == 2) {
                     // O índice 2 corresponde ao item 'Scanner PDF' no seu array
-                    Get.to(CamScannerPage());
+                    Get.to(const CamScannerPage());
                   } else {
                     // Outras ações quando outros itens forem clicados
                   }
@@ -149,12 +149,12 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.add_a_photo,
                           color: Colors.white,
                           size: 40,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
                           cor: Colors.white,
