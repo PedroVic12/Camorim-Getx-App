@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DropMenuForm extends StatefulWidget {
-  DropMenuForm({super.key});
+  final TextEditingController textController;
+
+  DropMenuForm({required this.textController, super.key});
 
   @override
   State<DropMenuForm> createState() => _DropMenuFormState();
@@ -14,13 +16,12 @@ class _DropMenuFormState extends State<DropMenuForm> {
 
   List<String> _options = ['Apple', 'Banana', 'Cherry'];
   String? _selectedOption;
-  TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _textController.addListener(() {
-      if (!_options.contains(_textController.text)) {
+    widget.textController.addListener(() {
+      if (!_options.contains(widget.textController.text)) {
         _selectedOption = null;
       }
     });
@@ -36,7 +37,7 @@ class _DropMenuFormState extends State<DropMenuForm> {
             children: [
               Expanded(
                 child: CaixaDeTexto(
-                  controller: _textController,
+                  controller: widget.textController,
                   labelText: 'Entre com as Opções',
                 ),
               ),
@@ -53,32 +54,11 @@ class _DropMenuFormState extends State<DropMenuForm> {
                 onChanged: (newValue) {
                   setState(() {
                     _selectedOption = newValue;
-                    _textController.text = newValue!;
+                    widget.textController.text = newValue!;
                   });
                 },
               ),
             ],
-          ),
-          SizedBox(height: 16),
-          CupertinoButton.filled(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                showCupertinoDialog(
-                  context: context,
-                  builder: (context) => CupertinoAlertDialog(
-                    title: Text('Data Processed'),
-                    content: Text('Selected: ${_textController.text}'),
-                    actions: [
-                      CupertinoDialogAction(
-                        child: Text('OK'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-            child: Text('Submit'),
           ),
         ],
       ),

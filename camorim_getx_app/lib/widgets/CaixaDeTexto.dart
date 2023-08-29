@@ -30,7 +30,7 @@ class CaixaDeTexto extends StatelessWidget {
             border: OutlineInputBorder(),
             label: Padding(
               padding:
-                  const EdgeInsets.only(left: 10.0), // Seu valor de padding
+                  const EdgeInsets.only(left: 12.0), // Seu valor de padding
               child: Text(
                 labelText,
                 style: const TextStyle(

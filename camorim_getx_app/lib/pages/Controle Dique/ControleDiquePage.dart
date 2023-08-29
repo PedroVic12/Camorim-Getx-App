@@ -23,7 +23,7 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Controle Dique'),
+        title: const Text('Controle Dique'),
         backgroundColor: Colors.red,
         bottomOpacity: BorderSide.strokeAlignInside,
       ),
@@ -47,7 +47,9 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
               controller: formController.potencia,
               labelText: "Potencia",
             ),
-            DropMenuForm(),
+            DropMenuForm(
+              textController: formController.opcoesDique,
+            ),
             CaixaDeTexto(
               controller: formController.endereco,
               labelText: "Endereço de Aplicação ",
@@ -64,8 +66,6 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
                 );
                 if (date != null) {
                   formController.dataEntradaDique.text = date.toIso8601String();
-                  formController.dataEntradaDique.value =
-                      date as TextEditingValue;
                 }
               },
             ),
@@ -99,25 +99,64 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
                 backgroundColor: MaterialStateProperty.all(Colors.black),
               ),
               onPressed: () {
-                //Get.find<GoogleSheetsController>().addDataToSheet(dataList);
+                //save dados csv na pasta repository
+                formController.createExcel(controllers: [
+                  formController.idItem,
+                  formController.nomeEquipamento,
+                  formController.bordo,
+                  formController.potencia,
+                  formController.opcoesDique,
+                  formController.endereco,
+                  formController.dataEntradaDique,
+                  formController.nomeNavio,
+                  formController.isOkayParaUso,
+                  formController.classificacao,
+                  formController.situacaoEquipamento,
+                  formController.assetsEquipamento,
+                  formController.observacoesDique
+                ], labels: [
+                  "Id do Item",
+                  "Nome do Equipamento",
+                  "Bordo",
+                  "Potencia",
+                  "OPÇÕES",
+                  "Endereço de Aplicação",
+                  "Data de Entrada",
+                  "Embarcação",
+                  "Apto para Uso",
+                  "Classificação",
+                  "Situação da Peça",
+                  "Foto da Peça",
+                  "Observações",
+                ]);
+
+                Get.snackbar('Sucesso', 'Dados salvos com sucesso!',
+                    backgroundColor: Colors.green, colorText: Colors.white);
+
+                // Resetar o formulário
+                formController.idItem.clear();
+                formController.nomeEquipamento.clear();
+                formController.bordo.clear();
+                formController.potencia.clear();
+                formController.opcoesDique.clear();
+                formController.endereco.clear();
+                formController.dataEntradaDique.clear();
+                formController.nomeNavio.clear();
+                formController.isOkayParaUso.clear();
+                formController.classificacao.clear();
+                formController.situacaoEquipamento.clear();
+                formController.assetsEquipamento.clear();
+                formController.observacoesDique.clear();
               },
               child: Obx(() {
                 if (planilhaController.isLoading.value) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }
-                return Text("Adicionar dados");
+                return const Text("Adicionar dados");
               }),
             )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueGrey,
-        child: const Icon(Icons.add),
-        onPressed: () {
-          //save dados csv na pasta repository
-          formController.salvarDadosCsv();
-        },
       ),
     );
   }

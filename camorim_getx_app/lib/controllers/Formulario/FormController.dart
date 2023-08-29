@@ -2,18 +2,25 @@ import 'dart:io';
 
 import 'package:camorim_getx_app/repository/nivelRepository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
+
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart';
+import 'package:universal_html/html.dart' show AnchorElement;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
 
 class FormController extends GetxController {
-  // Formulário Ferramentas
+  //! Formulário Ferramentas
   final nomeController = TextEditingController();
   final ferramentaController = TextEditingController();
   final quantidadeController = TextEditingController();
   final dataNascimentoController = TextEditingController();
   final localController = TextEditingController();
 
-  // Formulário Dique
+  //! Formulário Dique
   final idItem = TextEditingController();
   final nomeEquipamento = TextEditingController();
   final bordo = TextEditingController();
@@ -22,6 +29,7 @@ class FormController extends GetxController {
   final dataRetiradaDique = TextEditingController();
   final dataEntradaDique = TextEditingController();
   final nomeNavio = TextEditingController();
+  final opcoesDique = TextEditingController();
   final isOkayParaUso = TextEditingController();
   final classificacao = TextEditingController();
   final situacaoEquipamento = TextEditingController();
@@ -29,36 +37,78 @@ class FormController extends GetxController {
   final observacoesDique = TextEditingController();
   var campos = <String>[].obs;
 
-  //Variáveis
+  //!Variáveis
   var dataNascimento = DateTime.now().obs;
   var nivelSelecionado = ''.obs;
   var opcaoSelecionada = <String>[].obs;
   var salarioEscolhido = 0.0.obs;
   var quantidade = 1.obs;
 
-  // Repositórios
+  //! Repositórios
   final NivelRepository nivelRepository = NivelRepository();
   final OpcoesRepository opcoesRepository = OpcoesRepository();
   var niveis = <String>[].obs;
   var opcoes = <String>[].obs;
 
-  void salvarDadosCsv() {
-    // Cria um arquivo CSV na pasta repository com o nome do equipamento como nome do arquivo.
-    File file = File('lib/repository/${nomeEquipamento}.csv');
+  //! Métodos
+  Future<void> createExcel({
+    required List<TextEditingController> controllers,
+    required List<String> labels,
+  }) async {
+    final DateTime now = DateTime.now();
+    final String formattedDate = "${now.year}-${now.month}-${now.day}";
+    final String fileName = "${idItem}_$formattedDate.xlsx";
 
-    // Percorre os campos do formulário e adiciona os valores aos respectivos campos do arquivo CSV.
-    for (var field in campos) {
-      // Verifica se o campo é válido.
+    final Workbook workbook = Workbook();
 
-      // Converte o valor do campo em uma string.
-      String value = field.toString();
-
-      // Concatena o valor do campo à string.
-      campos.add(value);
+    Worksheet sheet;
+    if (workbook.worksheets.count > 0 &&
+        workbook.worksheets[0].name == 'Sample') {
+      sheet = workbook.worksheets[0];
+    } else {
+      sheet = workbook.worksheets.addWithName('Sample');
     }
 
-    // Salva a string no arquivo CSV.
-    file.writeAsStringSync(campos.join(','));
+    int nextEmptyRow = 2;
+    while (sheet.getRangeByName('A${nextEmptyRow}').text != '') {
+      nextEmptyRow++;
+    }
+
+    // If it's a new file, add labels
+    if (nextEmptyRow == 2) {
+      for (int i = 0; i < labels.length; i++) {
+        final String cellName = String.fromCharCode(65 + i) + '1';
+        sheet.getRangeByName(cellName).setText(labels[i]);
+      }
+    }
+
+    // Add data to the next empty row
+    for (int i = 0; i < controllers.length; i++) {
+      final String cellName =
+          String.fromCharCode(65 + i) + nextEmptyRow.toString();
+      sheet.getRangeByName(cellName).setText(controllers[i].text);
+    }
+
+    final List<int> bytes = workbook.saveAsStream();
+    workbook.dispose();
+
+    if (kIsWeb) {
+      AnchorElement(
+          href:
+              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
+        ..setAttribute('download', fileName)
+        ..click();
+    } else {
+      final String appDirectoryPath =
+          (await getApplicationSupportDirectory()).path;
+      final String repositoryPath =
+          p.join(appDirectoryPath, "lib", "repository");
+      final Directory directory = Directory(repositoryPath);
+      final String filePath = p.join(directory.path, fileName);
+      final File file = File(filePath);
+      await file.writeAsBytes(bytes, flush: true);
+      OpenFile.open(filePath);
+    }
   }
 
   bool validateFormData() {

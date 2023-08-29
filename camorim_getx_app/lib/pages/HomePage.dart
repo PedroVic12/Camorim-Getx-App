@@ -21,8 +21,8 @@ class _HomePageState extends State<HomePage> {
     'Ordem de Serviço',
     'Ferramentas',
     'Scanner PDF',
+    'Manutenção Dique',
     'Monitoramento',
-    'Manutenção Dique'
   ];
 
   @override
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
-                padding: const EdgeInsets.only(top: 35, left: 15, right: 15),
+                padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
                 child: Row(
                   children: [
                     InkWell(
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCount: columns,
                 childAspectRatio: 1.2,
                 crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
+                mainAxisSpacing: 10,
               ),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     //Get.to(const CamScannerPage());
                   }
 
-                  if (index == 4) {
+                  if (index == 3) {
                     Get.to(ControleDiquePage());
                   } else {
                     // Outras ações quando outros itens forem clicados
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
-                          size: fontePagina,
+                          size: 12,
                           cor: Colors.white,
                         ),
                       ],
