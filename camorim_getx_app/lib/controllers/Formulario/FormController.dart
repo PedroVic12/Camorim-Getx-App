@@ -57,35 +57,20 @@ class FormController extends GetxController {
   }) async {
     final DateTime now = DateTime.now();
     final String formattedDate = "${now.year}-${now.month}-${now.day}";
-    final String fileName = "${idItem}_$formattedDate.xlsx";
+    final String fileName = "${controllers[0].text}_$formattedDate.xlsx";
 
     final Workbook workbook = Workbook();
+    final Worksheet sheet = workbook.worksheets[0];
 
-    Worksheet sheet;
-    if (workbook.worksheets.count > 0 &&
-        workbook.worksheets[0].name == 'Sample') {
-      sheet = workbook.worksheets[0];
-    } else {
-      sheet = workbook.worksheets.addWithName('Sample');
+    // Adicionando os títulos
+    for (int i = 0; i < labels.length; i++) {
+      final String cellName = String.fromCharCode(65 + i) + '1';
+      sheet.getRangeByName(cellName).setText(labels[i]);
     }
 
-    int nextEmptyRow = 2;
-    while (sheet.getRangeByName('A${nextEmptyRow}').text != '') {
-      nextEmptyRow++;
-    }
-
-    // If it's a new file, add labels
-    if (nextEmptyRow == 2) {
-      for (int i = 0; i < labels.length; i++) {
-        final String cellName = String.fromCharCode(65 + i) + '1';
-        sheet.getRangeByName(cellName).setText(labels[i]);
-      }
-    }
-
-    // Add data to the next empty row
+    // Adicionando os dados dos controladores na segunda linha
     for (int i = 0; i < controllers.length; i++) {
-      final String cellName =
-          String.fromCharCode(65 + i) + nextEmptyRow.toString();
+      final String cellName = String.fromCharCode(65 + i) + '2';
       sheet.getRangeByName(cellName).setText(controllers[i].text);
     }
 
@@ -103,8 +88,7 @@ class FormController extends GetxController {
           (await getApplicationSupportDirectory()).path;
       final String repositoryPath =
           p.join(appDirectoryPath, "lib", "repository");
-      final Directory directory = Directory(repositoryPath);
-      final String filePath = p.join(directory.path, fileName);
+      final String filePath = p.join(repositoryPath, fileName);
       final File file = File(filePath);
       await file.writeAsBytes(bytes, flush: true);
       OpenFile.open(filePath);
