@@ -1,15 +1,33 @@
+import 'dart:io';
+
 import 'package:camorim_getx_app/repository/nivelRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class FormController extends GetxController {
-  // Formulário
+  // Formulário Ferramentas
   final nomeController = TextEditingController();
   final ferramentaController = TextEditingController();
   final quantidadeController = TextEditingController();
   final dataNascimentoController = TextEditingController();
   final localController = TextEditingController();
+
+  // Formulário Dique
+  final idItem = TextEditingController();
+  final nomeEquipamento = TextEditingController();
+  final bordo = TextEditingController();
+  final potencia = TextEditingController();
+  final endereco = TextEditingController();
+  final dataRetiradaDique = TextEditingController();
+  final dataEntradaDique = TextEditingController();
+  final nomeNavio = TextEditingController();
+  final isOkayParaUso = TextEditingController();
+  final classificacao = TextEditingController();
+  final situacaoEquipamento = TextEditingController();
+  final assetsEquipamento = TextEditingController();
+  final observacoesDique = TextEditingController();
+  var campos = <String>[].obs;
 
   //Variáveis
   var dataNascimento = DateTime.now().obs;
@@ -23,6 +41,25 @@ class FormController extends GetxController {
   final OpcoesRepository opcoesRepository = OpcoesRepository();
   var niveis = <String>[].obs;
   var opcoes = <String>[].obs;
+
+  void salvarDadosCsv() {
+    // Cria um arquivo CSV na pasta repository com o nome do equipamento como nome do arquivo.
+    File file = File('lib/repository/${nomeEquipamento}.csv');
+
+    // Percorre os campos do formulário e adiciona os valores aos respectivos campos do arquivo CSV.
+    for (var field in campos) {
+      // Verifica se o campo é válido.
+
+      // Converte o valor do campo em uma string.
+      String value = field.toString();
+
+      // Concatena o valor do campo à string.
+      campos.add(value);
+    }
+
+    // Salva a string no arquivo CSV.
+    file.writeAsStringSync(campos.join(','));
+  }
 
   bool validateFormData() {
     if (nomeController.text.trim().length < 3) {

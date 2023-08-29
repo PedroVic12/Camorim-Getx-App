@@ -44,6 +44,8 @@ dependencies:
   document_scanner_flutter: ^0.2.7
   url_launcher: ^6.1.12
   intl: ^0.18.1
+  csv: ^5.0.2
+  io: ^1.0.4
 
 dev_dependencies:
   flutter_test:

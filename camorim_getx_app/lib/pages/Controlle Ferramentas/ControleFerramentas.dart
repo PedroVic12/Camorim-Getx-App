@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/widgets/Caixa_texto.dart';
+import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/CustomCheckBox.dart';
 import 'package:camorim_getx_app/widgets/CustomDropDownMenu.dart';
 import 'package:camorim_getx_app/widgets/RadioButtonGroup.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controllers/Formulario/FormController.dart';
+import '../../controllers/Formulario/FormController.dart';
 
 class ControleFerramentasPage extends StatefulWidget {
   const ControleFerramentasPage({super.key});

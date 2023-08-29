@@ -1,6 +1,7 @@
-import 'package:camorim_getx_app/pages/Scanner%20PDF/CamScannerPage.dart';
-import 'package:camorim_getx_app/pages/ControleFerramentas.dart';
-import 'package:camorim_getx_app/pages/RelatoriosPage.dart';
+//import 'package:camorim_getx_app/pages/Scanner%20PDF/CamScannerPage.txt';
+import 'package:camorim_getx_app/pages/Controle%20Dique/ControleDiquePage.dart';
+import 'package:camorim_getx_app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
+import 'package:camorim_getx_app/pages/Relatorio%20OS/RelatoriosPage.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +21,15 @@ class _HomePageState extends State<HomePage> {
     'Ordem de Serviço',
     'Ferramentas',
     'Scanner PDF',
-    'Monitoramento'
+    'Monitoramento',
+    'Manutenção Dique'
   ];
 
   @override
   Widget build(BuildContext context) {
     final height_screen = MediaQuery.of(context).size.height;
     final width_screen = MediaQuery.of(context).size.width;
+    double fontePagina = 18.0;
 
     // 1. Obtenha a largura da tela
     double screenWidth = MediaQuery.of(context).size.width;
@@ -34,9 +37,10 @@ class _HomePageState extends State<HomePage> {
     // 2. Defina uma variável que determinará o número de itens no crossAxisCount com base na largura da tela
     int columns;
     if (screenWidth > 600) {
-      columns = 4;
+      columns = 5;
     } else {
       columns = 2;
+      fontePagina = 11;
     }
     return Scaffold(
       appBar: AppBar(
@@ -130,7 +134,11 @@ class _HomePageState extends State<HomePage> {
                   }
                   if (index == 2) {
                     // O índice 2 corresponde ao item 'Scanner PDF' no seu array
-                    Get.to(const CamScannerPage());
+                    //Get.to(const CamScannerPage());
+                  }
+
+                  if (index == 4) {
+                    Get.to(ControleDiquePage());
                   } else {
                     // Outras ações quando outros itens forem clicados
                   }
@@ -157,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
+                          size: fontePagina,
                           cor: Colors.white,
                         ),
                       ],
@@ -170,7 +179,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(const CamScannerPage());
+          //Get.to(const CamScannerPage());
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.red,
