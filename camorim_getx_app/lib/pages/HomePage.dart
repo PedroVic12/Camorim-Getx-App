@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'CRUD EXCEL/GoogleSheetsPage.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -23,6 +25,7 @@ class _HomePageState extends State<HomePage> {
     'Scanner PDF',
     'Manutenção Dique',
     'Monitoramento',
+    'CRUD Excel'
   ];
 
   @override
@@ -139,8 +142,10 @@ class _HomePageState extends State<HomePage> {
 
                   if (index == 3) {
                     Get.to(ControleDiquePage());
-                  } else {
-                    // Outras ações quando outros itens forem clicados
+                  }
+
+                  if (index == 5) {
+                    Get.to(GoogleSheetsPage());
                   }
                 },
                 child: Container(
