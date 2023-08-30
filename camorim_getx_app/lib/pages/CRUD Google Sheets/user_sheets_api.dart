@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:camorim_getx_app/pages/CRUD%20EXCEL/user_fields.dart';
+import 'package:camorim_getx_app/pages/CRUD%20Google%20Sheets/user_fields.dart';
 import 'package:gsheets/gsheets.dart';
 
 class UserSheetsApi {
@@ -43,6 +43,17 @@ class UserSheetsApi {
     } catch (e) {
       print('Erro ao iniciar a API $e');
     }
+  }
+
+  static Future<Object?> getRowCount() async {
+    if (_userSheet == null) {
+      return 0;
+    }
+
+    // Obtenha todas as linhas da planilha.
+    final lastRow = await _userSheet!.values.lastRow();
+
+    return lastRow == null ? 0 : int.tryParse(lastRow.first) ?? 0;
   }
 
   static Future<Worksheet> _getWorksheet(
