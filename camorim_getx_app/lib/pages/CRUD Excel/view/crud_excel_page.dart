@@ -18,7 +18,7 @@ class _ContactFormState extends State<ContactForm> {
   final _formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
-  final controller = Get.put(ContactController());
+  final controller = Get.put(ExcelController());
 
   @override
   void initState() {
