@@ -4,8 +4,15 @@ import 'package:flutter/material.dart';
 
 class DropMenuForm extends StatefulWidget {
   final TextEditingController textController;
+  final String labelText;
+  final List<String> options;
 
-  DropMenuForm({required this.textController, super.key});
+  DropMenuForm({
+    required this.textController,
+    required this.labelText,
+    required this.options,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<DropMenuForm> createState() => _DropMenuFormState();
@@ -13,15 +20,13 @@ class DropMenuForm extends StatefulWidget {
 
 class _DropMenuFormState extends State<DropMenuForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  List<String> _options = ['Apple', 'Banana', 'Cherry'];
   String? _selectedOption;
 
   @override
   void initState() {
     super.initState();
     widget.textController.addListener(() {
-      if (!_options.contains(widget.textController.text)) {
+      if (!widget.options.contains(widget.textController.text)) {
         _selectedOption = null;
       }
     });
@@ -38,28 +43,58 @@ class _DropMenuFormState extends State<DropMenuForm> {
               Expanded(
                 child: CaixaDeTexto(
                   controller: widget.textController,
-                  labelText: 'Entre com as Opções',
+                  labelText: widget.labelText,
                 ),
               ),
-              SizedBox(width: 16),
-              DropdownButton<String>(
-                value: _selectedOption,
-                hint: const Text('Opções'),
-                items: _options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedOption = newValue;
-                    widget.textController.text = newValue!;
-                  });
-                },
-              ),
+              const SizedBox(width: 12),
+              Theme(
+                  data: Theme.of(context).copyWith(
+                      popupMenuTheme: const PopupMenuThemeData(),
+                      canvasColor: Colors.indigo),
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minWidth:
+                                50, // ajuste este valor conforme necessário
+                          ),
+                          child: DropdownButton<String>(
+                            value: _selectedOption,
+                            icon: Center(
+                                child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            )),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedOption = newValue;
+                                widget.textController.text = newValue!;
+                              });
+                            },
+                            items: widget.options.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            selectedItemBuilder: (BuildContext context) {
+                              return widget.options.map<Widget>((String value) {
+                                return const SizedBox
+                                    .shrink(); // Retornamos um widget vazio para que não seja exibido nada quando a opção estiver selecionada
+                              }).toList();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ))
             ],
-          ),
+          )
         ],
       ),
     );

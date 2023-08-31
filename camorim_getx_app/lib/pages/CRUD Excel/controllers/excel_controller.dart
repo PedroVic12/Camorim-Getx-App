@@ -16,7 +16,7 @@ class ExcelController extends GetxController {
   final ExcelTitle excelTitle =
       ExcelTitle(nameTitle: "Name", emailTitle: "Email"); // Títulos da planilha
 
-  // Função para salvar arquivo Excel
+  //! Função para salvar arquivo Excel
   Future<void> saveExcel(Workbook workbook, String filename) async {
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
@@ -28,7 +28,7 @@ class ExcelController extends GetxController {
     }
   }
 
-  // Função para baixar arquivo em ambiente Web
+  // !Função para baixar arquivo em ambiente Web
   void downloadFileWeb(List<int> bytes, String filename) {
     AnchorElement(
         href:
@@ -37,7 +37,7 @@ class ExcelController extends GetxController {
       ..click();
   }
 
-  // Função para salvar arquivo localmente
+  //! Função para salvar arquivo localmente
   Future<void> saveFileLocal(List<int> bytes, String filename) async {
     final String path = (await getApplicationSupportDirectory()).path;
     final String filePath =
@@ -47,7 +47,7 @@ class ExcelController extends GetxController {
     OpenFile.open(filePath);
   }
 
-  // CRUD - Create
+  //! CRUD - Create
   Future<void> addContact(Contact contact) async {
     final Workbook workbook = Workbook();
     final Worksheet sheet = workbook.worksheets[0];
@@ -68,19 +68,19 @@ class ExcelController extends GetxController {
     contacts.add(contact);
   }
 
-  // CRUD - Update (esboço)
+  // !CRUD - Update (esboço)
   Future<void> updateContact(int index, Contact updatedContact) async {
     // Aqui, você irá carregar o arquivo Excel existente, encontrar o contato pelo índice, atualizar e salvar novamente.
     // Para simplicidade, estou omitindo a implementação detalhada aqui.
   }
 
-  // CRUD - Delete (esboço)
+  //! CRUD - Delete (esboço)
   Future<void> deleteContact(int index) async {
     // Aqui, você irá carregar o arquivo Excel existente, encontrar o contato pelo índice, deletar e salvar novamente.
     // Para simplicidade, estou omitindo a implementação detalhada aqui.
   }
 
-  // CRUD - Read (esboço)
+  // !CRUD - Read (esboço)
   Future<void> loadContacts() async {
     // Aqui, você irá carregar o arquivo Excel e adicionar contatos à lista de contatos (contacts).
     // Para simplicidade, estou omitindo a implementação detalhada aqui.

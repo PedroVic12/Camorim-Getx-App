@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../CRUD Excel/controllers/excel_controller.dart';
+
 // TODO -> Tensão, funções, atuadores, VB, TORREs
 
 class ControleDiquePage extends StatefulWidget {
@@ -18,6 +20,7 @@ class ControleDiquePage extends StatefulWidget {
 class _ControleDiquePageState extends State<ControleDiquePage> {
   final formController = Get.put(FormController());
   final planilhaController = Get.put(GoogleSheetsController());
+  final excelController = Get.put(ExcelController());
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +42,23 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
               controller: formController.nomeEquipamento,
               labelText: "Nome da Peça",
             ),
-            CaixaDeTexto(
-              controller: formController.bordo,
-              labelText: "Bordo",
+            DropMenuForm(
+              labelText: 'Bordo',
+              options: const ['BOMBORDO', 'BORESTE', 'OUTRO'],
+              textController: formController.bordo,
             ),
             CaixaDeTexto(
               controller: formController.potencia,
               labelText: "Potencia",
             ),
-            DropMenuForm(
-              textController: formController.opcoesDique,
-            ),
             CaixaDeTexto(
-              controller: formController.endereco,
-              labelText: "Endereço de Aplicação ",
+              controller: formController.potencia,
+              labelText: "Tensão",
+            ),
+            DropMenuForm(
+              labelText: 'Local da Aplicação',
+              options: const ['TORRE 1', 'TORRE 2', 'TORRE 3', 'TORRE 4'],
+              textController: formController.endereco,
             ),
             CaixaDeTexto(
               controller: formController.dataEntradaDique,
@@ -69,21 +75,25 @@ class _ControleDiquePageState extends State<ControleDiquePage> {
                 }
               },
             ),
-            CaixaDeTexto(
-              controller: formController.nomeNavio,
-              labelText: "Embarcação ",
+            DropMenuForm(
+              labelText: 'Nome da Embarcação',
+              options: const ['DIQUE'],
+              textController: formController.nomeNavio,
             ),
-            CaixaDeTexto(
-              controller: formController.isOkayParaUso,
-              labelText: "Apto para Uso ",
+            DropMenuForm(
+              labelText: 'Apto para uso?',
+              options: const ['SIM', 'NÃO'],
+              textController: formController.isOkayParaUso,
             ),
-            CaixaDeTexto(
-              controller: formController.classificacao,
-              labelText: "Classificação ",
+            DropMenuForm(
+              labelText: 'Classificação',
+              options: const ['MCP', 'MCA', 'PROPULSÃO', 'N/A'],
+              textController: formController.classificacao,
             ),
-            CaixaDeTexto(
-              controller: formController.situacaoEquipamento,
-              labelText: "Situação da Peça ",
+            DropMenuForm(
+              labelText: 'Situação da Peça',
+              options: const ['APTO PARA USO', 'REPARAR'],
+              textController: formController.situacaoEquipamento,
             ),
             CaixaDeTexto(
               controller: formController.assetsEquipamento,

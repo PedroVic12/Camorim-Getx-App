@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/pages/CRUD%20Excel/controllers/contact_controller.dart';
+import 'package:camorim_getx_app/pages/CRUD%20Excel/controllers/excel_controller.dart';
 import 'package:camorim_getx_app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:flutter/material.dart';
 

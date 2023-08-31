@@ -39,8 +39,7 @@ class CaixaDeTexto extends StatelessWidget {
               ),
             ),
             contentPadding: EdgeInsets.symmetric(
-              vertical: (height ?? 48.0) / 2 - 12,
-            ),
+                vertical: (height ?? 10.0), horizontal: 10.0),
           )),
     );
   }
