@@ -20,14 +20,26 @@ class DropMenuForm extends StatefulWidget {
 
 class _DropMenuFormState extends State<DropMenuForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String? _selectedOption;
 
-  @override
-  void initState() {
-    super.initState();
-    widget.textController.addListener(() {
-      if (!widget.options.contains(widget.textController.text)) {
-        _selectedOption = null;
+  Future<void> _showOptionsDialog() async {
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Selecione uma Opção'),
+        children: widget.options.map((String option) {
+          return SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, option);
+            },
+            child: Text(option),
+          );
+        }).toList(),
+      ),
+    ).then((selectedValue) {
+      if (selectedValue != null && selectedValue.isNotEmpty) {
+        setState(() {
+          widget.textController.text = selectedValue;
+        });
       }
     });
   }
@@ -47,52 +59,16 @@ class _DropMenuFormState extends State<DropMenuForm> {
                 ),
               ),
               const SizedBox(width: 12),
-              Theme(
-                  data: Theme.of(context).copyWith(
-                      popupMenuTheme: const PopupMenuThemeData(),
-                      canvasColor: Colors.indigo),
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            minWidth:
-                                50, // ajuste este valor conforme necessário
-                          ),
-                          child: DropdownButton<String>(
-                            value: _selectedOption,
-                            icon: Center(
-                                child: Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            )),
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedOption = newValue;
-                                widget.textController.text = newValue!;
-                              });
-                            },
-                            items: widget.options.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            selectedItemBuilder: (BuildContext context) {
-                              return widget.options.map<Widget>((String value) {
-                                return const SizedBox
-                                    .shrink(); // Retornamos um widget vazio para que não seja exibido nada quando a opção estiver selecionada
-                              }).toList();
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ))
+              InkWell(
+                onTap: _showOptionsDialog,
+                child: const CircleAvatar(
+                  backgroundColor: Colors.indigo,
+                  child: Icon(
+                    Icons.arrow_circle_down,
+                    color: Colors.black,
+                  ),
+                ),
+              )
             ],
           )
         ],
