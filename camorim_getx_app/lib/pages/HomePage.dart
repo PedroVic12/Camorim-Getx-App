@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                   }
                   if (index == 2) {
                     // O índice 2 corresponde ao item 'Scanner PDF' no seu array
-                    //Get.to(const CamScannerPage());
+                    //Get.to(CamScannerPage());
                   }
 
                   if (index == 3) {
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if (index == 5) {
-                    Get.to(GoogleSheetsPage());
+                    Get.to(const GoogleSheetsPage());
                   }
                 },
                 child: Container(
@@ -154,8 +154,8 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                       color: Colors.indigo,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        const BoxShadow(
+                      boxShadow: const [
+                        BoxShadow(
                             color: Colors.black, spreadRadius: 1, blurRadius: 6)
                       ]),
                   child: Center(
