@@ -1,7 +1,7 @@
 //import 'package:camorim_getx_app/pages/Scanner%20PDF/CamScannerPage.txt';
-import 'package:camorim_getx_app/pages/Controle%20Dique/ControleDiquePage.dart';
-import 'package:camorim_getx_app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
-import 'package:camorim_getx_app/pages/Relatorio%20OS/RelatoriosPage.dart';
+import 'package:camorim_getx_app/app/pages/Controle%20Dique/ControleDiquePage.dart';
+import 'package:camorim_getx_app/app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
+import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

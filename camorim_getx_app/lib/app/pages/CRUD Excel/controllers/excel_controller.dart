@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:camorim_getx_app/pages/CRUD%20Excel/model/contact_model.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:get/get.dart';
 
 class ExcelController extends GetxController {

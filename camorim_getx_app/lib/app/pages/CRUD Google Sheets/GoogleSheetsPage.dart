@@ -1,8 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:camorim_getx_app/pages/CRUD%20Excel/view/crud_excel_page.dart';
-import 'package:camorim_getx_app/pages/CRUD%20Google%20Sheets/user_fields.dart';
-import 'package:camorim_getx_app/pages/CRUD%20Google%20Sheets/user_sheets_api.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/view/crud_excel_page.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Google%20Sheets/user_fields.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Google%20Sheets/user_sheets_api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';

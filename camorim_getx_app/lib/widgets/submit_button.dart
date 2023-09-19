@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/controllers/Formulario/FormController.dart';
+import 'package:camorim_getx_app/app/controllers/Formulario/FormController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

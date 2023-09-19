@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:camorim_getx_app/pages/CRUD%20Google%20Sheets/user_fields.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Google%20Sheets/user_fields.dart';
 import 'package:gsheets/gsheets.dart';
 
 class UserSheetsApi {

@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/controllers/RelatorioController.dart';
+import 'package:camorim_getx_app/app/controllers/RelatorioController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

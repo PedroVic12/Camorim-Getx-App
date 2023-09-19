@@ -1,12 +1,13 @@
-import 'package:camorim_getx_app/controllers/Formulario/FormController.dart';
-import 'package:camorim_getx_app/controllers/GoogleSheetsController.dart';
+import 'package:camorim_getx_app/app/controllers/Formulario/FormController.dart';
+import 'package:camorim_getx_app/app/controllers/GoogleSheetsController.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../CRUD Excel/controllers/excel_controller.dart';
+import '../../../pages/CRUD Excel/controllers/excel_controller.dart';
+
 
 // TODO -> Tensão, funções, atuadores, VB, TORREs
 

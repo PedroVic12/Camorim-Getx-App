@@ -1,9 +1,10 @@
-import 'package:camorim_getx_app/pages/Scanner%20PDF/second_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../pages/Scanner PDF/first_page.dart';
+import '../app/pages/Scanner PDF/first_page.dart';
+import '../app/pages/Scanner PDF/second_page.dart';
+
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
