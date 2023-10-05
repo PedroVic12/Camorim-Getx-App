@@ -2,6 +2,8 @@
 import 'package:camorim_getx_app/app/pages/Controle%20Dique/ControleDiquePage.dart';
 import 'package:camorim_getx_app/app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/ImagePickerPage/ImagePickerPage.dart';
+import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,18 +48,17 @@ class _HomePageState extends State<HomePage> {
       fontePagina = 11;
     }
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('HomePage')),
-        backgroundColor: Colors.red,
+      appBar: AppBarPersonalizada(
+        titulo: "HomePage",
       ),
       body: Container(
-        color: Colors.indigo,
+        color: Colors.red,
         height: height_screen,
         width: width_screen,
         child: ListView(children: [
           Container(
             decoration: const BoxDecoration(
-              color: Colors.indigo,
+              color: Colors.red,
             ),
             height: height_screen * 0.30,
             width: width_screen,
@@ -138,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                   if (index == 2) {
                     // O índice 2 corresponde ao item 'Scanner PDF' no seu array
                     //Get.to(CamScannerPage());
+                    Get.to(ScannerOcrPage());
                   }
 
                   if (index == 3) {

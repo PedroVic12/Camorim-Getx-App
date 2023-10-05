@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        title: 'Flutter Demo',
+        title: 'CAMORIM MANUTENÇÃO APP',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlueAccent),
           useMaterial3: true,
         ),
         home: HomePage());
