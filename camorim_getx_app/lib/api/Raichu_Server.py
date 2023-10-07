@@ -18,6 +18,10 @@ class RaichuServerWeb:
         def upload_image():
             return self.processarTextoDaImagem()
 
+        @self.app.route('/', methods=['GET'])
+        def index():
+            return "<h1> Raichu Server is online!</h1>"
+
     def processarTextoDaImagem(self):
 
         try:

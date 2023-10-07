@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import spacy
 # import nltk
 
-# Instanciar o cliente
 #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'C:\Users\PedroVictorRodrigues\Documents\GitHub\elon-musk\Tecnologia e Inovação\Visão Computacional\src\open_cv_demo\client_file.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'/home/pedrov/Documentos/GitHub/Camorim-Getx-App/camorim_getx_app/lib/api/client_file.json'
 
