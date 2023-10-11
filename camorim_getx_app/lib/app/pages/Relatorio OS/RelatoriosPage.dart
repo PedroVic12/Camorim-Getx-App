@@ -1,9 +1,17 @@
 import 'package:camorim_getx_app/app/controllers/relatorios/RelatorioController.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
+import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'widgets/relatorios_widgets.dart';
+
 class RelatorioPage extends StatelessWidget {
-  final RelatorioController controller = Get.put(RelatorioController());
+  final RelatorioController relatorio_controller =
+      Get.put(RelatorioController());
+  final _formKey = GlobalKey<FormState>();
+  final ExcelController excel_controller = Get.put(ExcelController());
 
   @override
   Widget build(BuildContext context) {
@@ -16,89 +24,21 @@ class RelatorioPage extends StatelessWidget {
         padding: EdgeInsets.all(12),
         child: Column(
           children: [
-            TextFormField(
-              controller: controller.nomeRebocadorText,
-              decoration: InputDecoration(
-                hintText: 'Nome do Rebocador',
-                labelText: 'Nome do Rebocador',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                isDense: true,
-              ),
-            ),
-            SizedBox(height: 8),
-            TextFormField(
-              controller: controller.descricaoFalhaText,
-              decoration: InputDecoration(
-                hintText: 'Descrição da falha',
-                labelText: 'Descrição da Falha',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                isDense: true,
-              ),
-            ),
-            SizedBox(height: 8),
-            TextFormField(
-              controller: controller.servicoExecutadoText,
-              decoration: InputDecoration(
-                hintText: 'Serviço Executado',
-                labelText: 'Serviço Executado',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                isDense: true,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text('Serviço Finalizado?'),
-            Checkbox(
-              value: controller.servicoFinalizado.value,
-              onChanged: (value) {
-                controller.servicoFinalizado.value = value!;
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                controller.addRelatorio();
-              },
-              child: Text("Enviar Relatorio"),
-            ),
-            Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  itemCount: controller.relatorio.length,
-                  itemBuilder: (context, index) {
-                    final relatorioItem = controller.relatorio[index];
-                    return ListTile(
-                      title: Text(relatorioItem.nome_rebocador!),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(relatorioItem.descricao_falha!),
-                          Text(relatorioItem.servico_executado!),
-                          Text(
-                            'Serviço Finalizado: ${relatorioItem.servico_finalizado}',
-                          ),
-                        ],
-                      ),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          controller.removerRelatoio(index);
-                        },
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            DisplaySimpleForms(),
+            DisplayFormsResults(),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            // Adicione ou atualize o contato usando o ContactController
+            //final contact = Relatorio(               descricaoFalha:                );
+            //excel_controller.addContact(contact as Contact);
+            Get.back();
+          }
+        },
+        child: Text('Save'),
       ),
     );
   }
