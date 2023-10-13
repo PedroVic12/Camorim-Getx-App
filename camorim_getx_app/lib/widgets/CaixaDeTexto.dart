@@ -18,7 +18,7 @@ class CaixaDeTexto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.all(12.0),
       child: TextField(
           style: TextStyle(),
           controller: controller,

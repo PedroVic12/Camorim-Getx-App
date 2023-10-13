@@ -9,8 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:get/get.dart';
 
+import '../models/RelatorioModel.dart';
+
 class ExcelController extends GetxController {
   var contatos = <Contact>[].obs;
+
+  var relatorios_array = <Relatorio>[].obs;
 
   final ExcelTitle excelTitle =
       ExcelTitle(nameTitle: "Nome", emailTitle: "Email"); // Títulos da planilha
@@ -69,5 +73,34 @@ class ExcelController extends GetxController {
     }
   }
 
-  // As demais funções para update, delete e load permanecem similares e podem ser implementadas conforme a necessidade específica do aplicativo.
+//!CRUD
+  Future<void> adicionarRelatorio(
+      Relatorio relatorio, String nomeArquivo) async {
+    final Workbook workbook = Workbook();
+    final Worksheet sheet = workbook.worksheets[0];
+
+    sheet.getRangeByIndex(1, 1).setText(excelTitle.nameTitle);
+    sheet.getRangeByIndex(1, 2).setText(excelTitle.emailTitle);
+
+    final int proximaLinha = contatos.length + 2;
+    sheet.getRangeByIndex(proximaLinha, 1).setText(relatorio.nomeRebocador);
+    sheet.getRangeByIndex(proximaLinha, 2).setText(relatorio.descricaoFalha);
+
+    await salvarExcel(workbook, '$nomeArquivo.xlsx');
+
+    relatorios_array.add(relatorio);
+  }
+
+  void showMessage() {
+    // Adiciona Snackbar para notificar sucesso
+    try {
+      Get.snackbar('Sucesso', 'Feito com sucesso!',
+          snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      // Adiciona Snackbar para notificar erro
+      Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
+    }
+
+    // As demais funções para update, delete e load permanecem similares e podem ser implementadas conforme a necessidade específica do aplicativo.
+  }
 }

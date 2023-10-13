@@ -37,7 +37,7 @@ class RelatorioController extends GetxController {
     servicoFinalizado.value = false;
   }
 
-  void removerRelatoio(int index) {
+  void removerRelatorio(int index) {
     relatorios.removeAt(index);
     itemCount.value = relatorios.length;
   }

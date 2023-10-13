@@ -94,7 +94,7 @@ class DisplayFormsResults extends StatelessWidget {
                   ),
                   trailing: GestureDetector(
                     onTap: () {
-                      controller.removerRelatoio(index);
+                      controller.removerRelatorio(index);
                     },
                     child: Icon(
                       Icons.delete,

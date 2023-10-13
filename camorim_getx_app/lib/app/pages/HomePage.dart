@@ -161,8 +161,7 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.black, spreadRadius: 1, blurRadius: 6)
                       ]),
                   child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: ListView(
                       children: [
                         const Icon(
                           Icons.add_a_photo,
