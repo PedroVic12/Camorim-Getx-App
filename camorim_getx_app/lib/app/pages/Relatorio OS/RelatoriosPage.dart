@@ -11,6 +11,7 @@ import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../widgets/NavBarCustom.dart';
 import 'widgets/relatorios_widgets.dart';
 
 class RelatorioPage extends StatelessWidget {
@@ -38,6 +39,28 @@ class RelatorioPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: Text('Save'),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        navBarItems: [
+          NavigationBarItem(
+              label: 'Calendário',
+              iconData: Icons.date_range_outlined,
+              onPress: () {
+                // Get.to(CalendarioWidget());
+              }),
+          NavigationBarItem(
+              label: 'Todo List',
+              iconData: Icons.search,
+              onPress: () {
+                //Get.to(TodoListPage());
+              }),
+          NavigationBarItem(
+              label: 'SCRUM CALENDAR',
+              iconData: Icons.person,
+              onPress: () {
+                //Get.to(CalendarioWidget());
+              }),
+        ],
       ),
     );
   }

@@ -52,45 +52,43 @@ class PrimeiraPagina extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Obx(() {
-            if (controller.imagens.isEmpty) {
-              return Center(
-                child: Text(
-                  'Selecione uma imagem da câmera ou galeria',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.indigo[900], fontSize: 30),
-                ),
-              );
-            } else {
-              return PdfPreview(
-                maxPageWidth: 1000,
-                canChangeOrientation: true,
-                canDebug: false,
-                build: (format) => controller.gerarDocumento(format),
-              );
-            }
-          }),
-          Align(
-            alignment: Alignment(-0.5, 0.8),
-            child: FloatingActionButton(
-              child: Icon(Icons.image),
-              backgroundColor: Colors.indigo[900],
-              onPressed: controller.pegarImagemDaGaleria,
-            ),
+    return Column(
+      children: [
+        Obx(() {
+          if (controller.imagens.isEmpty) {
+            return Center(
+              child: Text(
+                'Selecione uma imagem da câmera ou galeria',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.indigo[900], fontSize: 30),
+              ),
+            );
+          } else {
+            return PdfPreview(
+              maxPageWidth: 1000,
+              canChangeOrientation: true,
+              canDebug: false,
+              build: (format) => controller.gerarDocumento(format),
+            );
+          }
+        }),
+        Align(
+          alignment: Alignment(-0.5, 0.8),
+          child: FloatingActionButton(
+            child: Icon(Icons.image),
+            backgroundColor: Colors.indigo[900],
+            onPressed: controller.pegarImagemDaGaleria,
           ),
-          Align(
-            alignment: Alignment(0.5, 0.8),
-            child: FloatingActionButton(
-              child: Icon(Icons.camera),
-              backgroundColor: Colors.indigo[900],
-              onPressed: controller.pegarImagemDaCamera,
-            ),
+        ),
+        Align(
+          alignment: Alignment(0.5, 0.8),
+          child: FloatingActionButton(
+            child: Icon(Icons.camera),
+            backgroundColor: Colors.indigo[900],
+            onPressed: controller.pegarImagemDaCamera,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
