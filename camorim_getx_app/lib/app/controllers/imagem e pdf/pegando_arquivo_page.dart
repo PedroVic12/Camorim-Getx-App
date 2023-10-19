@@ -52,10 +52,6 @@ class _PegandoArquivosPageState extends State<PegandoArquivosPage> {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: pegarImagem,
-          child: Text('Selecione uma imagem web'),
-        ),
-        ElevatedButton(
           onPressed: controller.pegarUmArquivo,
           child: Text('Selecione um arquivo'),
         ),

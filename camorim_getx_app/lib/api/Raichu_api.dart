@@ -2,18 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class RaichuRestApi {
-  final Dio _dio;
+  final _dio = Dio();
 
   // URL da API (altere para o seu endpoint)
-  final String url_raichu_server = 'http://127.0.0.1:5000';
-
-  RaichuRestApi([Dio? dio])
-      : _dio = dio ?? Dio(BaseOptions(baseUrl: 'http://127.0.0.1:5000'));
+  final String url_raichu_server = 'raichu-server-web.onrender.com';
 
   Future<Map<String, dynamic>> uploadImage(Uint8List imageData) async {
     try {
       // Substitua pelo endpoint do seu servidor
-      String path = '/upload_image';
+      String path = 'raichu-server-web.onrender.com/upload_image';
 
       // Substitua pelo nome do campo esperado pelo seu servidor
       String imageFieldName = 'image';
