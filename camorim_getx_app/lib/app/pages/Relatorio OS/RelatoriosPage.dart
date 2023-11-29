@@ -6,6 +6,7 @@ import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_contro
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/views/SimpleFormPage.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_page.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:flutter/material.dart';
@@ -49,16 +50,10 @@ class RelatorioPage extends StatelessWidget {
                 // Get.to(CalendarioWidget());
               }),
           NavigationBarItem(
-              label: 'Todo List',
+              label: 'TELA CADASTRO',
               iconData: Icons.search,
               onPress: () {
-                //Get.to(TodoListPage());
-              }),
-          NavigationBarItem(
-              label: 'SCRUM CALENDAR',
-              iconData: Icons.person,
-              onPress: () {
-                //Get.to(CalendarioWidget());
+                Get.to(SistemaCadastroPage());
               }),
         ],
       ),

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         title: 'CAMORIM MANUTENÇÃO APP',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlueAccent),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
           useMaterial3: true,
         ),
         home: HomePage());

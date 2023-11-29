@@ -13,7 +13,7 @@ class DioFilesRestApiController extends StatefulWidget {
 }
 
 class _DioFilesRestApiControllerState extends State<DioFilesRestApiController> {
-  final restApi = Dio();
+  final Dio restApi = Dio();
 
   Future<void> pegandoImagemWeb({required ImageSource source}) async {
     var imagePicker = await ImagePicker().pickImage(source: source);
@@ -93,9 +93,40 @@ class _DioFilesRestApiControllerState extends State<DioFilesRestApiController> {
                   );
                 }
               },
-              child: Text('Fazer um post da img'))
+              child: Text('Fazer um post da img')),
+          ElevatedButton(
+              onPressed: () {
+                ImageUploader()
+                    .uploadImage('raichu-server-web.onrender.com/upload_image');
+              },
+              child: Text('Try to send to Server'))
         ],
       ),
     );
+  }
+}
+
+class ImageUploader {
+  final Dio _dio = Dio();
+
+  Future<void> uploadImage(String serverUrl) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(pickedFile.path,
+            filename: pickedFile.path.split('/').last)
+      });
+
+      try {
+        var response = await _dio.post(serverUrl, data: formData);
+        print(response);
+      } catch (e) {
+        print("Erro ao enviar a imagem: $e");
+      }
+    } else {
+      print('Nenhuma imagem selecionada.');
+    }
   }
 }
