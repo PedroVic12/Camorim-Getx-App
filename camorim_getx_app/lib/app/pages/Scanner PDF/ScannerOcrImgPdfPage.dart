@@ -20,6 +20,22 @@ class _ScannerOcrPageState extends State<ScannerOcrPage> {
           ImagePickerWidget(),
           separador('Exibindo a Imagem'),
           PegandoArquivosPage(),
+
+
+
+        ],
+      ),
+    );
+  }
+
+  Widget buildListOptions(){
+    return Column(
+      children: [
+        
+          ElevatedButton(onPressed: () {Get.to(Secondpage);}, child: Text('Ir para Segunda Pagina')),
+
+
+
           separador('Pegando arquivo e e fazendo um POST'),
           DioFilesRestApiController(),
           separador('Coluna Botoes'),
@@ -28,10 +44,8 @@ class _ScannerOcrPageState extends State<ScannerOcrPage> {
           separador('Exibindo Resultado OCR'),
           ElevatedButton(onPressed: () {}, child: Text('Salvar Excel')),
           separador('Pegando varios arquivos'),
-          // PrimeiraPagina(),
-        ],
-      ),
-    );
+      ]
+    )
   }
 
   Widget separador(text) {
