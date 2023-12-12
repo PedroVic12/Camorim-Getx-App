@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
@@ -8,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' show AnchorElement;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
 
 class BulbassaurExcelController extends GetxController {
   void abrirArquivo() async {
@@ -33,6 +34,8 @@ class BulbassaurExcelController extends GetxController {
   Future<void> create_excel() async {
     final Workbook wb = Workbook();
     final Worksheet sheet = wb.worksheets[0];
+    final sheetNames = wb.worksheets;
+
     sheet.getRangeByName('A1').setText('Hello World');
 
     salvar_excel(wb);
@@ -46,12 +49,25 @@ class BulbassaurExcelController extends GetxController {
   final ExcelTitle excelTitle =
       ExcelTitle(nameTitle: "Nome", emailTitle: "Email"); // Títulos da planilha
 
-  Future<void> salvarExcel(Workbook workbook, String filename) async {
-    final List<int> bytes = workbook.saveAsStream();
-    workbook.dispose();
-
+  salvarExcelWeb(Workbook wb, fileName) async {
+    final Worksheet sheet = wb.worksheets[0];
+    sheet.getRangeByName('A1').setText('Hello World!');
+    final List<int> bytes = wb.saveAsStream();
+    wb.dispose();
     if (kIsWeb) {
-    } else {}
+      AnchorElement(
+          href:
+              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
+        ..setAttribute('download', 'Output.xlsx')
+        ..click();
+    } else {
+      final String path = (await getApplicationSupportDirectory()).path;
+      final String fileName =
+          Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
+      final File file = File(fileName);
+      await file.writeAsBytes(bytes, flush: true);
+      OpenFile.open(fileName);
+    }
   }
 
   Future<void> adicionarContato(Contact contato, String nomeArquivo) async {
@@ -66,7 +82,7 @@ class BulbassaurExcelController extends GetxController {
       sheet.getRangeByIndex(proximaLinha, 1).setText(contato.name);
       sheet.getRangeByIndex(proximaLinha, 2).setText(contato.email);
 
-      await salvarExcel(workbook, '$nomeArquivo.xlsx');
+      await salvarExcelWeb(workbook, '$nomeArquivo.xlsx');
 
       contatos.add(contato);
 
@@ -93,7 +109,7 @@ class BulbassaurExcelController extends GetxController {
     sheet.getRangeByIndex(proximaLinha, 1).setText(relatorio.nomeRebocador);
     sheet.getRangeByIndex(proximaLinha, 2).setText(relatorio.descricaoFalha);
 
-    await salvarExcel(workbook, '$nomeArquivo.xlsx');
+    await salvarExcelWeb(workbook, '$nomeArquivo.xlsx');
 
     relatorios_array.add(relatorio);
   }
@@ -107,7 +123,5 @@ class BulbassaurExcelController extends GetxController {
       // Adiciona Snackbar para notificar erro
       Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
     }
-
-    // As demais funções para update, delete e load permanecem similares e podem ser implementadas conforme a necessidade específica do aplicativo.
   }
 }

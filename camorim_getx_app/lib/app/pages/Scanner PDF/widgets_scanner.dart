@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/models/Dragonite.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -63,5 +64,27 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         }),
       ],
     );
+  }
+}
+
+class ImagemController extends GetxController {
+  var imagens = <Uint8List>[].obs;
+  final DragonitePDF pdfCreator = DragonitePDF(); // Criador de PDF
+
+  Future<void> pegarImagem() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      Uint8List? imageData = await pickedFile.readAsBytes();
+      imagens.add(imageData);
+
+      // Cria um PDF com a imagem capturada
+      await pdfCreator.saveImageToPdf(imageData, 'NomeDoArquivo');
+      // Salva e abre o PDF
+      await pdfCreator.saveAndLauchFile(imageData, 'NomeDoArquivo.pdf');
+    } else {
+      print('Nenhuma imagem selecionada.');
+    }
   }
 }

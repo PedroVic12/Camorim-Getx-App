@@ -1,3 +1,4 @@
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/pdf_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -5,8 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-
-import 'controller/pdf_controller.dart';
 
 class Secondpage extends StatelessWidget {
   final controller = Get.put(ImageToPdfController());
