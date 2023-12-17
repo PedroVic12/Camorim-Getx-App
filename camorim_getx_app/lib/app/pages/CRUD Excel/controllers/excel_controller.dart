@@ -13,8 +13,8 @@ import 'package:get/get.dart';
 class ExcelController extends GetxController {
   var contacts = <Contact>[].obs;
 
-  final ExcelTitle excelTitle =
-      ExcelTitle(nameTitle: "Name", emailTitle: "Email"); //! Títulos da planilha
+  final ExcelTitle excelTitle = ExcelTitle(
+      nameTitle: "Name", emailTitle: "Email"); //! Títulos da planilha
 
   //! Função para salvar arquivo Excel
   Future<void> saveExcel(Workbook workbook, String filename) async {

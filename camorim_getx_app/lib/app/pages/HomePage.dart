@@ -1,4 +1,5 @@
 //import 'package:camorim_getx_app/pages/Scanner%20PDF/CamScannerPage.txt';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/view/crud_excel_page.dart';
 import 'package:camorim_getx_app/app/pages/Controle%20Dique/ControleDiquePage.dart';
 import 'package:camorim_getx_app/app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
@@ -137,7 +138,6 @@ class _HomePageState extends State<HomePage> {
                     Get.to(const ControleFerramentasPage());
                   }
                   if (index == 2) {
-
                     Get.to(ScannerOcrPage());
                   }
 
@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if (index == 5) {
-                    Get.to(const GoogleSheetsPage());
+                    Get.to(ContactForm());
                   }
                 },
                 child: Container(

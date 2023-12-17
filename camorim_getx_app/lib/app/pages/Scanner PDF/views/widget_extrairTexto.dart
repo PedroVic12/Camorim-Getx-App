@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 
 class WidgetSelecionadorImagem extends StatefulWidget {
   @override
@@ -18,11 +19,24 @@ class WidgetSelecionadorImagem extends StatefulWidget {
 class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   XFile? imagemSelecionada;
   String textoExtraido = '';
-  final String baseUrl =
-      'https://bb8e-2804-18-4840-7eed-eafb-1cff-fed7-91f7.ngrok-free.app';
+  final String baseUrl = 'https://docker-raichu.onrender.com';
   final String raichu_url = 'https://raichu-server-web.onrender.com';
   final dio_API = ServidorOCR();
   bool isLoading = false; // Adicionado para gerenciar o estado de carregamento
+  TextEditingController textEditingController = TextEditingController();
+  TextEditingController dataText = TextEditingController();
+  TextEditingController categoriaText = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getStatus();
+  }
+
+  getStatus() async {
+    var response = await dio_API.dio.get('$baseUrl/');
+    print('Testando o docker  ${response.data} ');
+  }
 
   Future<void> escolherImagemGaleria() async {
     final ImagePicker seletorImagem = ImagePicker();
@@ -54,33 +68,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     }
   }
 
-  sendImageRaichu(XFile file) async {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('${raichu_url}/enviar-foto/'),
-    );
-    request.files.add(
-      http.MultipartFile(
-        'file', // Este deve ser o nome do campo esperado pelo servidor
-        file.readAsBytes().asStream(),
-        await file.length(),
-        filename: file.name,
-      ),
-    );
-
-    var res = await request.send();
-    var response = await http.Response.fromStream(res);
-    return response;
-  }
-
   Future<http.Response> sendImageServer(XFile file) async {
-    try {
-      final data = await sendImageRaichu(file);
-      print(data);
-    } catch (e) {
-      showMessage('Erro', e.toString());
-    }
-
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('${baseUrl}/enviar-foto/'),
@@ -95,24 +83,27 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     );
     var res = await request.send();
     var response = await http.Response.fromStream(res);
-    print("Response body: " + response.body);
     print("Response status code: ${res.statusCode}");
 
-    showMessage('Texto', 'Extraido!');
-    var responseData = json.decode(response.body);
-    setState(() {
-      textoExtraido = responseData['ocr_text'];
-    });
+    if (res.statusCode == 200) {
+      print("Response body: " + response.body);
+
+      var responseData = await json.decode(response.body);
+      setState(() {
+        textoExtraido = responseData['ocr_text'];
+      });
+      showMessage('OK', 'Imagem enviada com sucesso!');
+    }
     return response;
   }
 
   Future<void> obterTexto() async {
     var response = await dio_API.dio.get('$baseUrl/get-text/');
     if (response.statusCode == 200) {
-      showMessage('Sucesso', 'Imagem enviada com sucesso!');
-
+      showMessage('Texto', 'Extraido!');
       setState(() {
         textoExtraido = response.data['extracted_text'];
+        textEditingController.text = textoExtraido;
       });
     }
   }
@@ -121,19 +112,34 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey.shade300,
-      appBar: AppBar(title: Text("OCR App + Backend Server")),
+      appBar: AppBar(title: const Text("OCR App + Backend Server")),
       body: ListView(
         children: [
           BotaoAcao(texto: 'Escolher Imagem', acao: escolherImagemGaleria),
           BotaoAcao(texto: ' Imagem Camera', acao: escolherImagemCamera),
           if (imagemSelecionada != null) CardImagem(),
           BotaoAcao(texto: 'Obter Texto', acao: obterTexto),
-          CardTexto()
+          //CardTexto(),
+
+          Column(
+            children: [
+              cardTextoEditavel('Total', textEditingController),
+              cardTextoEditavel("Data", dataText),
+              cardTextoEditavel("Categoria", categoriaText)
+            ],
+          ),
+
+          BotaoAcao(
+              texto: "Salvar Excel",
+              acao: () {
+                String dataFormatada =
+                    DateFormat('dd/MM/yyyy').format(DateTime.now());
+              })
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: obterTexto,
-        child: Icon(Icons.textsms),
+        child: const Icon(Icons.textsms),
       ),
     );
   }
@@ -142,10 +148,10 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     return Column(
       children: [
         GestureDetector(
-          child: CustomText(text: '${imagemSelecionada}'),
+          child: CustomText(text: imagemSelecionada!.path),
         ),
         Container(
-          height: 600,
+          height: 400,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.network(imagemSelecionada!.path),
@@ -155,19 +161,45 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     );
   }
 
-  Widget BotaoAcao({required String texto, required VoidCallback acao}) {
+  Widget BotaoAcao(
+      {required String texto,
+      required VoidCallback acao,
+      MaterialStateProperty<Color?>? cor}) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: EdgeInsets.all(12.0),
       child: ElevatedButton(
+        style: ButtonStyle(backgroundColor: cor),
         onPressed: acao,
         child: Text(texto),
       ),
     );
   }
 
+  Widget cardTextoEditavel(
+      String labelText, TextEditingController _controller) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: _controller,
+        decoration: InputDecoration(
+          hintText: 'Digite algo aqui...',
+          border: OutlineInputBorder(),
+          label: Text(
+            labelText,
+            style: const TextStyle(
+              color: Colors.purple,
+            ),
+          ),
+        ),
+        maxLines: null, // Permite múltiplas linhas
+        keyboardType: TextInputType.multiline,
+      ),
+    );
+  }
+
   Widget CardTexto() {
     return Container(
-      height: 600,
+      height: 400,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CustomText(text: textoExtraido),
@@ -176,8 +208,6 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   }
 
   void showMessage(String texto1, String texto2) {
-    // Adiciona Snackbar para notificar sucesso
-
     getX.Get.snackbar(texto1, texto2, snackPosition: getX.SnackPosition.TOP);
   }
 }

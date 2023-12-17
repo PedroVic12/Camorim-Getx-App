@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../CRUD Google Sheets/GoogleSheetsPage.dart';
+
 class ContactForm extends StatefulWidget {
   final Contact?
       contact; // Null para novo contato, preenchido para editar um contato existente
@@ -32,51 +34,61 @@ class _ContactFormState extends State<ContactForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(widget.contact == null ? 'Add Contact' : 'Edit Contact')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter email';
-                  }
-                  return null;
-                },
-              ),
-              ElevatedButton(
+        appBar: AppBar(
+            title:
+                Text(widget.contact == null ? 'Add Contact' : 'Edit Contact')),
+        body: ListView(
+          children: [
+            ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Adicione ou atualize o contato usando o ContactController
-                    final contact = Contact(
-                        name: nameController.text, email: emailController.text);
-                    controller.addContact(
-                        contact); // Aqui você pode decidir adicionar ou atualizar com base em widget.contact
-                    Get.back();
-                  }
+                  Get.to(GsheetsController);
                 },
-                child: Text('Save'),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+                child: Text('Google Sheets')),
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: 'Name'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter name';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter email';
+                        }
+                        return null;
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // Adicione ou atualize o contato usando o ContactController
+                          final contact = Contact(
+                              name: nameController.text,
+                              email: emailController.text);
+                          controller.addContact(
+                              contact); // Aqui você pode decidir adicionar ou atualizar com base em widget.contact
+                          Get.back();
+                        }
+                      },
+                      child: Text('Save'),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }

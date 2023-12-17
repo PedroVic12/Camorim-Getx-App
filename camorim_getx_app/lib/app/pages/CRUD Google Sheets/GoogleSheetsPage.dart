@@ -61,66 +61,55 @@ class _GoogleSheetsPageState extends State<GoogleSheetsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CRUD Excel'),
-        backgroundColor: Colors.black,
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(32),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              Center(
-                child: new InkWell(
-                    child: new Text('ABRIR LINK DA PLANILHA'),
-                    onTap: () => launch(
-                        'https://docs.google.com/spreadsheets/d/1F4xp1uLQvuUplDPqV_Vg5I-Wp3-7dNlpmY4IQOPTuak/edit#gid=0')),
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(32),
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            Center(
+              child: new InkWell(
+                  child: new Text('ABRIR LINK DA PLANILHA'),
+                  onTap: () => launch(
+                      'https://docs.google.com/spreadsheets/d/1F4xp1uLQvuUplDPqV_Vg5I-Wp3-7dNlpmY4IQOPTuak/edit#gid=0')),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            buildName(sheet_controller),
+            const SizedBox(
+              height: 16,
+            ),
+            buildEmail(sheet_controller),
+            const SizedBox(
+              height: 16,
+            ),
+            buildPadawan(sheet_controller),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.black),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    Get.to(ContactForm());
-                  },
-                  child: Text('Ir para o CRUD Excel')),
-              const SizedBox(
-                height: 16,
-              ),
-              buildName(sheet_controller),
-              const SizedBox(
-                height: 16,
-              ),
-              buildEmail(sheet_controller),
-              const SizedBox(
-                height: 16,
-              ),
-              buildPadawan(sheet_controller),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.black),
-                ),
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    insertFromForm();
-                    Get.snackbar('Sucesso',
-                        'Dados do formulário inseridos na planilha!');
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  insertFromForm();
+                  Get.snackbar(
+                      'Sucesso', 'Dados do formulário inseridos na planilha!');
+                }
+              },
+              child: Text('Save Data'),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  try {
+                    insertUsers();
+                    Get.snackbar('Sucesso', 'Foi inserido na planilha!');
+                  } catch (e) {
+                    print('nao foi possivel $e');
                   }
                 },
-                child: Text('Save Data'),
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      insertUsers();
-                      Get.snackbar('Sucesso', 'Foi inserido na planilha!');
-                    } catch (e) {
-                      print('nao foi possivel $e');
-                    }
-                  },
-                  child: const Text('SALVAR DADOS VINDO DE UM JSON')),
-            ],
-          ),
+                child: const Text('SALVAR DADOS VINDO DE UM JSON')),
+          ],
         ),
       ),
     );
