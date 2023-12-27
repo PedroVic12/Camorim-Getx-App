@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
+import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' as getX;
@@ -140,6 +141,22 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
       floatingActionButton: FloatingActionButton(
         onPressed: obterTexto,
         child: const Icon(Icons.textsms),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        navBarItems: [
+          NavigationBarItem(
+              label: 'OCR',
+              iconData: Icons.date_range_outlined,
+              onPress: () {
+                // Get.to(CalendarioWidget());
+              }),
+          NavigationBarItem(
+              label: 'OS DIGITAL',
+              iconData: Icons.search,
+              onPress: () {
+                // getX.Get.to();
+              }),
+        ],
       ),
     );
   }

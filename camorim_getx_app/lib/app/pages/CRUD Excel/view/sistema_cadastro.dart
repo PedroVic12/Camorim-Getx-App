@@ -1,11 +1,11 @@
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
+import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
+import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../widgets/AppBarPersonalizada.dart';
-import '../../../widgets/CaixaDeTexto.dart';
-import '../CRUD Excel/controllers/excel_controller.dart';
 
 class SistemaCadastroPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
