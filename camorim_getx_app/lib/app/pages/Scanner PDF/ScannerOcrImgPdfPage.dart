@@ -25,11 +25,6 @@ class _ScannerOcrPageState extends State<ScannerOcrPage> {
       appBar: AppBar(title: Text("OCR Page")),
       body: ListView(
         children: [
-          ElevatedButton(
-              onPressed: () => Get.to(
-                    WidgetSelecionadorImagem(),
-                  ),
-              child: Text('OCR PAGE 2')),
           separador('Pegando imagem da Camera  e exibindo'),
           ImagePickerWidget(),
           separador('Exibindo a Imagem'),

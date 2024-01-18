@@ -1,0 +1,23 @@
+[
+    {
+        "DATA": 1696809600000,
+        "LOCAL": "CEP 08.900-000",
+        "PRODUTOS": "GASOLINA COMUM",
+        "CATEGORIA": "Combustivel",
+        "TOTAL": 108.34
+    },
+    {
+        "DATA": 1701561600000,
+        "LOCAL": "Av Jane Maria Martins Figueiredo - 301, 301, Jardim Marilea Rio das Ostras, RJ",
+        "PRODUTOS": "2x Caf\u00e9 c\/ Leite - R$ 6\n1x Pao na chapa  - R$ 4\n1x Cafe Expresso  - R$5,50\n1x Agua c\/Gas - R$ 4,50\n1x Red Bull 250ml - R$ 12,99",
+        "CATEGORIA": "Consumo",
+        "TOTAL": 32.68
+    },
+    {
+        "DATA": 1701820800000,
+        "LOCAL": "Parque Pauliceia, Duque de Caxias - RJ, 25020-001",
+        "PRODUTOS": "refeicao",
+        "CATEGORIA": "Vale refeicao",
+        "TOTAL": 81.0
+    }
+]

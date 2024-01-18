@@ -1,7 +1,16 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print
+
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/nota_fiscal_controller.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/tabela_notaFiscalView.dart';
+import 'package:camorim_getx_app/widgets/LoadingWidget.dart';
 import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
+import 'package:camorim_getx_app/widgets/TableCustom.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' as getX;
@@ -10,6 +19,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../widgets/AppBarPersonalizada.dart';
+import '../../CRUD Excel/controllers/bulbassaur_excel.dart';
+import '../../OCR_PAGE/views/DadosCadastradosPage.dart';
 
 class WidgetSelecionadorImagem extends StatefulWidget {
   @override
@@ -20,36 +33,97 @@ class WidgetSelecionadorImagem extends StatefulWidget {
 class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   XFile? imagemSelecionada;
   String textoExtraido = '';
+
+  //Controllers
   final String baseUrl = 'https://docker-raichu.onrender.com';
   final String raichu_url = 'https://raichu-server-web.onrender.com';
   final dio_API = ServidorOCR();
-  bool isLoading = false; // Adicionado para gerenciar o estado de carregamento
-  TextEditingController textEditingController = TextEditingController();
-  TextEditingController dataText = TextEditingController();
-  TextEditingController categoriaText = TextEditingController();
+  final excel_controller = getX.Get.put(ExcelController());
+  final nota_fiscal_controller = getX.Get.put(NotaFiscalController());
+
+  bool imagemEnviada = false;
+  int contador = 0;
 
   @override
   void initState() {
     super.initState();
     getStatus();
+
+    // Create the timer to periodically call verificaStatus()
+    //Timer.periodic(const Duration(seconds: 60),        (timer) => verificaStatus());
   }
 
   getStatus() async {
-    var response = await dio_API.dio.get('$baseUrl/');
-    print('Testando o docker  ${response.data} ');
+    var responseDio = await dio_API.dio.get('$baseUrl/');
+    print('Testando o docker \n${responseDio.data} ');
+    return responseDio;
+  }
+
+  // Cria a função que será chamada a cada 15 segundos
+  void verificaStatus() async {
+    // Chama a função `getStatus()`
+    var response = await getStatus();
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.statusCode == 200) {
+      // Exibe a imagem
+      print("\nDocker funcionando: $contador vezes");
+      contador++;
+      //await Image.network('https://example.com/image.jpg');
+    }
+  }
+
+  Future<void> lerDadosExtraidos() async {
+    var response = await dio_API.dio.get('$baseUrl/get-text/');
+    if (response.statusCode == 200) {
+      try {
+        String extractedText = json.encode(response.data);
+
+        Map<String, dynamic> textoExtraido =
+            json.decode(extractedText)['texto_extraido'];
+
+        String data = textoExtraido['Data'];
+
+        String local = textoExtraido['Local'];
+
+        List<dynamic> produtos = textoExtraido['Produtos'];
+
+        String total = textoExtraido['Total'];
+
+        // // Remova o símbolo de moeda do total
+        total = total.replaceAll('R\$', '');
+
+        showMessage('Texto', 'Extraído!');
+        setState(() {
+          nota_fiscal_controller.dataController.text = data;
+          nota_fiscal_controller.totalController.text = total;
+          nota_fiscal_controller.localController.text = local;
+          nota_fiscal_controller.produtosController.text = produtos.join(', ');
+        });
+      } catch (e) {
+        print('\nErro ==  $e');
+      }
+    }
   }
 
   Future<void> escolherImagemGaleria() async {
-    final ImagePicker seletorImagem = ImagePicker();
-    final XFile? imagem =
-        await seletorImagem.pickImage(source: ImageSource.gallery);
+    try {
+      final ImagePicker seletorImagem = ImagePicker();
+      final XFile? imagem =
+          await seletorImagem.pickImage(source: ImageSource.gallery);
 
-    if (imagem != null) {
-      setState(() {
-        imagemSelecionada = imagem;
-      });
+      if (imagem != null) {
+        setState(() {
+          imagemSelecionada = imagem;
+          imagemEnviada = false;
+        });
 
-      await sendImageServer(imagemSelecionada!);
+        await sendImageServer(imagemSelecionada!);
+      }
+    } catch (error) {
+      print("\nErro aqui: $error");
+
+      showMessage('Erro', 'Falha ao enviar imagem');
     }
   }
 
@@ -84,62 +158,80 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     );
     var res = await request.send();
     var response = await http.Response.fromStream(res);
-    print("Response status code: ${res.statusCode}");
+    print("\nResponse status code: ${res.statusCode}");
 
     if (res.statusCode == 200) {
-      print("Response body: " + response.body);
+      print("\nResponse body: " + response.body);
 
       var responseData = await json.decode(response.body);
+      // Access the nested 'ocr_text' object
+      String textoExtraido = responseData['ocr_text']?['Data'] ??
+          ''; // Get Data or empty string if null
+
       setState(() {
-        textoExtraido = responseData['ocr_text'];
+        this.textoExtraido = textoExtraido;
+        imagemEnviada = true;
       });
       showMessage('OK', 'Imagem enviada com sucesso!');
     }
-    return response;
-  }
 
-  Future<void> obterTexto() async {
-    var response = await dio_API.dio.get('$baseUrl/get-text/');
-    if (response.statusCode == 200) {
-      showMessage('Texto', 'Extraido!');
-      setState(() {
-        textoExtraido = response.data['extracted_text'];
-        textEditingController.text = textoExtraido;
-      });
-    }
+    return response;
   }
 
   @override
   Widget build(BuildContext context) {
+    final bulbassauro = getX.Get.put(BulbassauroExcelController());
+
     return Scaffold(
-      backgroundColor: Colors.blueGrey.shade300,
-      appBar: AppBar(title: const Text("OCR App + Backend Server")),
+      backgroundColor: Colors.blueGrey.shade200,
+      appBar: AppBarPersonalizada(
+        titulo: "OCR App + Backend Server",
+      ),
       body: ListView(
         children: [
-          BotaoAcao(texto: 'Escolher Imagem', acao: escolherImagemGaleria),
-          BotaoAcao(texto: ' Imagem Camera', acao: escolherImagemCamera),
-          if (imagemSelecionada != null) CardImagem(),
-          BotaoAcao(texto: 'Obter Texto', acao: obterTexto),
-          //CardTexto(),
-
-          Column(
+          //Botoes de Escolha
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              cardTextoEditavel('Total', textEditingController),
-              cardTextoEditavel("Data", dataText),
-              cardTextoEditavel("Categoria", categoriaText)
+              cardButton(escolherImagemGaleria, Icons.phone, "Escolher Imagem"),
+              cardButton(
+                  escolherImagemCamera, Icons.camera_alt, "Imagem camera"),
             ],
           ),
 
+          //Exibindo a imagem
+          if (imagemSelecionada != null && imagemEnviada == false)
+            const Center(child: LoadingWidget())
+          else
+            Center(child: CardImagem()),
+
+          //Formulario a ser cadastrado
+          Column(
+            children: [
+              cardTextoEditavel(
+                  "Categoria", nota_fiscal_controller.categoriaController),
+              cardTextoEditavel("Data", nota_fiscal_controller.dataController),
+              cardTextoEditavel(
+                  "Local", nota_fiscal_controller.localController),
+              cardTextoEditavel(
+                  "Produtos", nota_fiscal_controller.produtosController),
+              cardTextoEditavel(
+                  'Total', nota_fiscal_controller.totalController),
+            ],
+          ),
           BotaoAcao(
               texto: "Salvar Excel",
               acao: () {
                 String dataFormatada =
                     DateFormat('dd/MM/yyyy').format(DateTime.now());
-              })
+
+                nota_fiscal_controller.salvarDados();
+              }),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: obterTexto,
+        onPressed: lerDadosExtraidos,
         child: const Icon(Icons.textsms),
       ),
       bottomNavigationBar: CustomNavBar(
@@ -148,34 +240,76 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
               label: 'OCR',
               iconData: Icons.date_range_outlined,
               onPress: () {
-                // Get.to(CalendarioWidget());
+                getX.Get.to(const ScannerOCRWithBackEND());
               }),
           NavigationBarItem(
-              label: 'OS DIGITAL',
+              label: 'Dados Cadastrados',
               iconData: Icons.search,
               onPress: () {
-                // getX.Get.to();
+                getX.Get.to(NotaFiscalView(controller: nota_fiscal_controller));
+              }),
+          NavigationBarItem(
+              label: 'Tela Cadastrados',
+              iconData: Icons.search,
+              onPress: () {
+                getX.Get.to(DadosCadastradosPage());
               }),
         ],
       ),
     );
   }
 
-  Widget CardImagem() {
-    return Column(
-      children: [
-        GestureDetector(
-          child: CustomText(text: imagemSelecionada!.path),
-        ),
-        Container(
-          height: 400,
+  Widget cardButton(function, IconData icone, String texto) {
+    return InkWell(
+      onTap: function,
+      child: Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 100,
+          width: 160,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.network(imagemSelecionada!.path),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.lightBlue.shade300,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Icon(icone), CustomText(text: texto)],
+                ),
+              ),
+            ),
           ),
-        )
-      ],
+        ),
+      ),
     );
+  }
+
+  Widget CardImagem() {
+    if (imagemSelecionada != null && imagemEnviada == true) {
+      return Column(
+        children: [
+          GestureDetector(
+            child: CustomText(text: imagemSelecionada!.path),
+          ),
+          SizedBox(
+            height: 300,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.network(imagemSelecionada!.path),
+            ),
+          )
+        ],
+      );
+    } else {
+      return const Center(
+        child: CustomText(
+          text: 'Nenhuma imagem selecionada',
+        ),
+      );
+    }
   }
 
   Widget BotaoAcao(
@@ -183,7 +317,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
       required VoidCallback acao,
       MaterialStateProperty<Color?>? cor}) {
     return Padding(
-      padding: EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(12.0),
       child: ElevatedButton(
         style: ButtonStyle(backgroundColor: cor),
         onPressed: acao,
@@ -200,7 +334,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
         controller: _controller,
         decoration: InputDecoration(
           hintText: 'Digite algo aqui...',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           label: Text(
             labelText,
             style: const TextStyle(
@@ -224,7 +358,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     );
   }
 
-  void showMessage(String texto1, String texto2) {
+  void showMessage(String texto1, String texto2) async {
     getX.Get.snackbar(texto1, texto2, snackPosition: getX.SnackPosition.TOP);
   }
 }

@@ -111,6 +111,7 @@ class CadastroController extends GetxController {
 
   // Modelo atual
   var currentModel = Rx<CadastroModel?>(null);
+
   void salvar(BuildContext context) {
     if (EQUIPAMENTO_TEXT.text.isEmpty ||
         nomeRebocadorText.text.isEmpty ||

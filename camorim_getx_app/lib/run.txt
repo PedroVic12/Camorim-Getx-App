@@ -1,0 +1,2 @@
+export CHROME_EXECUTABLE="/usr/local/bin/google-chrome-stable"
+flutter run -d chrome --web-renderer html

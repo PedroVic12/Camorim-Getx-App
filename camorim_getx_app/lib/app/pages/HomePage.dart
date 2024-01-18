@@ -4,6 +4,7 @@ import 'package:camorim_getx_app/app/pages/Controle%20Dique/ControleDiquePage.da
 import 'package:camorim_getx_app/app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/ScannerOcrImgPdfPage.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,17 +26,17 @@ class _HomePageState extends State<HomePage> {
   List titulos = [
     'Ordem de Serviço',
     'Ferramentas',
+    'Nota Fiscal OCR',
     'Scanner PDF',
     'Manutenção Dique',
-    'Monitoramento',
     'CRUD Excel'
   ];
 
   @override
   Widget build(BuildContext context) {
-    final height_screen = MediaQuery.of(context).size.height;
+    final height_screen = MediaQuery.of(context).size.height + 300;
     final width_screen = MediaQuery.of(context).size.width;
-    double fontePagina = 18.0;
+    double fontePagina = 12.0;
 
     // 1. Obtenha a largura da tela
     double screenWidth = MediaQuery.of(context).size.width;
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
       columns = 5;
     } else {
       columns = 2;
-      fontePagina = 11;
+      fontePagina = 10;
     }
     return Scaffold(
       appBar: AppBarPersonalizada(
@@ -56,57 +57,59 @@ class _HomePageState extends State<HomePage> {
         color: Colors.red,
         height: height_screen,
         width: width_screen,
-        child: ListView(children: [
+        child: ListView(scrollDirection: Axis.vertical, children: [
           Container(
             decoration: const BoxDecoration(
               color: Colors.red,
             ),
-            height: height_screen * 0.30,
+            height: height_screen * 0.15,
             width: width_screen,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                child: Row(
-                  children: [
-                    InkWell(
-                        onTap: () {
-                          Get.to(RelatorioPage());
-                        },
-                        child: const Icon(
-                          Icons.sort,
-                          color: Colors.white,
-                          size: 40,
-                        )),
-                    const ClipRRect(
-                      //child: Image.asset('images/camorim_logo.png',
-                      child: Icon(Icons.add_a_photo),
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20,
-                  left: 25,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const TextLabel(texto: 'Dashboard', cor: Colors.white),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Ultima atualização: ${DateTime.now()}',
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        letterSpacing: 1,
-                        fontSize: 14,
-                      ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 15, left: 15, right: 15),
+                    child: Row(
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              Get.to(RelatorioPage());
+                            },
+                            child: const Icon(
+                              Icons.sort,
+                              color: Colors.white,
+                              size: 40,
+                            )),
+                        const ClipRRect(
+                          //child: Image.asset('images/camorim_logo.png',
+                          child: Icon(Icons.add_a_photo),
+                        )
+                      ],
                     ),
-                  ],
-                ),
-              )
-            ]),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      left: 25,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const TextLabel(texto: 'Dashboard', cor: Colors.white),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Ultima atualização: ${DateTime.now()}',
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            letterSpacing: 1,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ]),
           ),
           Container(
             height: height_screen * 0.75,
@@ -138,10 +141,13 @@ class _HomePageState extends State<HomePage> {
                     Get.to(const ControleFerramentasPage());
                   }
                   if (index == 2) {
+                    Get.to(WidgetSelecionadorImagem());
+                  }
+                  if (index == 3) {
                     Get.to(ScannerOcrPage());
                   }
 
-                  if (index == 3) {
+                  if (index == 4) {
                     Get.to(ControleDiquePage());
                   }
 
@@ -160,17 +166,21 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.black, spreadRadius: 1, blurRadius: 6)
                       ]),
                   child: Center(
-                    child: ListView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          height: 16,
+                        ),
                         const Icon(
                           Icons.add_a_photo,
                           color: Colors.white,
-                          size: 40,
+                          size: 36,
                         ),
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
-                          size: 12,
+                          size: 8,
                           cor: Colors.white,
                         ),
                       ],
@@ -181,13 +191,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ]),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          //Get.to(const CamScannerPage());
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.red,
       ),
     );
   }

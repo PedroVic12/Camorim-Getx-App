@@ -24,7 +24,6 @@ class _ContactFormState extends State<ContactForm> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final controller = Get.put(ExcelController());
-  //final ExcelController excel_controller = Get.put(ExcelController());
   final CadastroController relatorio_controller = Get.put(CadastroController());
 
   @override
@@ -40,94 +39,13 @@ class _ContactFormState extends State<ContactForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(widget.contact == null ? 'Add Contact' : 'Edit Contact')),
+          title: Text(
+              widget.contact == null ? 'CRUD EXCEL PAGE' : 'Edit Contact')),
       body: ListView(
         children: [
-          ElevatedButton(
-              onPressed: () {
-                Get.to(GsheetsController);
-              },
-              child: Text('Google Sheets')),
           FormsListRelatorio(),
-          Obx(() {
-            final model = relatorio_controller.currentModel.value;
-            final models = relatorio_controller.array_cadastro;
-            if (model != null) {
-              return Column(
-                children: models
-                    .map((element) => Card(
-                        color: Colors.lightBlue,
-                        child: ListTile(
-                          title: Text(element.equipamento),
-                          subtitle: Column(
-                            children: [
-                              Text(
-                                element.rebocador,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Text(
-                                element.acao,
-                                style: TextStyle(color: Colors.white),
-                              )
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              models.remove(element);
-                            },
-                          ),
-                        )))
-                    .toList(),
-              );
-            } else {
-              return Text('Sem dados cadastrados :(');
-            }
-          }),
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: InputDecoration(labelText: 'Name'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter email';
-                      }
-                      return null;
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Adicione ou atualize o contato usando o ContactController
-                        final contact = Contact(
-                            name: nameController.text,
-                            email: emailController.text);
-                        controller.addContact(
-                            contact); // Aqui você pode decidir adicionar ou atualizar com base em widget.contact
-                        Get.back();
-                      }
-                    },
-                    child: Text('Save'),
-                  )
-                ],
-              ),
-            ),
-          ),
+          cardsProdutosCadastrados(),
+          // saveExcelExemplo()
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -139,6 +57,90 @@ class _ContactFormState extends State<ContactForm> {
         child: Text('SALVAR!'),
       ),
     );
+  }
+
+  Widget saveExcelExemplo() {
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter email';
+                }
+                return null;
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  // Adicione ou atualize o contato usando o ContactController
+                  final contact = Contact(
+                      name: nameController.text, email: emailController.text);
+                  controller.addContact(
+                      contact); // Aqui você pode decidir adicionar ou atualizar com base em widget.contact
+                  Get.back();
+                }
+              },
+              child: Text('Save'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget cardsProdutosCadastrados() {
+    return Obx(() {
+      final model = relatorio_controller.currentModel.value;
+      final models = relatorio_controller.array_cadastro;
+      if (model != null) {
+        return Column(
+          children: models
+              .map((element) => Card(
+                  color: Colors.lightBlue,
+                  child: ListTile(
+                    title: Text(element.equipamento),
+                    subtitle: Column(
+                      children: [
+                        Text(
+                          element.rebocador,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Text(
+                          element.acao,
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        models.remove(element);
+                      },
+                    ),
+                  )))
+              .toList(),
+        );
+      } else {
+        return Text('Sem dados cadastrados :(');
+      }
+    });
   }
 }
 
