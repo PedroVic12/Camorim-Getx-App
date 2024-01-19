@@ -28,7 +28,7 @@ class DataGridWidget<T> extends StatelessWidget {
     //List<List<String>> linhas =        excelData.isNotEmpty ? excelData.sublist(1) : [];
 
     // Certifique-se de que o NotaFiscalRepository está sendo inicializado em algum lugar do seu app
-    final controller = Get.put(NotaFiscalRepository(jsonFilePath));
+    final controller = Get.put(NotaFiscalRepository());
     return GetBuilder<NotaFiscalRepository>(
       builder: (controller) {
         if (controller.products.isNotEmpty) {
@@ -63,6 +63,7 @@ class DataTableWidget extends StatelessWidget {
     //required this.excelData,
   });
 
+
   @override
   Widget build(BuildContext context) {
     //List<String> colunas = excelData.isNotEmpty ? excelData[0] : [];
@@ -86,4 +87,6 @@ class DataTableWidget extends StatelessWidget {
       },
     );
   }
+
+ 
 }

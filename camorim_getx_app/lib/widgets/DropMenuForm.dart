@@ -1,4 +1,5 @@
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,7 @@ class DropMenuForm extends StatefulWidget {
   final String labelText;
   final List<String> options;
 
-  DropMenuForm({
+  const DropMenuForm({
     required this.textController,
     required this.labelText,
     required this.options,
@@ -25,14 +26,22 @@ class _DropMenuFormState extends State<DropMenuForm> {
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
-        title: const Text('Selecione uma Opção'),
+        title: const Column(children: [
+          Divider(),
+          CustomText(
+            text: "Selecione uma Opção: ",
+            size: 20,
+            color: Colors.blue,
+          ),
+          Divider()
+        ]),
         children: widget.options.map((String option) {
           return SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context, option);
-            },
-            child: Text(option),
-          );
+              onPressed: () {
+                Navigator.pop(context, option);
+              },
+              //child: Column( children: [const Divider(), Text(option), const Divider()],
+              child: CustomText(text: option));
         }).toList(),
       ),
     ).then((selectedValue) {
@@ -58,7 +67,7 @@ class _DropMenuFormState extends State<DropMenuForm> {
                   labelText: widget.labelText,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 6),
               InkWell(
                 onTap: _showOptionsDialog,
                 child: const CircleAvatar(
@@ -68,7 +77,8 @@ class _DropMenuFormState extends State<DropMenuForm> {
                     color: Colors.black,
                   ),
                 ),
-              )
+              ),
+              const SizedBox(width: 12),
             ],
           )
         ],

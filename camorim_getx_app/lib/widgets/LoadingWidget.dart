@@ -22,6 +22,8 @@ class LoadingController extends GetxController {
   }
 
   void _startTimer() {
+
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       segundos++;
       update();
@@ -35,34 +37,29 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LoadingController());
+    controller.segundos = 0.obs;
 
-    //print(controller.segundos);
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Center(
-        child: Container(
-          height: 120,
-          width: 120,
-          margin: const EdgeInsets.all(24),
-          color: Colors.green,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Obx(() => CustomText(
-                    text: 'Carregando... ${controller.segundos} s',
-                    //text: 'Carregando...',
-                    size: 12,
-                    color: Colors.white,
-                  )),
-              CircularProgressIndicator(color: Colors.greenAccent),
-              Icon(
-                Icons.cloud_upload_rounded,
-                color: Colors.white,
-                size: 24,
-              ),
-            ],
-          ),
+    return Center(
+      child: Container(
+        height: 120,
+        width: 120,
+        margin: const EdgeInsets.all(24),
+        color: Colors.green,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Obx(() => CustomText(
+                  text: 'Carregando... ${controller.segundos} s',
+                  size: 12,
+                  color: Colors.white,
+                )),
+            CircularProgressIndicator(color: Colors.greenAccent),
+            Icon(
+              Icons.cloud_upload_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ],
         ),
       ),
     );

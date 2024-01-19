@@ -1,3 +1,4 @@
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,14 +11,14 @@ class TableCustom extends StatelessWidget {
   const TableCustom({super.key, required this.columns, required this.rows});
 
   void onSort(int columnIndex, bool ascending) {
-    var repository = Get.find<NotaFiscalRepository>();
+    var repository = Get.put(NotaFiscalRepository());
     repository.sortProducts(columnIndex, ascending);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(12.0),
       child: Table(
         border: TableBorder.all(),
         children: [
@@ -26,18 +27,15 @@ class TableCustom extends StatelessWidget {
             decoration: BoxDecoration(color: Colors.redAccent),
             children: columns.map((col) {
               return TableCell(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: Container(
                   child: Center(
                     child: InkWell(
-                      onTap: () => onSort(1, true),
-                      child: Text(
-                        col,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                        onTap: () => onSort(1, true),
+                        child: CustomText(
+                          text: col,
+                          size: 10,
+                          weight: FontWeight.bold,
+                        )),
                   ),
                 ),
               );
@@ -51,9 +49,11 @@ class TableCustom extends StatelessWidget {
               children: row.map((cell) {
                 return TableCell(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(cell),
-                  ),
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomText(
+                        text: cell,
+                        size: 10,
+                      )),
                 );
               }).toList(),
             );

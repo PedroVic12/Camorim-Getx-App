@@ -8,6 +8,8 @@ import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/nota_fiscal_
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/tabela_notaFiscalView.dart';
+import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
+import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
 import 'package:camorim_getx_app/widgets/LoadingWidget.dart';
 import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
 import 'package:camorim_getx_app/widgets/TableCustom.dart';
@@ -50,12 +52,13 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     getStatus();
 
     // Create the timer to periodically call verificaStatus()
-    //Timer.periodic(const Duration(seconds: 60),        (timer) => verificaStatus());
+    Timer.periodic(const Duration(seconds: 60), (timer) => verificaStatus());
   }
 
   getStatus() async {
     var responseDio = await dio_API.dio.get('$baseUrl/');
     print('Testando o docker \n${responseDio.data} ');
+
     return responseDio;
   }
 
@@ -69,7 +72,6 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
       // Exibe a imagem
       print("\nDocker funcionando: $contador vezes");
       contador++;
-      //await Image.network('https://example.com/image.jpg');
     }
   }
 
@@ -93,7 +95,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
         // // Remova o símbolo de moeda do total
         total = total.replaceAll('R\$', '');
 
-        showMessage('Texto', 'Extraído!');
+        //showMessage('Texto', 'Extraído!');
         setState(() {
           nota_fiscal_controller.dataController.text = data;
           nota_fiscal_controller.totalController.text = total;
@@ -137,6 +139,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     if (imagem != null) {
       setState(() {
         imagemSelecionada = imagem;
+        imagemEnviada = false;
       });
 
       await sendImageServer(imagemSelecionada!);
@@ -146,7 +149,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   Future<http.Response> sendImageServer(XFile file) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${baseUrl}/enviar-foto/'),
+      Uri.parse('$baseUrl/upload-foto/'),
     );
     request.files.add(
       http.MultipartFile(
@@ -185,19 +188,35 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     return Scaffold(
       backgroundColor: Colors.blueGrey.shade200,
       appBar: AppBarPersonalizada(
-        titulo: "OCR App + Backend Server",
+        titulo: "OCR APP + IA ",
       ),
       body: ListView(
         children: [
           //Botoes de Escolha
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              cardButton(escolherImagemGaleria, Icons.phone, "Escolher Imagem"),
-              cardButton(
-                  escolherImagemCamera, Icons.camera_alt, "Imagem camera"),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FutureBuilder(
+                  future: vmStatusServer(
+                      "https://i.gifer.com/Td9n.gif"), // Pass the required URL
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return snapshot.data
+                          as Widget; // Display the built widget
+                    } else {
+                      return Container(); // Show loading indicator
+                    }
+                  },
+                ),
+                cardButton(
+                    escolherImagemGaleria, Icons.phone, "Escolher Imagem"),
+                cardButton(
+                    escolherImagemCamera, Icons.camera_alt, "Imagem camera"),
+              ],
+            ),
           ),
 
           //Exibindo a imagem
@@ -209,24 +228,44 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
           //Formulario a ser cadastrado
           Column(
             children: [
-              cardTextoEditavel(
-                  "Categoria", nota_fiscal_controller.categoriaController),
-              cardTextoEditavel("Data", nota_fiscal_controller.dataController),
-              cardTextoEditavel(
-                  "Local", nota_fiscal_controller.localController),
-              cardTextoEditavel(
-                  "Produtos", nota_fiscal_controller.produtosController),
-              cardTextoEditavel(
-                  'Total', nota_fiscal_controller.totalController),
+              selectedForm(),
+              CaixaDeTexto(
+                  labelText: "Data",
+                  controller: nota_fiscal_controller.dataController),
+              CaixaDeTexto(
+                  labelText: "Local",
+                  controller: nota_fiscal_controller.localController),
+              CaixaDeTexto(
+                  labelText: "Produtos",
+                  controller: nota_fiscal_controller.produtosController),
+              CaixaDeTexto(
+                  labelText: "Total",
+                  controller: nota_fiscal_controller.totalController),
             ],
           ),
+
           BotaoAcao(
-              texto: "Salvar Excel",
+              texto: "Salvar Dados Nota Fiscal",
+              cor: Colors.green,
               acao: () {
-                String dataFormatada =
-                    DateFormat('dd/MM/yyyy').format(DateTime.now());
+                // String dataFormatada =   DateFormat('dd/MM/yyyy').format(DateTime.now());
 
                 nota_fiscal_controller.salvarDados();
+
+                setState(() {
+                  // Reset text fields
+                  nota_fiscal_controller.dataController.clear();
+                  nota_fiscal_controller.localController.clear();
+                  nota_fiscal_controller.produtosController.clear();
+                  nota_fiscal_controller.totalController.clear();
+                  nota_fiscal_controller.categoriaController.clear();
+
+                  // Reset image
+                  imagemSelecionada = null;
+                });
+
+                // Show success message
+                BulbassauroExcelController().showMessage("Dados Cadastrados!");
               }),
         ],
       ),
@@ -246,16 +285,51 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
               label: 'Dados Cadastrados',
               iconData: Icons.search,
               onPress: () {
-                getX.Get.to(NotaFiscalView(controller: nota_fiscal_controller));
-              }),
-          NavigationBarItem(
-              label: 'Tela Cadastrados',
-              iconData: Icons.search,
-              onPress: () {
                 getX.Get.to(DadosCadastradosPage());
               }),
         ],
       ),
+    );
+  }
+
+  Widget selectedForm() {
+    return Column(
+      children: [
+        DropMenuForm(
+          labelText: 'Embarcação',
+          options: const [
+            'PEROLA',
+            'AÇU',
+            "TOPÁZIO",
+            "ESMERALDA",
+            "TORMENTA",
+            "TORNADO",
+            "ZANGADO",
+            "TEMPESTADE",
+            'ÁGATA',
+            "ANDREIS XI",
+            "ATLÂNTICO"
+          ],
+          textController: nota_fiscal_controller.navioController,
+        ),
+        DropMenuForm(
+          labelText: 'Tipo de Despesas',
+          options: const [
+            'ALUGUEL DE VEÍCULOS',
+            "CARTÓRIO",
+            'COMBUSTÍVEL',
+            "ESTADIAS",
+            "CUSTOS DIVERSOS",
+            "ESTACIONAMENTO",
+            "PEDÁGIO",
+            "TRANSPORTE - VIAGENS",
+            "ALIMENTAÇÃO - VIAGENS ",
+            'BENS DE NATUREZA PERMANENTE',
+            'CORREIOS'
+          ],
+          textController: nota_fiscal_controller.categoriaController,
+        ),
+      ],
     );
   }
 
@@ -287,15 +361,42 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     );
   }
 
+  Future<Widget> vmStatusServer(url) async {
+    var response = await getStatus();
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.statusCode == 200) {
+      return Column(
+        children: [
+          CustomText(text: 'Maquina virtual online!'),
+          Card(
+              child: SizedBox(
+            height: 60,
+            width: 60,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.network(url),
+            ),
+          ))
+        ],
+      );
+    } else {
+      return const CustomText(text: 'Maquina virtual offline! :( ');
+    }
+  }
+
   Widget CardImagem() {
     if (imagemSelecionada != null && imagemEnviada == true) {
       return Column(
         children: [
           GestureDetector(
-            child: CustomText(text: imagemSelecionada!.path),
+            child: CustomText(
+              text: imagemSelecionada!.path,
+              size: 10,
+            ),
           ),
           SizedBox(
-            height: 300,
+            height: 160,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Image.network(imagemSelecionada!.path),
@@ -312,16 +413,22 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     }
   }
 
-  Widget BotaoAcao(
-      {required String texto,
-      required VoidCallback acao,
-      MaterialStateProperty<Color?>? cor}) {
+  Widget BotaoAcao({
+    required String texto,
+    required VoidCallback acao,
+    Color cor = Colors.blue,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: ElevatedButton(
-        style: ButtonStyle(backgroundColor: cor),
+        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(cor)),
         onPressed: acao,
-        child: Text(texto),
+        child: CustomText(
+          text: texto,
+          color: Colors.white,
+          size: 16,
+          weight: FontWeight.bold,
+        ),
       ),
     );
   }

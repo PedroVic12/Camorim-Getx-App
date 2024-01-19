@@ -1,3 +1,4 @@
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/bulbassaur_excel.dart';
 import 'package:camorim_getx_app/widgets/TableCustom.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import '../../Scanner PDF/controller/nota_fiscal_controller.dart';
 
 class DadosCadastradosPage extends StatelessWidget {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
+  final bulbassauro = Get.put(BulbassauroExcelController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,61 +17,11 @@ class DadosCadastradosPage extends StatelessWidget {
       ),
       body: Obx(() => ListView(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: controller.dataController,
-                        decoration: const InputDecoration(
-                          labelText: "Data",
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: TextField(
-                        controller: controller.localController,
-                        decoration: const InputDecoration(
-                          labelText: "Local",
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  controller: controller.produtosController,
-                  decoration: const InputDecoration(
-                    labelText: "Produtos",
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  controller: controller.totalController,
-                  decoration: const InputDecoration(
-                    labelText: "Total",
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => controller.salvarDados(),
-                    child: const Text("Salvar Forms"),
-                  ),
-                ],
-              ),
-
               // Tabela com os dados cadastrados
 
               TableCustom(
                 columns: const [
+                  "CATEGORIA",
                   "DATA",
                   "LOCAL",
                   "PRODUTOS",
@@ -77,12 +29,18 @@ class DadosCadastradosPage extends StatelessWidget {
                 ],
                 rows: controller.notasFiscais_ARRAY.map((notaFiscal) {
                   return [
+                    notaFiscal.categoria,
                     notaFiscal.data,
                     notaFiscal.local,
                     notaFiscal.produtos.join(", "),
                     notaFiscal.total.toString(),
                   ];
                 }).toList(),
+              ),
+
+              ElevatedButton(
+                onPressed: () => bulbassauro.salvarDadosNotaFiscal(),
+                child: const Text("Exportar Excel"),
               ),
             ],
           )),

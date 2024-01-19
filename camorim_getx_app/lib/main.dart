@@ -2,12 +2,10 @@ import 'package:camorim_getx_app/app/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
-import 'app/pages/CRUD Google Sheets/user_sheets_api.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await UserSheetsApi.init();
 
   runApp(const MyApp());
 }

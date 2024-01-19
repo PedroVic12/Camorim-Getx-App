@@ -61,10 +61,12 @@ class BulbassauroExcelController {
     final sheet = workbook.worksheets[0];
 
     // Add headers
-    sheet.getRangeByName('A1').setText('Data');
+    int lineHeader = 1;
+    sheet.getRangeByName('A$lineHeader').setText('Data');
     sheet.getRangeByName('B1').setText('Local');
     sheet.getRangeByName('C1').setText('Produtos');
     sheet.getRangeByName('D1').setText('Total');
+    sheet.getRangeByName('E1').setText('Categoria');
 
     // Add data from the list
     int row = 2;
@@ -73,6 +75,8 @@ class BulbassauroExcelController {
       sheet.getRangeByName('B$row').setText(notaFiscal.local);
       sheet.getRangeByName('C$row').setText(notaFiscal.produtos.join(', '));
       sheet.getRangeByName('D$row').setNumber(notaFiscal.total);
+      sheet.getRangeByName('E$row').setText(notaFiscal.categoria);
+
       row++;
     }
 
@@ -80,7 +84,7 @@ class BulbassauroExcelController {
     salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
 
     // Show success message
-    BulbassauroExcelController().showMessage();
+    BulbassauroExcelController().showMessage("Excel Salvo!");
   }
 
 //!GPT
@@ -136,11 +140,10 @@ class BulbassauroExcelController {
     }
   }
 
-  void showMessage() {
+  void showMessage(texto) {
     // Adiciona Snackbar para notificar sucesso
     try {
-      Get.snackbar('Sucesso', 'Feito com sucesso!',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Sucesso', texto, snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       // Adiciona Snackbar para notificar erro
       Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);

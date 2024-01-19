@@ -11,8 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'CRUD Google Sheets/GoogleSheetsPage.dart';
-
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -36,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final height_screen = MediaQuery.of(context).size.height + 300;
     final width_screen = MediaQuery.of(context).size.width;
-    double fontePagina = 12.0;
+    double fontePagina = 10.0;
 
     // 1. Obtenha a largura da tela
     double screenWidth = MediaQuery.of(context).size.width;
@@ -47,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       columns = 5;
     } else {
       columns = 2;
-      fontePagina = 10;
+      fontePagina = 6;
     }
     return Scaffold(
       appBar: AppBarPersonalizada(
@@ -79,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                             child: const Icon(
                               Icons.sort,
                               color: Colors.white,
-                              size: 40,
+                              size: 36,
                             )),
                         const ClipRRect(
                           //child: Image.asset('images/camorim_logo.png',
@@ -180,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
-                          size: 8,
+                          size: 6,
                           cor: Colors.white,
                         ),
                       ],

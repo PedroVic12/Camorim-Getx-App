@@ -11,9 +11,11 @@ class NotaFiscalController extends GetxController {
   final TextEditingController produtosController = TextEditingController();
   final TextEditingController totalController = TextEditingController();
   final TextEditingController categoriaController = TextEditingController();
+  final TextEditingController navioController = TextEditingController();
 
   void salvarDados() {
     final notaFiscal = NotaFiscal(
+      categoria: categoriaController.text,
       data: dataController.text,
       local: localController.text,
       produtos: produtosController.text.split(", "),
@@ -29,12 +31,14 @@ class NotaFiscal {
   String local;
   List<String> produtos;
   double total;
+  String categoria;
 
   NotaFiscal({
     required this.data,
     required this.local,
     required this.produtos,
     required this.total,
+    required this.categoria,
   });
 }
 
@@ -72,7 +76,7 @@ class notaFiscalProduct {
 }
 
 class NotaFiscalRepository extends GetxController {
-  NotaFiscalRepository(jsonFilePath);
+  NotaFiscalRepository();
   List<dynamic> _products = [];
 
   List<dynamic> get products => _products;
