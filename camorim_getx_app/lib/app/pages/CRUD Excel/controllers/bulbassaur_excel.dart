@@ -63,19 +63,28 @@ class BulbassauroExcelController {
     // Add headers
     int lineHeader = 1;
     sheet.getRangeByName('A$lineHeader').setText('Data');
-    sheet.getRangeByName('B1').setText('Local');
-    sheet.getRangeByName('C1').setText('Produtos');
-    sheet.getRangeByName('D1').setText('Total');
-    sheet.getRangeByName('E1').setText('Categoria');
+    sheet.getRangeByName('B1').setText('Embarcação');
+    sheet.getRangeByName('C1').setText('Tipo de Despesas');
+    sheet.getRangeByName('D1').setText('Local');
+    sheet.getRangeByName('E1').setText('Produtos');
+    sheet.getRangeByName('F1').setText('Total');
+
+    // formatação
+    sheet.getRangeByName('A1:F1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:F1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:F1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:F1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:G1').autoFitColumns();
 
     // Add data from the list
     int row = 2;
     for (final notaFiscal in controller.notasFiscais_ARRAY) {
       sheet.getRangeByName('A$row').setText(notaFiscal.data);
-      sheet.getRangeByName('B$row').setText(notaFiscal.local);
-      sheet.getRangeByName('C$row').setText(notaFiscal.produtos.join(', '));
-      sheet.getRangeByName('D$row').setNumber(notaFiscal.total);
-      sheet.getRangeByName('E$row').setText(notaFiscal.categoria);
+      sheet.getRangeByName('B$row').setText(notaFiscal.navio);
+      sheet.getRangeByName('C$row').setText(notaFiscal.categoria);
+      sheet.getRangeByName('D$row').setText(notaFiscal.local);
+      sheet.getRangeByName('E$row').setText(notaFiscal.produtos.join(', '));
+      sheet.getRangeByName('F$row').setNumber(notaFiscal.total);
 
       row++;
     }
@@ -149,57 +158,4 @@ class BulbassauroExcelController {
       Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
     }
   }
-}
-
-class BulbassauroExcelRepository {}
-
-//! ANTIGO CONTROLLER
-var contatos = <Contact>[].obs;
-
-var relatorios_array = <Relatorio>[].obs;
-
-final ExcelTitle excelTitle =
-    ExcelTitle(nameTitle: "Nome", emailTitle: "Email"); // Títulos da planilha
-
-Future<void> adicionarContato(Contact contato, String nomeArquivo) async {
-  try {
-    final Workbook workbook = Workbook();
-    final Worksheet sheet = workbook.worksheets[0];
-
-    sheet.getRangeByIndex(1, 1).setText(excelTitle.nameTitle);
-    sheet.getRangeByIndex(1, 2).setText(excelTitle.emailTitle);
-
-    final int proximaLinha = contatos.length + 2;
-    sheet.getRangeByIndex(proximaLinha, 1).setText(contato.name);
-    sheet.getRangeByIndex(proximaLinha, 2).setText(contato.email);
-
-    //await salvarExcelWeb(workbook, '$nomeArquivo.xlsx');
-
-    contatos.add(contato);
-
-    // Adiciona Snackbar para notificar sucesso
-    Get.snackbar('Sucesso', 'Contato adicionado com sucesso!',
-        snackPosition: SnackPosition.BOTTOM);
-  } catch (e) {
-    // Adiciona Snackbar para notificar erro
-    Get.snackbar('Erro', 'Erro ao adicionar contato: $e',
-        snackPosition: SnackPosition.BOTTOM);
-  }
-}
-
-//!CRUD
-Future<void> adicionarRelatorio(Relatorio relatorio, String nomeArquivo) async {
-  final Workbook workbook = Workbook();
-  final Worksheet sheet = workbook.worksheets[0];
-
-  sheet.getRangeByIndex(1, 1).setText(excelTitle.nameTitle);
-  sheet.getRangeByIndex(1, 2).setText(excelTitle.emailTitle);
-
-  final int proximaLinha = contatos.length + 2;
-  sheet.getRangeByIndex(proximaLinha, 1).setText(relatorio.nomeRebocador);
-  sheet.getRangeByIndex(proximaLinha, 2).setText(relatorio.descricaoFalha);
-
-//  await salvarExcelWeb(workbook, '$nomeArquivo.xlsx');
-
-  relatorios_array.add(relatorio);
 }

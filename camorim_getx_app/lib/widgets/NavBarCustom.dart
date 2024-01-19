@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class CustomNavBar extends StatelessWidget {
@@ -9,11 +8,13 @@ class CustomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.indigoAccent,
       items: navBarItems.map((item) {
         // Crie uma cópia personalizada do BottomNavigationBarItem
         return BottomNavigationBarItem(
-            icon: Icon(item.iconData), label: item.label);
+          icon: Icon(item.iconData),
+          label: item.label,
+        );
       }).toList(),
       onTap: (index) {
         // Chame a função onPress do item selecionado

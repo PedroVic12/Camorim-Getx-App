@@ -279,7 +279,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
               label: 'OCR',
               iconData: Icons.date_range_outlined,
               onPress: () {
-                getX.Get.to(const ScannerOCRWithBackEND());
+                getX.Get.to(WidgetSelecionadorImagem());
               }),
           NavigationBarItem(
               label: 'Dados Cadastrados',

@@ -1,5 +1,9 @@
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/bulbassaur_excel.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
+import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
 import 'package:camorim_getx_app/widgets/TableCustom.dart';
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,6 +25,7 @@ class DadosCadastradosPage extends StatelessWidget {
 
               TableCustom(
                 columns: const [
+                  "EMBARCAÇÃO",
                   "CATEGORIA",
                   "DATA",
                   "LOCAL",
@@ -29,6 +34,7 @@ class DadosCadastradosPage extends StatelessWidget {
                 ],
                 rows: controller.notasFiscais_ARRAY.map((notaFiscal) {
                   return [
+                    notaFiscal.navio,
                     notaFiscal.categoria,
                     notaFiscal.data,
                     notaFiscal.local,
@@ -40,10 +46,32 @@ class DadosCadastradosPage extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: () => bulbassauro.salvarDadosNotaFiscal(),
-                child: const Text("Exportar Excel"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.indigo),
+                ),
+                child: const CustomText(
+                  text: "Exportar Excel",
+                  color: Colors.white,
+                ),
               ),
             ],
           )),
+      bottomNavigationBar: CustomNavBar(
+        navBarItems: [
+          NavigationBarItem(
+              label: 'OCR',
+              iconData: Icons.date_range_outlined,
+              onPress: () {
+                Get.to(WidgetSelecionadorImagem());
+              }),
+          NavigationBarItem(
+              label: 'Dados Cadastrados',
+              iconData: Icons.search,
+              onPress: () {
+                Get.to(DadosCadastradosPage());
+              }),
+        ],
+      ),
     );
   }
 }

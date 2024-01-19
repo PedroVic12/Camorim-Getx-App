@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final height_screen = MediaQuery.of(context).size.height + 300;
     final width_screen = MediaQuery.of(context).size.width;
-    double fontePagina = 10.0;
+    double fontePagina = 8.0;
 
     // 1. Obtenha a largura da tela
     double screenWidth = MediaQuery.of(context).size.width;
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       columns = 5;
     } else {
       columns = 2;
-      fontePagina = 6;
+      fontePagina = 4;
     }
     return Scaffold(
       appBar: AppBarPersonalizada(
