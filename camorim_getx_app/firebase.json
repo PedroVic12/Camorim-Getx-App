@@ -8,8 +8,9 @@
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/**",
+        "destination": "http://192.168.3.90:8080/**",
+        "function": "app"
       }
     ]
   }

@@ -7,6 +7,7 @@ import 'package:camorim_getx_app/app/pages/Scanner%20PDF/ScannerOcrImgPdfPage.da
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
+import 'package:camorim_getx_app/widgets/google_maps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -72,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         InkWell(
                             onTap: () {
-                              Get.to(RelatorioPage());
+                              Get.to(PedidoTrackingMapsScreen());
                             },
                             child: const Icon(
                               Icons.sort,
@@ -139,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                     Get.to(const ControleFerramentasPage());
                   }
                   if (index == 2) {
-                    Get.to(WidgetSelecionadorImagem());
+                    Get.toNamed('/OcrPage');
                   }
                   if (index == 3) {
                     Get.to(ScannerOcrPage());
@@ -155,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: Container(
                   margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 30),
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   decoration: BoxDecoration(
                       color: Colors.indigo,
                       borderRadius: BorderRadius.circular(20),
@@ -173,12 +174,12 @@ class _HomePageState extends State<HomePage> {
                         const Icon(
                           Icons.add_a_photo,
                           color: Colors.white,
-                          size: 36,
+                          size: 32,
                         ),
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
-                          size: 6,
+                          size: 4,
                           cor: Colors.white,
                         ),
                       ],

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +10,8 @@ import 'package:get/get.dart' as getX;
 class OCRController {
   XFile? imagemSelecionada;
   String textoExtraido = '';
-  final String baseUrl = 'https://docker-raichu.onrender.com';
+  final String dockerUrl = "http://192.168.3.90:8080";
 
-  final String raichu_url = 'https://raichu-server-web.onrender.com';
   final dio_API = ServidorOCR();
   bool isLoading = false; // Adicionado para gerenciar o estado de carregamento
   TextEditingController totalText = TextEditingController();
@@ -19,8 +20,26 @@ class OCRController {
   TextEditingController localText = TextEditingController();
   TextEditingController produtosText = TextEditingController();
 
+  Future<void> getRequestDocker() async {
+    try {
+      
+      final response = await http.get(Uri.parse('$dockerUrl/get-text'));
+
+      if (response.statusCode == 200) {
+        String extractedText = response.body;
+
+        print(extractedText);
+      } else {
+        print('\nErro na solicitação: ${response.statusCode}');
+        // Trate o erro de acordo com o status code, por exemplo:
+      }
+    } catch (e) {
+      print('\nErro geral na conexão: $e');
+    }
+  }
+
   getStatus() async {
-    var response = await dio_API.dio.get('$baseUrl/');
+    var response = await dio_API.dio.get('$dockerUrl/');
     print('Testando o docker  ${response.data} ');
   }
 
@@ -66,7 +85,7 @@ class OCRController {
   Future<http.Response> sendImageServer(XFile file) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${baseUrl}/enviar-foto/'),
+      Uri.parse('${dockerUrl}/enviar-foto/'),
     );
     request.files.add(
       http.MultipartFile(
@@ -93,7 +112,7 @@ class OCRController {
   }
 
   Future<void> obterTexto() async {
-    var response = await dio_API.dio.get('$baseUrl/get-text/');
+    var response = await dio_API.dio.get('$dockerUrl/get-text/');
     if (response.statusCode == 200) {
       textoExtraido = response.data['extracted_text'];
       dataText.text = textoExtraido;

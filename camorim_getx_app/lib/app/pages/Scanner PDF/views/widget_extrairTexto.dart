@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/Ocr_controller_notaFiscal.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/nota_fiscal_controller.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
@@ -38,10 +39,11 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
 
   //Controllers
   final String baseUrl = 'https://docker-raichu.onrender.com';
-  final String raichu_url = 'https://raichu-server-web.onrender.com';
+  final String dockerUrl = "http://192.168.3.90:8080";
   final dio_API = ServidorOCR();
   final excel_controller = getX.Get.put(ExcelController());
   final nota_fiscal_controller = getX.Get.put(NotaFiscalController());
+  final backendController = OCRController();
 
   bool imagemEnviada = false;
   int contador = 0;
@@ -52,12 +54,14 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     getStatus();
 
     // Create the timer to periodically call verificaStatus()
-    Timer.periodic(const Duration(seconds: 60), (timer) => verificaStatus());
+    Timer.periodic(const Duration(seconds: 120), (timer) => verificaStatus());
   }
 
   getStatus() async {
     var responseDio = await dio_API.dio.get('$baseUrl/');
-    print('Testando o docker \n${responseDio.data} ');
+    //var responseDio = await http.get(Uri.parse('$dockerUrl/'));
+
+    print('\nTestando o docker \n${responseDio.data} ');
 
     return responseDio;
   }
@@ -76,10 +80,14 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   }
 
   Future<void> lerDadosExtraidos() async {
-    var response = await dio_API.dio.get('$baseUrl/get-text/');
+//    var response = await dio_API.dio.get('$dockerUrl/get-text/');
+    final response = await http.get(Uri.parse('$dockerUrl/get-text'));
+
     if (response.statusCode == 200) {
       try {
-        String extractedText = json.encode(response.data);
+        //String extractedText = json.encode(response.body);
+        String extractedText = response.body;
+        print(extractedText);
 
         Map<String, dynamic> textoExtraido =
             json.decode(extractedText)['texto_extraido'];
@@ -108,27 +116,6 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     }
   }
 
-  Future<void> escolherImagemGaleria() async {
-    try {
-      final ImagePicker seletorImagem = ImagePicker();
-      final XFile? imagem =
-          await seletorImagem.pickImage(source: ImageSource.gallery);
-
-      if (imagem != null) {
-        setState(() {
-          imagemSelecionada = imagem;
-          imagemEnviada = false;
-        });
-
-        await sendImageServer(imagemSelecionada!);
-      }
-    } catch (error) {
-      print("\nErro aqui: $error");
-
-      showMessage('Erro', 'Falha ao enviar imagem');
-    }
-  }
-
   Future<void> escolherImagemCamera() async {
     final ImagePicker seletorImagem = ImagePicker();
     final XFile? imagem = await seletorImagem.pickImage(
@@ -146,10 +133,35 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     }
   }
 
+  Future<void> escolherImagemGaleria() async {
+    try {
+      final ImagePicker seletorImagem = ImagePicker();
+      final XFile? imagem =
+          await seletorImagem.pickImage(source: ImageSource.gallery);
+
+      if (imagem != null) {
+        setState(() {
+          imagemSelecionada = imagem;
+          imagemEnviada = false;
+        });
+
+        try {
+          await sendFile(imagemSelecionada!);
+        } catch (e) {
+          print('Erro = $e');
+        }
+      }
+    } catch (error) {
+      print("\nErro aqui: $error");
+
+      showMessage('Erro', 'Falha ao enviar imagem : $error');
+    }
+  }
+
   Future<http.Response> sendImageServer(XFile file) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('$baseUrl/upload-foto/'),
+      Uri.parse('$dockerUrl/upload-foto/'),
     );
     request.files.add(
       http.MultipartFile(
@@ -181,14 +193,45 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     return response;
   }
 
+  Future sendFile(XFile file) async {
+    var request =
+        http.MultipartRequest('POST', Uri.parse('$dockerUrl/upload-foto/'));
+    request.files.add(
+      http.MultipartFile(
+        'file',
+        file.readAsBytes().asStream(),
+        await file.length(),
+        filename: file.name,
+      ),
+    );
+
+    var response = await request.send();
+    var responseData = await json.decode(await response.stream.bytesToString());
+
+    if (response.statusCode == 200) {
+      // Access the nested 'ocr_text' object
+      var textoExtraido = responseData['ocr_text']?['Data'] ??
+          ''; // Get Data or empty string if null
+
+      setState(() {
+        this.textoExtraido = textoExtraido;
+        imagemEnviada = true;
+      });
+      showMessage('OK', 'Imagem enviada com sucesso!');
+    } else {
+      // File upload failed
+    }
+    return response;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bulbassauro = getX.Get.put(BulbassauroExcelController());
 
     return Scaffold(
-      backgroundColor: Colors.blueGrey.shade200,
+      backgroundColor: const Color.fromARGB(255, 134, 185, 211),
       appBar: AppBarPersonalizada(
-        titulo: "OCR APP + IA ",
+        titulo: "Nota Fiscal OCR APP 6",
       ),
       body: ListView(
         children: [
@@ -345,7 +388,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.lightBlue.shade300,
+                color: Colors.indigoAccent,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(

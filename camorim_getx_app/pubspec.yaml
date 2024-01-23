@@ -57,6 +57,9 @@ dependencies:
   syncfusion_flutter_pdf: ^22.2.12
   syncfusion_flutter_datagrid: ^22.2.12
   glassmorphism_ui: ^0.3.0
+  google_maps_flutter: ^2.5.3
+  location: ^5.0.3
+  google_maps_flutter_web: ^0.5.4+3
 
 dev_dependencies:
   flutter_test:
