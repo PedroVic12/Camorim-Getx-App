@@ -39,7 +39,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
 
   //Controllers
   final String baseUrl = 'https://docker-raichu.onrender.com';
-  final String dockerUrl = "http://192.168.3.90:8080";
+  final String dockerUrl = "https://raichu-server-app-247nqx34sa-rj.a.run.app/";
   final dio_API = ServidorOCR();
   final excel_controller = getX.Get.put(ExcelController());
   final nota_fiscal_controller = getX.Get.put(NotaFiscalController());
@@ -51,14 +51,14 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   @override
   void initState() {
     super.initState();
-    getStatus();
+    //getStatus();
 
     // Create the timer to periodically call verificaStatus()
-    Timer.periodic(const Duration(seconds: 120), (timer) => verificaStatus());
+    //Timer.periodic(const Duration(seconds: 120), (timer) => verificaStatus());
   }
 
   getStatus() async {
-    var responseDio = await dio_API.dio.get('$baseUrl/');
+    var responseDio = await dio_API.dio.get('$dockerUrl/');
     //var responseDio = await http.get(Uri.parse('$dockerUrl/'));
 
     print('\nTestando o docker \n${responseDio.data} ');
@@ -80,13 +80,12 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   }
 
   Future<void> lerDadosExtraidos() async {
-//    var response = await dio_API.dio.get('$dockerUrl/get-text/');
-    final response = await http.get(Uri.parse('$dockerUrl/get-text'));
+    var response = await dio_API.dio.get('$dockerUrl/get-text/');
 
     if (response.statusCode == 200) {
       try {
-        //String extractedText = json.encode(response.body);
-        String extractedText = response.body;
+        String extractedText = json.encode(response.data);
+        //String extractedText = response.data;
         print(extractedText);
 
         Map<String, dynamic> textoExtraido =
@@ -146,7 +145,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
         });
 
         try {
-          await sendFile(imagemSelecionada!);
+          await sendImageServer(imagemSelecionada!);
         } catch (e) {
           print('Erro = $e');
         }
@@ -161,7 +160,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   Future<http.Response> sendImageServer(XFile file) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('$dockerUrl/upload-foto/'),
+      Uri.parse('$dockerUrl/enviar-foto/'),
     );
     request.files.add(
       http.MultipartFile(
@@ -231,7 +230,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 134, 185, 211),
       appBar: AppBarPersonalizada(
-        titulo: "Nota Fiscal OCR APP 6",
+        titulo: "Nota Fiscal OCR APP",
       ),
       body: ListView(
         children: [

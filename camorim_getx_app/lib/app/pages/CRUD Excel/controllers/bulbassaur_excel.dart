@@ -152,7 +152,7 @@ class BulbassauroExcelController {
   void showMessage(texto) {
     // Adiciona Snackbar para notificar sucesso
     try {
-      Get.snackbar('Sucesso', texto, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Sucesso', texto, snackPosition: SnackPosition.TOP);
     } catch (e) {
       // Adiciona Snackbar para notificar erro
       Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);

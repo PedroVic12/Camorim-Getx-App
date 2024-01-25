@@ -95,7 +95,9 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const TextLabel(texto: 'Dashboard', cor: Colors.white),
+                        const TextLabel(
+                            texto: 'Setor de Manutenção e Engenharia',
+                            cor: Colors.white),
                         const SizedBox(height: 10),
                         Text(
                           'Ultima atualização: ${DateTime.now()}',
@@ -167,6 +169,7 @@ class _HomePageState extends State<HomePage> {
                   child: Center(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
                           height: 16,
@@ -179,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 10),
                         TextLabel(
                           texto: titulos[index],
-                          size: 4,
+                          size: 3,
                           cor: Colors.white,
                         ),
                       ],
