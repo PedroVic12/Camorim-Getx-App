@@ -9,9 +9,7 @@ class PresentationController:
     def __init__(self):
         self.width, self.height = 900, 450
         self.gestureThreshold = 300
-        self.folderPath = (
-            "camorim_getx_app/lib/Python-Code-ML/Computer-Vision/presetation"
-        )
+        self.folderPath = "camorim_getx_app/lib/Python-Code-ML/Computer-Vision/saida"
         self.detectorHand = HandDetector(detectionCon=0.8, maxHands=1)
         self.presentation = Presentation(self.folderPath, self.width, self.height)
         self.handGestureController = HandGestureController(
@@ -76,8 +74,12 @@ class HandGestureController:
                 [0, presentation.height],
             )
 
-            indexFinger = (int(xVal), int(yVal))  # Coordenadas convertidas para inteiros
+            indexFinger = (
+                int(xVal),
+                int(yVal),
+            )  # Coordenadas convertidas para inteiros
 
+            #! 55:37
             if cy <= self.gestureThreshold:
                 # Gesture 1 - Movimento para Esquerda/Direita
                 if fingers == [1, 1, 0, 0, 0]:
