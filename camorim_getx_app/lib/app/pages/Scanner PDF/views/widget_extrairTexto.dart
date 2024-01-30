@@ -2,26 +2,19 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/Ocr_controller_notaFiscal.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/nota_fiscal_controller.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/controller/servidor_dio_ocr.dart';
-import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
-import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/tabela_notaFiscalView.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
 import 'package:camorim_getx_app/widgets/LoadingWidget.dart';
 import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
-import 'package:camorim_getx_app/widgets/TableCustom.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' as getX;
-import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../widgets/AppBarPersonalizada.dart';
 import '../../CRUD Excel/controllers/bulbassaur_excel.dart';
@@ -39,7 +32,9 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
 
   //Controllers
   final String baseUrl = 'https://docker-raichu.onrender.com';
-  final String dockerUrl = "https://raichu-server-app-247nqx34sa-rj.a.run.app/";
+  final String cloud_dockerUrl =
+      "https://raichu-server-app-247nqx34sa-rj.a.run.app/";
+  final String ipAddressDocker = "192.168.3.217:8080";
   final dio_API = ServidorOCR();
   final excel_controller = getX.Get.put(ExcelController());
   final nota_fiscal_controller = getX.Get.put(NotaFiscalController());
@@ -53,13 +48,11 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
     super.initState();
     //getStatus();
 
-    // Create the timer to periodically call verificaStatus()
     //Timer.periodic(const Duration(seconds: 120), (timer) => verificaStatus());
   }
 
   getStatus() async {
-    var responseDio = await dio_API.dio.get('$dockerUrl/');
-    //var responseDio = await http.get(Uri.parse('$dockerUrl/'));
+    var responseDio = await dio_API.dio.get('$cloud_dockerUrl/');
 
     print('\nTestando o docker \n${responseDio.data} ');
 
@@ -80,12 +73,11 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   }
 
   Future<void> lerDadosExtraidos() async {
-    var response = await dio_API.dio.get('$dockerUrl/get-text/');
+    var response = await dio_API.dio.get('$cloud_dockerUrl/get-text/');
 
     if (response.statusCode == 200) {
       try {
         String extractedText = json.encode(response.data);
-        //String extractedText = response.data;
         print(extractedText);
 
         Map<String, dynamic> textoExtraido =
@@ -118,7 +110,8 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   Future<void> escolherImagemCamera() async {
     final ImagePicker seletorImagem = ImagePicker();
     final XFile? imagem = await seletorImagem.pickImage(
-      source: ImageSource.camera, maxHeight: 600, // Exemplo de altura máxima
+      source: ImageSource.camera,
+      maxHeight: 600,
       maxWidth: 600,
     );
 
@@ -160,7 +153,7 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   Future<http.Response> sendImageServer(XFile file) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('$dockerUrl/enviar-foto/'),
+      Uri.parse('$cloud_dockerUrl/enviar-foto/'),
     );
     request.files.add(
       http.MultipartFile(
@@ -189,37 +182,6 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
       showMessage('OK', 'Imagem enviada com sucesso!');
     }
 
-    return response;
-  }
-
-  Future sendFile(XFile file) async {
-    var request =
-        http.MultipartRequest('POST', Uri.parse('$dockerUrl/upload-foto/'));
-    request.files.add(
-      http.MultipartFile(
-        'file',
-        file.readAsBytes().asStream(),
-        await file.length(),
-        filename: file.name,
-      ),
-    );
-
-    var response = await request.send();
-    var responseData = await json.decode(await response.stream.bytesToString());
-
-    if (response.statusCode == 200) {
-      // Access the nested 'ocr_text' object
-      var textoExtraido = responseData['ocr_text']?['Data'] ??
-          ''; // Get Data or empty string if null
-
-      setState(() {
-        this.textoExtraido = textoExtraido;
-        imagemEnviada = true;
-      });
-      showMessage('OK', 'Imagem enviada com sucesso!');
-    } else {
-      // File upload failed
-    }
     return response;
   }
 
@@ -404,10 +366,10 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
   }
 
   Future<Widget> vmStatusServer(url) async {
-    var response = await getStatus();
+    var responseVM = await getStatus();
 
     // Verifica se a resposta foi bem-sucedida
-    if (response.statusCode == 200) {
+    if (responseVM.statusCode == 200) {
       return Column(
         children: [
           CustomText(text: 'Maquina virtual online!'),

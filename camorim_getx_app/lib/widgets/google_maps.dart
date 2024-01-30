@@ -23,8 +23,6 @@ class _PedidoTrackingMapsScreenState extends State<PedidoTrackingMapsScreen> {
   static const LatLng sourceLocation = LatLng(37.22300926, -122.03272188);
   static const LatLng destination = LatLng(37.33429383, -122.06600055);
 
-
-
 //variaveis
   bool showMaps = true;
   List<Marker> marker_array = [];

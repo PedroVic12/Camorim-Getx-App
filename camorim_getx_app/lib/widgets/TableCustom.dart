@@ -18,7 +18,7 @@ class TableCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(6.0),
       child: Table(
         border: TableBorder.all(),
         children: [
@@ -33,7 +33,7 @@ class TableCustom extends StatelessWidget {
                         onTap: () => onSort(1, true),
                         child: CustomText(
                           text: col,
-                          size: 10,
+                          size: 8,
                           weight: FontWeight.bold,
                         )),
                   ),
@@ -49,10 +49,10 @@ class TableCustom extends StatelessWidget {
               children: row.map((cell) {
                 return TableCell(
                   child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: CustomText(
                         text: cell,
-                        size: 10,
+                        size: 8,
                       )),
                 );
               }).toList(),
