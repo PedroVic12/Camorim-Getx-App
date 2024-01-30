@@ -65,6 +65,18 @@ class HandGestureController:
             fingers = self.detectorHand.fingersUp(hand)
             print("Mão: ", handType, ", Dedos Levantados: ", fingers)
             cx, cy = hand["center"]
+            xVal = np.interp(
+                hand["lmList"][8][0],
+                [presentation.width // 2, presentation.width],
+                [0, presentation.width],
+            )
+            yVal = np.interp(
+                hand["lmList"][8][1],
+                [150, presentation.height - 150],
+                [0, presentation.height],
+            )
+
+            indexFinger = (int(xVal), int(yVal))  # Coordenadas convertidas para inteiros
 
             if cy <= self.gestureThreshold:
                 # Gesture 1 - Movimento para Esquerda/Direita
@@ -78,6 +90,19 @@ class HandGestureController:
                             presentation.imgNumber += 1
                             print("Movendo para a próxima imagem")
                     self.buttonPressed = True
+
+                # Gesture 2 - Finger Point
+                if fingers == [1, 1, 1, 0, 0]:
+                    try:
+                        cv2.circle(
+                            presentation.imgCurrent,
+                            indexFinger,
+                            12,
+                            (0, 0, 255),
+                            cv2.FILLED,
+                        )
+                    except:
+                        print("Saiu da tela")
 
         # Controle de delay para evitar múltiplas detecções
         if self.buttonPressed:
