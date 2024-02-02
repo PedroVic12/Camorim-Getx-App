@@ -36,9 +36,9 @@ class PresentationController:
             self.handGestureController.desenharLinhas(img=img, width=self.width)
 
             # Reduz a apresentação
-            img_reduzida = cv2.resize(self.presentation.imgCurrent, dsize=(500, 500))
-            cv2.imshow("Slides", img_reduzida)
-            cv2.imshow("Image", img)
+            img_reduzida = cv2.resize(self.presentation.imgCurrent, dsize=(1100, 700))
+            cv2.imshow("Slides like Steve Jobs", img_reduzida)
+            cv2.imshow("Camera", img)
 
             # Controle de saída
             if cv2.waitKey(1) == ord("q"):
@@ -52,50 +52,83 @@ class HandGestureController:
         self.buttonPressed = False
         self.counter = 0
         self.delay = 30
+        self.annotations = [[], [], []]
+        self.annotationNumber = -1
+        self.annotationStart = False
 
     def delay(self, s):
         time.sleep(s)
 
+    def resetState(self):
+        self.annotations = [[], [], []]
+        self.annotationNumber = -1
+        self.annotationStart = False
+
+        return self.annotations, self.annotationNumber, self.annotationStart
+
     def moverTelasApresentacao(self, hands, presentation):
-        if hands and not self.buttonPressed:
-            hand = hands[0]
-            handType = hand["type"]  # Pega o tipo de mão (esquerda ou direita)
-            fingers = self.detectorHand.fingersUp(hand)
-            print("Mão: ", handType, ", Dedos Levantados: ", fingers)
-            cx, cy = hand["center"]
-            xVal = np.interp(
-                hand["lmList"][8][0],
-                [presentation.width // 2, presentation.width],
-                [0, presentation.width],
-            )
-            yVal = np.interp(
-                hand["lmList"][8][1],
-                [150, presentation.height - 150],
-                [0, presentation.height],
-            )
+        try:
+            if hands and not self.buttonPressed:
+                hand = hands[0]
+                handType = hand["type"]  # Pega o tipo de mão (esquerda ou direita)
+                fingers = self.detectorHand.fingersUp(hand)
+                print("Mão: ", handType, ", Dedos Levantados: ", fingers)
+                cx, cy = hand["center"]
+                xVal = np.interp(
+                    hand["lmList"][8][0],
+                    [presentation.width // 2, presentation.width],
+                    [0, presentation.width],
+                )
+                yVal = np.interp(
+                    hand["lmList"][8][1],
+                    [150, presentation.height - 150],
+                    [0, presentation.height],
+                )
 
-            indexFinger = (
-                int(xVal),
-                int(yVal),
-            )  # Coordenadas convertidas para inteiros
+                indexFinger = (
+                    int(xVal),
+                    int(yVal),
+                )  # Coordenadas convertidas para inteiros
 
-            #! 55:37
-            if cy <= self.gestureThreshold:
-                # Gesture 1 - Movimento para Esquerda/Direita
-                if fingers == [1, 1, 0, 0, 0]:
-                    if handType == "Left":  # Mão esquerda: decrementa o contador
-                        if presentation.imgNumber > 0:
-                            presentation.imgNumber -= 1
-                            print("Movendo para a imagem anterior")
-                    elif handType == "Right":  # Mão direita: incrementa o contador
-                        if presentation.imgNumber < len(presentation.pathImages) - 1:
-                            presentation.imgNumber += 1
-                            print("Movendo para a próxima imagem")
-                    self.buttonPressed = True
+                #! 1:15:30
+                if cy <= self.gestureThreshold:
+                    #! Gesture 1 - Movimento para Esquerda/Direita (NUM 1)
+                    if fingers == [1, 1, 0, 0, 0]:
+                        if handType == "Left":  # Mão esquerda: decrementa o contador
+                            if presentation.imgNumber > 0:
+                                presentation.imgNumber -= 1
+                                print("\n\nMovendo para a imagem anterior")
+                                self.resetState()
 
-                # Gesture 2 - Finger Point
-                if fingers == [1, 1, 1, 0, 0]:
-                    try:
+                        elif handType == "Right":  # Mão direita: incrementa o contador
+                            if (
+                                presentation.imgNumber
+                                < len(presentation.pathImages) - 1
+                            ):
+                                presentation.imgNumber += 1
+                                print("\n\nMovendo para a próxima imagem")
+                                self.resetState()
+                        self.buttonPressed = True
+
+                    #! Gesture 2 - Finger Point
+                    if fingers == [1, 1, 1, 0, 0]:
+                        try:
+                            cv2.circle(
+                                presentation.imgCurrent,
+                                indexFinger,
+                                12,
+                                (0, 0, 255),
+                                cv2.FILLED,
+                            )
+                        except:
+                            print("Saiu da tela")
+
+                    #! Gesture 3 = Desenhar na tela(NUM 2)
+                    if fingers == [1, 1, 1, 0]:
+                        if self.annotationStart is False:
+                            self.annotationStart = True
+                            self.annotationNumber += 1
+                            self.annotations.append([])
                         cv2.circle(
                             presentation.imgCurrent,
                             indexFinger,
@@ -103,8 +136,25 @@ class HandGestureController:
                             (0, 0, 255),
                             cv2.FILLED,
                         )
-                    except:
-                        print("Saiu da tela")
+                        self.annotations[self.annotationNumber].append(indexFinger)
+
+                    else:
+                        self.annotationStart = False
+
+                    #! Gesture 4 - Limpar a tela(NUM 3)
+                    if fingers == [0, 1, 1, 1, 0]:
+                        if self.annotations:
+                            self.buttonPressed = True
+                            self.annotations = [[]]
+                            self.annotationNumber = -1
+                        print("Limpando a tela")
+
+            # Se ocorrer algum erro no reconhecimento de gestos
+            else:
+                print("Nenhuma mão detectada")
+                self.annotationStart = False
+        except ValueError as e:
+            print("Erro: ", e)
 
         # Controle de delay para evitar múltiplas detecções
         if self.buttonPressed:
@@ -112,6 +162,17 @@ class HandGestureController:
             if self.counter > self.delay:
                 self.counter = 0
                 self.buttonPressed = False
+
+        for i in range(len(self.annotations)):
+            for j in range(len(self.annotations[1])):
+                if j != 0:
+                    cv2.line(
+                        presentation.imgCurrent,
+                        self.annotations[i][j - 1],
+                        self.annotations[i][j],
+                        (0, 0, 200),
+                        12,
+                    )
 
     def desenharLinhas(self, img, width):
         cv2.line(
