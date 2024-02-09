@@ -2,9 +2,11 @@
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/view/crud_excel_page.dart';
 import 'package:camorim_getx_app/app/pages/Controle%20Dique/ControleDiquePage.dart';
 import 'package:camorim_getx_app/app/pages/Controlle%20Ferramentas/ControleFerramentas.dart';
-import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/ScannerOcrImgPdfPage.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_desktop.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/responsive_layoutPage.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:camorim_getx_app/widgets/google_maps.dart';
@@ -135,7 +137,9 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) => InkWell(
                 onTap: () {
                   if (index == 0) {
-                    Get.to(RelatorioPage());
+                    Get.to((ResponsiveLayout(
+                        mobileScaffold: SistemaCadastroPage(),
+                        desktopScaffold: SistemaCadastroDesktop())));
                   }
 
                   if (index == 1) {

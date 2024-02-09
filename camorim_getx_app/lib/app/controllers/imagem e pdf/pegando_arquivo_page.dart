@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../widgets/customText.dart';
+
 class PegandoArquivosPage extends StatefulWidget {
   @override
   State<PegandoArquivosPage> createState() => _PegandoArquivosPageState();
@@ -106,14 +108,35 @@ class _PegandoArquivosPageState extends State<PegandoArquivosPage> {
       ],
     );
   }
+
+  Widget cardButton(function, IconData icone, String texto) {
+    return InkWell(
+      onTap: function,
+      child: Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 100,
+          width: 160,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.indigoAccent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Icon(icone), CustomText(text: texto)],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
-
-
-
-
-
-
-
 
 class DisplayFilesWidget extends StatelessWidget {
   final FilesController controller = Get.find();

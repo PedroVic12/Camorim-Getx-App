@@ -19,7 +19,8 @@ class CustomCheckboxGroup extends StatelessWidget {
                 dense: true,
                 title: Text(
                   opcao,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 value: opcaoSelecionada.contains(opcao),
                 onChanged: (bool? value) {

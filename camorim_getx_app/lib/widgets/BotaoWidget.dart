@@ -1,33 +1,34 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class BotaoWidget extends StatelessWidget {
-  final VoidCallback btnPressionado;
-  final MaterialStateProperty<Color?> cor;
+class BotaoPadrao extends StatelessWidget {
+  final Color color;
+  final VoidCallback on_pressed;
   final String text;
-  BotaoWidget(
+  BotaoPadrao(
       {super.key,
-      required this.btnPressionado,
-      required this.cor,
+      required this.color,
+      required this.on_pressed,
       required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: cor,
-          elevation: MaterialStateProperty.all<double?>(10),
-        ),
-        onPressed: btnPressionado,
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
+        padding: const EdgeInsets.all(8),
+        child: SizedBox(
+            height: 40,
+            child: ElevatedButton(
+                onPressed: on_pressed,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: color,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ))));
   }
 }

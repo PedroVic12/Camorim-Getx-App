@@ -15,11 +15,10 @@ class ColunaBotoes extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        BotaoWidget(
-          btnPressionado: controllerImage.selecionarImagem,
-          text: 'Pegar imagem',
-          cor: MaterialStateProperty.all<Color?>(Colors.red),
-        ),
+        BotaoPadrao(
+            on_pressed: () => controllerImage.selecionarImagem,
+            text: 'Pegar imagem',
+            color: Colors.red),
       ],
     );
   }

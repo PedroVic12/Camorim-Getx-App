@@ -1,12 +1,11 @@
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/excel_controller.dart';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
-import 'package:camorim_getx_app/app/pages/Relatorio%20OS/RelatoriosPage.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../sistema Cadastro/cadastro_page.dart';
+import '../../sistema Cadastro/views/cadastro_page.dart';
 
 class ContactForm extends StatefulWidget {
   final Contact?

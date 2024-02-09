@@ -8,6 +8,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class DragonitePDF extends GetxController {
+  Future<void> pegarImagem() async {
+    var imagens = <Uint8List>[].obs;
+
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      Uint8List? imageData = await pickedFile.readAsBytes();
+      imagens.add(imageData);
+    } else {
+      print('Nenhuma imagem selecionada.');
+    }
+  }
+
   Future<String> createSimpleTextPDF(String text, String filePath) async {
     // Método para criar um PDF simples com texto
 

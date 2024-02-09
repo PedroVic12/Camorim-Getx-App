@@ -7,7 +7,7 @@ class AppBarPersonalizada extends StatelessWidget
   AppBarPersonalizada({required this.titulo});
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +15,11 @@ class AppBarPersonalizada extends StatelessWidget
       title: Center(
         child: Text(
           titulo,
-          style: TextStyle(color: Colors.deepOrange, fontSize: 20),
+          style: const TextStyle(color: Colors.deepOrange, fontSize: 20),
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 17, 46, 99),
-      shape: RoundedRectangleBorder(
+      backgroundColor: const Color.fromARGB(255, 17, 46, 99),
+      shape: const RoundedRectangleBorder(
         side: BorderSide(
           color: Colors.black,
           width: 2,

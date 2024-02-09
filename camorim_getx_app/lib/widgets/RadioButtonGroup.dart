@@ -20,7 +20,7 @@ class RadioButtonGroup extends StatelessWidget {
           children: niveis
               .map((nivel) => RadioListTile(
                   dense: true,
-                  title: TextLabel(texto: nivel),
+                  title: TextLabel(texto: nivel, size: 11),
                   value: nivel,
                   selected: nivelSelecionado.value == nivel,
                   groupValue: nivelSelecionado.value,

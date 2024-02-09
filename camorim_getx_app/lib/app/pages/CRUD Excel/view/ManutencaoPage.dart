@@ -1,4 +1,4 @@
-import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_page.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
