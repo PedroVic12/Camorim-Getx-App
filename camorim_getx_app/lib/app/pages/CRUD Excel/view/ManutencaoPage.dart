@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../sistema Cadastro/cadastro_controllers.dart';
 import '../controllers/excel_controller.dart';
 
 class ManutencaoPage extends StatefulWidget {
@@ -70,7 +71,7 @@ class _ManutencaoPageState extends State<ManutencaoPage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         Text(
-                          element.acao,
+                          element.dataInicial,
                           style: TextStyle(color: Colors.white),
                         )
                       ],

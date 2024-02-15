@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../sistema Cadastro/cadastro_controllers.dart';
 import '../../sistema Cadastro/views/cadastro_page.dart';
 
 class ContactForm extends StatefulWidget {
@@ -121,7 +122,7 @@ class _ContactFormState extends State<ContactForm> {
                           style: TextStyle(color: Colors.white),
                         ),
                         Text(
-                          element.acao,
+                          element.dataInicial,
                           style: TextStyle(color: Colors.white),
                         )
                       ],

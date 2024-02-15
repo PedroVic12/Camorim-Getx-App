@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
@@ -15,6 +16,7 @@ import '../../Scanner PDF/controller/nota_fiscal_controller.dart';
 
 class BulbassauroExcelController {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
+  final CadastroController relatorio_controller = Get.put(CadastroController());
 
 //!CRUD
   // Função para ler um arquivo Excel
@@ -54,6 +56,59 @@ class BulbassauroExcelController {
     final List<int> bytes = workbook.saveAsStream();
     await File(filename).writeAsBytes(bytes);
     workbook.dispose();
+  }
+
+  void salvarDadosRelatorioOS() async {
+    final workbook = Workbook();
+    final sheet = workbook.worksheets[0];
+
+    // Add headers
+    int lineHeader = 1;
+    sheet.getRangeByName('A$lineHeader').setText('EMBARCAÇÃO');
+    sheet.getRangeByName('B1').setText('DATA INICIO');
+    sheet.getRangeByName('C1').setText('DESCRIÇÃO DA FALHA');
+    sheet.getRangeByName('D1').setText('EQUIPAMENTO');
+    sheet.getRangeByName('E1').setText('MANUTENÇÃO');
+    sheet.getRangeByName('F1').setText('SERVIÇO EXECUTADO');
+    sheet.getRangeByName('G1').setText('DATA INICIO');
+    sheet.getRangeByName('H$lineHeader').setText('RESPONSAVEL');
+    sheet.getRangeByName('I$lineHeader').setText('OFICINA');
+    sheet.getRangeByName('J$lineHeader').setText('FINALIZADO');
+    sheet.getRangeByName('K$lineHeader').setText('DATA FINAL');
+    sheet.getRangeByName('L$lineHeader').setText('FORA DE OPERAÇÃO ');
+    sheet.getRangeByName('M$lineHeader').setText('OBS');
+
+    // formatação
+    sheet.getRangeByName('A1:F1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:F1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:F1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:F1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:G1').autoFitColumns();
+
+    // Add data from the list
+    int row = 2;
+    for (final data in relatorio_controller.array_cadastro) {
+      sheet.getRangeByName('A$row').setText(data.rebocador);
+      sheet.getRangeByName('B$row').setText(data.dataInicial);
+      sheet.getRangeByName('C$row').setText(data.descFalha);
+      sheet.getRangeByName('D$row').setText(data.equipamento);
+      sheet.getRangeByName('E$row').setText(data.tipoManutencao);
+      sheet.getRangeByName('F$row').setText(data.servicoExecutado);
+      sheet.getRangeByName('G$row').setText(data.dataInicial);
+      sheet.getRangeByName('H$row').setText(data.funcionario.join(', '));
+      sheet.getRangeByName('I$row').setText(data.oficina);
+      sheet.getRangeByName('J$row').setText(data.status_finalizado.toString());
+      sheet.getRangeByName('J$row').setText(data.dataFinal.toString());
+      sheet.getRangeByName('J$row').setText(data.obs);
+
+      row++;
+    }
+
+    // Save the Excel file
+    salvarExcelWeb(workbook, 'relatorio_info.xlsx');
+
+    // Show success message
+    BulbassauroExcelController().showMessage("Excel Salvo!");
   }
 
   void salvarDadosNotaFiscal() async {

@@ -274,9 +274,13 @@ class _WidgetSelecionadorImagemState extends State<WidgetSelecionadorImagem> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: lerDadosExtraidos,
-        child: const Icon(Icons.textsms),
-      ),
+          onPressed: lerDadosExtraidos,
+          child: const Column(
+            children: [
+              Icon(Icons.textsms),
+              CustomText(text: 'Extrair Texto'),
+            ],
+          )),
       bottomNavigationBar: CustomNavBar(
         navBarItems: [
           NavigationBarItem(

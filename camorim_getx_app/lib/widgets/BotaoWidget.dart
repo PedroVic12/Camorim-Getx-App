@@ -1,3 +1,4 @@
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -23,12 +24,11 @@ class BotaoPadrao extends StatelessWidget {
                     backgroundColor: color,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20))),
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: CustomText(
+                  text: text,
+                  size: 20,
+                  color: Colors.white,
+                  weight: FontWeight.bold,
                 ))));
   }
 }
