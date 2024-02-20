@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +19,49 @@ import '../../Scanner PDF/controller/nota_fiscal_controller.dart';
 class BulbassauroExcelController {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
   final CadastroController relatorio_controller = Get.put(CadastroController());
+  Dio dio = Dio();
+
+  void enviarEmail() async {
+    final String subject = 'Relatório de Ordem de Serviço';
+    final String body = 'Segue em anexo o relatório de Ordem de Serviço';
+    final String recipient =
+        'julianomoreira@gmail.com'; // replace with your email here
+
+    dio.post("");
+  }
+
+  //!UTILS
+  salvarExcelWeb(Workbook wb, fileName) async {
+    final List<int> bytes = wb.saveAsStream();
+    wb.dispose();
+    if (kIsWeb) {
+      AnchorElement(
+          href:
+              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
+        ..setAttribute('download', '$fileName')
+        ..click();
+    } else {
+      final String path = (await getApplicationSupportDirectory()).path;
+      final String fileName =
+          Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
+      final File file = File(fileName);
+      await file.writeAsBytes(bytes, flush: true);
+      OpenFile.open(fileName);
+    }
+  }
+
+  void showMessage(texto) {
+    // Adiciona Snackbar para notificar sucesso
+    try {
+      Get.snackbar('Sucesso', texto,
+          snackPosition: SnackPosition.TOP,
+          colorText: Colors.white,
+          backgroundColor: Colors.green);
+    } catch (e) {
+      // Adiciona Snackbar para notificar erro
+      Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
+    }
+  }
 
 //!CRUD
   // Função para ler um arquivo Excel
@@ -79,11 +124,11 @@ class BulbassauroExcelController {
     sheet.getRangeByName('M$lineHeader').setText('OBS');
 
     // formatação
-    sheet.getRangeByName('A1:F1').cellStyle.fontSize = 14;
-    sheet.getRangeByName('A1:F1').cellStyle.bold = true;
-    sheet.getRangeByName('A1:F1').cellStyle.backColor = "#ff0000";
-    sheet.getRangeByName('A1:F1').cellStyle.fontColor = "#ffffff";
-    sheet.getRangeByName('A1:G1').autoFitColumns();
+    sheet.getRangeByName('A1:M1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:M1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:M1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:M1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:M1').autoFitColumns();
 
     // Add data from the list
     int row = 2;
@@ -98,8 +143,9 @@ class BulbassauroExcelController {
       sheet.getRangeByName('H$row').setText(data.funcionario.join(', '));
       sheet.getRangeByName('I$row').setText(data.oficina);
       sheet.getRangeByName('J$row').setText(data.status_finalizado.toString());
-      sheet.getRangeByName('J$row').setText(data.dataFinal.toString());
-      sheet.getRangeByName('J$row').setText(data.obs);
+      sheet.getRangeByName('K$row').setText(data.dataFinal.toString());
+      sheet.getRangeByName('L$row').setText("NÃO");
+      sheet.getRangeByName('M$row').setText(data.obs);
 
       row++;
     }
@@ -118,31 +164,35 @@ class BulbassauroExcelController {
     // Add headers
     int lineHeader = 1;
     sheet.getRangeByName('A$lineHeader').setText('Data');
-    sheet.getRangeByName('B1').setText('Embarcação');
-    sheet.getRangeByName('C1').setText('Tipo de Despesas');
-    sheet.getRangeByName('D1').setText('Local');
-    sheet.getRangeByName('E1').setText('Produtos');
-    sheet.getRangeByName('F1').setText('Total');
+    sheet.getRangeByName('B1').setText('Tipos de Despesas');
+    sheet.getRangeByName('C1').setText('Valor');
+    sheet.getRangeByName('D1').setText('CONTA CONTÁBIL');
+    sheet.getRangeByName('E1').setText('Embarcação');
+    sheet.getRangeByName('F1').setText('Local');
+    sheet.getRangeByName('G1').setText('Produtos');
 
     // formatação
-    sheet.getRangeByName('A1:F1').cellStyle.fontSize = 14;
-    sheet.getRangeByName('A1:F1').cellStyle.bold = true;
-    sheet.getRangeByName('A1:F1').cellStyle.backColor = "#ff0000";
-    sheet.getRangeByName('A1:F1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:G1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:G1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:G1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:G1').cellStyle.fontColor = "#ffffff";
     sheet.getRangeByName('A1:G1').autoFitColumns();
 
     // Add data from the list
     int row = 2;
     for (final notaFiscal in controller.notasFiscais_ARRAY) {
       sheet.getRangeByName('A$row').setText(notaFiscal.data);
-      sheet.getRangeByName('B$row').setText(notaFiscal.navio);
-      sheet.getRangeByName('C$row').setText(notaFiscal.categoria);
-      sheet.getRangeByName('D$row').setText(notaFiscal.local);
-      sheet.getRangeByName('E$row').setText(notaFiscal.produtos.join(', '));
-      sheet.getRangeByName('F$row').setNumber(notaFiscal.total);
+      sheet.getRangeByName('B$row').setText(notaFiscal.categoria);
+      sheet.getRangeByName('C$row').setNumber(notaFiscal.total);
+      sheet.getRangeByName('D$row').setText(" ");
+      sheet.getRangeByName('E$row').setText(notaFiscal.navio);
+      sheet.getRangeByName('F$row').setText(notaFiscal.produtos.join(', '));
+      sheet.getRangeByName('G$row').setText(notaFiscal.local);
 
       row++;
     }
+    sheet.getRangeByName('A2:F20').cellStyle.fontSize = 10;
+    sheet.getRangeByName('A2:F20').cellStyle.hAlign = HAlignType.center;
 
     // Save the Excel file
     salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
@@ -182,35 +232,5 @@ class BulbassauroExcelController {
     final List<List<Object>> data = getAllRows(sheet);
     workbook.dispose();
     return data;
-  }
-
-//!UTILS
-  salvarExcelWeb(Workbook wb, fileName) async {
-    final List<int> bytes = wb.saveAsStream();
-    wb.dispose();
-    if (kIsWeb) {
-      AnchorElement(
-          href:
-              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
-        ..setAttribute('download', '$fileName')
-        ..click();
-    } else {
-      final String path = (await getApplicationSupportDirectory()).path;
-      final String fileName =
-          Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
-      final File file = File(fileName);
-      await file.writeAsBytes(bytes, flush: true);
-      OpenFile.open(fileName);
-    }
-  }
-
-  void showMessage(texto) {
-    // Adiciona Snackbar para notificar sucesso
-    try {
-      Get.snackbar('Sucesso', texto, snackPosition: SnackPosition.TOP);
-    } catch (e) {
-      // Adiciona Snackbar para notificar erro
-      Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
-    }
   }
 }

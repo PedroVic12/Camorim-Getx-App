@@ -40,7 +40,6 @@ class _DropMenuFormState extends State<DropMenuForm> {
               onPressed: () {
                 Navigator.pop(context, option);
               },
-              //child: Column( children: [const Divider(), Text(option), const Divider()],
               child: CustomText(text: option));
         }).toList(),
       ),
@@ -62,12 +61,8 @@ class _DropMenuFormState extends State<DropMenuForm> {
           Row(
             children: [
               Expanded(
-                child: CaixaDeTexto(
-                  controller: widget.textController,
-                  labelText: widget.labelText,
-                ),
+                child: caixaTextoAutoComplete(),
               ),
-              const SizedBox(width: 6),
               InkWell(
                 onTap: _showOptionsDialog,
                 child: const CircleAvatar(
@@ -83,6 +78,34 @@ class _DropMenuFormState extends State<DropMenuForm> {
           )
         ],
       ),
+    );
+  }
+
+  Widget caixaTextoAutoComplete() {
+    return Autocomplete<String>(
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return const Iterable<String>.empty();
+        }
+        return widget.options.where((option) =>
+            option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+      },
+      onSelected: (String selectedOption) {
+        setState(() {
+          widget.textController.text =
+              selectedOption; // Atualiza o campo de texto
+        });
+      },
+      fieldViewBuilder:
+          (context, textEditingController, focusNode, onFieldSubmitted) {
+        return CaixaDeTexto(
+          controller: widget
+              .textController, // Assegura que o controller seja compartilhado
+          focusNode: focusNode,
+          labelText: widget.labelText,
+          // Outros parâmetros necessários para CaixaDeTexto
+        );
+      },
     );
   }
 }

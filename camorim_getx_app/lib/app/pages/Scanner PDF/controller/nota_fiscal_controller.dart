@@ -15,8 +15,8 @@ class NotaFiscalController extends GetxController {
 
   void salvarDados() {
     final notaFiscal = NotaFiscal(
-      categoria: categoriaController.text,
-      navio: navioController.text,
+      categoria: categoriaController.text.toUpperCase(),
+      navio: navioController.text.toUpperCase(),
       data: dataController.text,
       local: localController.text,
       produtos: produtosController.text.split(", "),

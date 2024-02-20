@@ -62,6 +62,7 @@ dependencies:
   google_maps_flutter_web: ^0.5.4+3
   flutter_localizations:
     sdk: flutter
+  syncfusion_flutter_pdfviewer: ^22.2.12
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/app/pages/OCR_PAGE/repository/
+    - lib/app/controllers/PDF-Controller/assets/RELAToRIO_ORDEMSERVICO.pdf
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

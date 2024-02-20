@@ -3,6 +3,7 @@ import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_pag
 import 'package:camorim_getx_app/widgets/BotaoWidget.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
+import 'package:camorim_getx_app/widgets/DropdownWidget.dart';
 import 'package:camorim_getx_app/widgets/RadioButtonGroup.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
 import 'package:flutter/material.dart';
@@ -29,17 +30,92 @@ class FormsListRelatorioOS extends StatelessWidget {
                 child: DropMenuForm(
                   labelText: 'REBOCADOR',
                   options: const [
-                    'PEROLA',
                     'AÇU',
-                    "TOPÁZIO",
+                    "ATLÂNTICO",
+                    'ÁGATA',
+                    "ALDEBARAN",
+                    "ALTAIR",
+                    "ANDREIS XI",
+                    "ANGRA",
+                    "ANTARES",
+                    "ARIES",
+                    "ARRAIAL",
+                    "ARTHUR",
+                    "BALSA CAMORIM",
+                    "BALSA DIALCAR",
+                    "BALSA EQUIP 110",
+                    "BALSA EQUIP 190",
+                    "EQUIP 180",
+                    "BRILHANTE",
+                    "CAMORIM XVII",
+                    "CARAJAS",
+                    "CARLA",
+                    "CETUS",
+                    "CICLONE",
+                    "COBRE",
+                    "CRISTAL",
+                    "DIAMANTE",
+                    "EMBARCAÇÃO CASCO 045",
+                    "EMBARCAÇÃO LOT",
                     "ESMERALDA",
+                    "FELIZ",
+                    "FLORA",
+                    "ITACURUÇA",
+                    "JADE",
+                    "LANCHA ALUMINA III",
+                    "LANCHA JAF",
+                    "LANCHA OCEANBOAT ",
+                    "LANCHA SAVEIROS TOUR I",
+                    "LANCHA ST. TROPEZ",
+                    "LANCHA YECA",
+                    "LH COMANDANTE",
+                    "MACAE",
+                    "MACEIO",
+                    "MERCURIO IV",
+                    "MINI OR",
+                    "MINIBOLA",
+                    "N ALMEIDA VII",
+                    "NAVEMAR XIV",
+                    "NEBLINA",
+                    "NEVOEIRO",
+                    "NEW FURACÃO",
+                    "NEW TROVÃO",
+                    "NIQUEL",
+                    "NITEROI",
+                    "OPALA",
+                    "ORION",
+                    "OURO",
+                    "PEGASUS",
+                    "PEROLA",
+                    "PERSIVAL",
+                    "PRUDENT",
+                    "QUARTZO",
+                    "REBOC-CERRAÇÃO(ANT TEXAS)",
+                    "RELAMPAGO",
+                    "RIO",
+                    "SAGA RONCADOR",
+                    "SAGAMORIM II",
+                    "SAGITARIUS",
+                    "SALVADOR",
+                    "SEPETIBA",
+                    "SIRIUS",
+                    "SUPERPESA XIII",
+                    "SUPERPESA XIV",
+                    "TITA",
+                    "TEMPESTADE",
+                    "TEMPORAL",
+                    "TOPÁZIO",
                     "TORMENTA",
                     "TORNADO",
+                    "TRINDADE",
+                    "TUFAO",
+                    "TURMALINA",
+                    "TURQUEZA",
+                    "VENDAVAL",
+                    "VENTANIA",
+                    "VIGO MAXIMUS",
+                    "VITORIA",
                     "ZANGADO",
-                    "TEMPESTADE",
-                    'ÁGATA',
-                    "ANDREIS XI",
-                    "ATLÂNTICO"
                   ],
                   textController: relatorio_controller.nomeRebocadorText,
                 ),
@@ -109,7 +185,7 @@ class FormsListRelatorioOS extends StatelessWidget {
                     "LINHA DE EIXO BB",
                     "MCA BB",
                     "MCA BE",
-                    "MCA 02"
+                    "MCA 02",
                     "MCP BB",
                     "MCP BE",
                     "MCP LC",
@@ -152,16 +228,19 @@ class FormsListRelatorioOS extends StatelessWidget {
               labelText: 'SERVIÇO EXECUTADO'),
           Row(
             children: [
-              const TextLabel(texto: 'Serviço Finalizado??'),
               Expanded(
                 child: RadioButtonGroup(
+                  textLabel: "Serviço Finalizado?",
                   niveis: relatorio_controller.opcoes,
                   nivelSelecionado: relatorio_controller.nivelSelecionado,
                 ),
               ),
-              const TextLabel(texto: 'FORA DE OPERAÇÃO'),
+              const SizedBox(
+                width: 20,
+              ),
               Expanded(
                 child: RadioButtonGroup(
+                  textLabel: "FORA DE OPERAÇÃO",
                   niveis: relatorio_controller.opcoes,
                   nivelSelecionado: relatorio_controller.optionSelected,
                 ),
@@ -171,25 +250,80 @@ class FormsListRelatorioOS extends StatelessWidget {
                     controller: relatorio_controller.dataConclusao,
                     labelText: 'DATA CONCLUSÃO'),
               ),
+              Expanded(
+                child: CaixaDeTexto(
+                    controller: relatorio_controller.horarios,
+                    labelText: "Horários",
+                    onTap: () {}),
+              ),
             ],
           ),
           CaixaDeTexto(
               controller: relatorio_controller.obs, labelText: 'OBSERVAÇÕES'),
+          inserirFotoOuArquivo(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               BotaoPadrao(
                   on_pressed: () {
-                    relatorio_controller.salvar(
+                    relatorio_controller.salvarDadosCadastradosRelatorio(
                       context,
                     );
+                    relatorio_controller.descFalha.clear();
+                    relatorio_controller.ACAOTEXT.clear();
+                    relatorio_controller.obs.clear();
+                    relatorio_controller.EQUIPAMENTO_TEXT.clear();
+                  },
+                  color: Colors.blue,
+                  text: 'Adicionar mais dados'),
+              BotaoPadrao(
+                  on_pressed: () {
+                    relatorio_controller.salvarDadosCadastradosRelatorio(
+                      context,
+                    );
+                    relatorio_controller.resetLabels();
                   },
                   color: Colors.green,
                   text: 'Salvar'),
-              BotaoPadrao(on_pressed: () {}, color: Colors.red, text: 'Limpar')
+              BotaoPadrao(
+                  on_pressed: () {
+                    relatorio_controller.resetLabels();
+                  },
+                  color: Colors.red,
+                  text: 'Limpar')
             ],
           )
+        ],
+      ),
+    );
+  }
+
+  Widget inserirFotoOuArquivo() {
+    return Container(
+      color: Colors.amberAccent,
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        children: [
+          const TextLabel(
+            texto: 'Inserir Foto ou Arquivo',
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Inserir Foto'),
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                child: const Text('Inserir Arquivo'),
+              ),
+            ],
+          ),
         ],
       ),
     );

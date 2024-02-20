@@ -18,6 +18,7 @@ class CadastroController extends GetxController {
   final oficina = TextEditingController();
   final dataConclusao = TextEditingController();
   final obs = TextEditingController();
+  final horarios = TextEditingController();
 
   var opcaoSelecionada = <String>[].obs;
   var opcoes = <String>[].obs;
@@ -38,6 +39,27 @@ class CadastroController extends GetxController {
     niveis.assignAll(nivelRepository.retornaNiveis());
     opcoes.assignAll(opcoesRepository.retornarOpcoes());
   }
+
+  void salvarDadosCadastradosRelatorio(context) async {
+    try {
+      salvar(context);
+      gerarRelatorioPDF();
+      enviarEmail();
+      salvarBancoDeDados();
+    } on Exception catch (e) {
+      print(e);
+    }
+  }
+
+  void gerarRelatorioPDF() {
+    // !Gerar relatório em PDF
+  }
+
+  void enviarEmail() {}
+
+  void salvarBancoDeDados() {}
+
+  void updateExcelWebFile() {}
 
   void salvar(BuildContext context) {
     if (EQUIPAMENTO_TEXT.text.isEmpty ||
@@ -68,8 +90,6 @@ class CadastroController extends GetxController {
 
     array_cadastro.add(model);
 
-    resetLabels();
-
     // Show a success message,
     Get.snackbar(
       "Sucesso",
@@ -91,6 +111,7 @@ class CadastroController extends GetxController {
     manutencao.clear();
     obs.clear();
     dataAbertura.clear();
+    dataConclusao.clear();
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/bulbassaur_excel.dart';
+import 'package:camorim_getx_app/app/pages/Scanner%20PDF/NotaFiscalOcr/nota_fiscal_ocr_page.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/scanner_nota_fiscal.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
 import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
@@ -25,35 +26,51 @@ class DadosCadastradosPage extends StatelessWidget {
 
               TableCustom(
                 columns: const [
-                  "EMBARCAÇÃO",
-                  "CATEGORIA",
                   "DATA",
+                  "CATEGORIA",
+                  "TOTAL",
+                  "EMBARCAÇÃO",
                   "LOCAL",
                   "PRODUTOS",
-                  "TOTAL",
                 ],
                 rows: controller.notasFiscais_ARRAY.map((notaFiscal) {
                   return [
-                    notaFiscal.navio,
-                    notaFiscal.categoria,
                     notaFiscal.data,
+                    notaFiscal.categoria,
+                    notaFiscal.total.toString(),
+                    notaFiscal.navio,
                     notaFiscal.local,
                     notaFiscal.produtos.join(", "),
-                    notaFiscal.total.toString(),
                   ];
                 }).toList(),
               ),
 
-              ElevatedButton(
-                onPressed: () => bulbassauro.salvarDadosNotaFiscal(),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.indigo),
-                ),
-                child: const CustomText(
-                  text: "Exportar Excel",
-                  color: Colors.white,
-                ),
-              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => bulbassauro.salvarDadosNotaFiscal(),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                    ),
+                    child: const CustomText(
+                      text: "Exportar Excel",
+                      color: Colors.white,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => bulbassauro.enviarEmail(),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.indigo),
+                    ),
+                    child: const CustomText(
+                      text: "Enviar Email",
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              )
             ],
           )),
       bottomNavigationBar: CustomNavBar(
@@ -62,7 +79,7 @@ class DadosCadastradosPage extends StatelessWidget {
               label: 'OCR',
               iconData: Icons.date_range_outlined,
               onPress: () {
-                Get.to(WidgetSelecionadorImagem());
+                Get.to(NotaFiscalOcrPage());
               }),
           NavigationBarItem(
               label: 'Dados Cadastrados',

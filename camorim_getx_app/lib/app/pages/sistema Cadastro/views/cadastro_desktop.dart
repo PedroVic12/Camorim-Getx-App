@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
+import 'package:camorim_getx_app/app/controllers/PDF-Controller/relatorio_os_template.dart';
 import 'package:camorim_getx_app/app/controllers/imagem%20e%20pdf/pegando_arquivo_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/showTableCadastro.dart';
@@ -46,6 +47,8 @@ class SistemaCadastroDesktop extends StatelessWidget {
                   height: 900,
                   child: ShowTableDadosCadastrados(),
                 ); // Terceira página
+              } else if (navController.currentPageIndex.value == 3) {
+                return PdfViewScreen();
               } else {
                 return Container(
                   color: Colors.blueGrey.shade300,
@@ -89,10 +92,22 @@ class SistemaCadastroDesktop extends StatelessWidget {
             // Desativa o scrolling do ListView.builder
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
+              var title = "";
+              switch (index) {
+                case 0:
+                  title = "Cadastro";
+                  break;
+                case 1:
+                  title = "Consulta";
+                  break;
+                case 2:
+                  title = "Relatório";
+                  break;
+              }
               return ListTile(
                 trailing: Icon(Icons.arrow_forward_ios),
                 title: Text(
-                  'Página $index',
+                  'Página $index - $title',
                   style: TextStyle(
                     // Se o índice da página atual for igual ao índice do item, use vermelho; caso contrário, preto.
                     color: navController.currentPageIndex.value == index

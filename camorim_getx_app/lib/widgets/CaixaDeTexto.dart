@@ -2,45 +2,48 @@ import 'package:flutter/material.dart';
 
 class CaixaDeTexto extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String labelText;
-  final bool isReadOnly;
-  final Function()? onTap;
+  final TextStyle labelStyle;
   final double? height; // Adicione o parâmetro opcional
+  final Function()? onTap;
 
-  CaixaDeTexto({
+  const CaixaDeTexto({
+    Key? key,
     required this.controller,
+    this.focusNode,
     required this.labelText,
-    this.isReadOnly = false,
-    this.onTap,
     this.height,
-  });
+    this.onTap,
+    this.labelStyle = const TextStyle(),
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(8.0),
       child: TextField(
-          style: TextStyle(),
-          controller: controller,
-          readOnly: isReadOnly,
-          onTap: onTap,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.purple[50],
-            border: OutlineInputBorder(),
-            label: Padding(
-              padding:
-                  const EdgeInsets.only(left: 12.0), // Seu valor de padding
-              child: Text(
-                labelText,
-                style: const TextStyle(
-                  color: Colors.purple,
-                ),
+        controller: controller,
+        focusNode: focusNode,
+        onTap: onTap,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.purple[50],
+          border: OutlineInputBorder(),
+          label: Padding(
+            padding: const EdgeInsets.only(left: 12.0), // Seu valor de padding
+            child: Text(
+              labelText,
+              style: const TextStyle(
+                color: Colors.purple,
+                fontSize: 16,
               ),
             ),
-            contentPadding: EdgeInsets.symmetric(
-                vertical: (height ?? 10.0), horizontal: 10.0),
-          )),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+              vertical: (height ?? 10.0), horizontal: 10.0),
+        ),
+      ),
     );
   }
 }

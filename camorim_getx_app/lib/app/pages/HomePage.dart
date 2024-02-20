@@ -14,6 +14,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../widgets/customText.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
@@ -184,10 +186,11 @@ class _HomePageState extends State<HomePage> {
                           size: 32,
                         ),
                         const SizedBox(height: 10),
-                        TextLabel(
-                          texto: titulos[index],
-                          size: 3,
-                          cor: Colors.white,
+                        CustomText(
+                          text: titulos[index],
+                          color: Colors.white,
+                          size: 20,
+                          weight: FontWeight.bold,
                         ),
                       ],
                     ),

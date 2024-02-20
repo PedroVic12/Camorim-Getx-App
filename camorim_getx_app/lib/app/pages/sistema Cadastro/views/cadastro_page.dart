@@ -36,14 +36,14 @@ class SistemaCadastroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarPersonalizada(
-        titulo: 'RELATÓRIO ORDEM DE SERVIÇO',
+        titulo: 'RELATÓRIO ORDEM DE SERVIÇO - MOBILE',
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
         children: [
           PegandoArquivosPage(),
           FormsListRelatorioOS(),
-          showTableDadosCadastrados(context)
+          //showTableDadosCadastrados(context)
         ],
       ),
       bottomNavigationBar: CustomNavBar(
