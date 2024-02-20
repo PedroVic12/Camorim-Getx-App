@@ -60,7 +60,7 @@ class DadosCadastradosPage extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () => bulbassauro.enviarEmail(),
+                    onPressed: () => (),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(Colors.indigo),
                     ),

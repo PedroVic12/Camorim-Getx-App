@@ -102,6 +102,7 @@ class CadastroController extends GetxController {
     // Reset the text fields after saving
     nomeRebocadorText.clear();
     oficina.clear();
+    horarios.clear();
     funcionarios.clear();
     dataAbertura.clear();
     EQUIPAMENTO_TEXT.clear();

@@ -1,64 +1,70 @@
 import 'package:flutter/material.dart';
 
-class DateTimePickerWidget extends StatefulWidget {
-  final Function(DateTime) onDateSelected;
-  final Function(TimeOfDay) onTimeSelected;
+class DateTimeIntervalPickerWidget extends StatefulWidget {
+  final Function(DateTime start, DateTime end) onIntervalSelected;
 
-  DateTimePickerWidget(
-      {Key? key, required this.onDateSelected, required this.onTimeSelected})
+  const DateTimeIntervalPickerWidget(
+      {Key? key, required this.onIntervalSelected})
       : super(key: key);
 
   @override
-  State<DateTimePickerWidget> createState() => _DateTimePickerWidgetState();
+  State<DateTimeIntervalPickerWidget> createState() =>
+      _DateTimeIntervalPickerWidgetState();
 }
 
-class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
+class _DateTimeIntervalPickerWidgetState
+    extends State<DateTimeIntervalPickerWidget> {
+  Future<void> _selectDateTimeInterval() async {
+    final DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2030),
+    );
+
+    if (date != null) {
+      final TimeOfDay? startTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: 12, minute: 0), // Início do intervalo
+      );
+
+      final TimeOfDay? endTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: 20, minute: 0), // Final do intervalo
+      );
+
+      if (startTime != null && endTime != null) {
+        DateTime startDateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          startTime.hour,
+          startTime.minute,
+        );
+
+        DateTime endDateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          endTime.hour,
+          endTime.minute,
+        );
+
+        widget.onIntervalSelected(startDateTime, endDateTime);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future _selectDate() async {
-      final DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
-          lastDate: DateTime(2030));
-
-      if (picked != null) {
-        widget.onDateSelected(picked);
-      }
-    }
-
-    Future _selectTime() async {
-      final TimeOfDay? picked =
-          await showTimePicker(context: context, initialTime: TimeOfDay.now());
-
-      if (picked != null) {
-        widget.onTimeSelected(picked);
-      }
-    }
-
-    return Flexible(
-      child: Container(
-        width: 400,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Icon(Icons.data_exploration_rounded),
-          TextButton(
-              onPressed: () {
-                _selectDate();
-              },
-              child: const Text(
-                'Data',
-                style: TextStyle(fontSize: 14),
-              )),
-          const Icon(Icons.lock_clock),
-          TextButton(
-              onPressed: () {
-                _selectTime();
-              },
-              child: const Text(
-                'Horário',
-                style: TextStyle(fontSize: 14),
-              )),
-        ]),
+    return Container(
+      width: double.infinity,
+      child: TextButton(
+        onPressed: _selectDateTimeInterval,
+        child: const Text(
+          'Selecionar Intervalo de Horário',
+          style: TextStyle(fontSize: 14),
+        ),
       ),
     );
   }

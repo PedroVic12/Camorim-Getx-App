@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as DioAPP;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,15 +19,23 @@ import '../../Scanner PDF/controller/nota_fiscal_controller.dart';
 class BulbassauroExcelController {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
   final CadastroController relatorio_controller = Get.put(CadastroController());
-  Dio dio = Dio();
+  DioAPP.Dio dio = DioAPP.Dio();
 
-  void enviarEmail() async {
-    final String subject = 'Relatório de Ordem de Serviço';
-    final String body = 'Segue em anexo o relatório de Ordem de Serviço';
-    final String recipient =
-        'julianomoreira@gmail.com'; // replace with your email here
+  enviarEmail(String fileName) async {
+    var formData = DioAPP.FormData.fromMap({
+      "file": await DioAPP.MultipartFile.fromFile(fileName, filename: fileName),
+    });
 
-    dio.post("");
+    try {
+      var response = await dio.post(
+          "https://rayquaza-citta-server.onrender.com/send-email-files",
+          data: formData,
+          options: DioAPP.Options(headers: {
+            "Content-Type": "multipart/form-data",
+          }, responseType: DioAPP.ResponseType.json));
+    } catch (e) {
+      print("Erro response $e");
+    }
   }
 
   //!UTILS
@@ -40,6 +48,8 @@ class BulbassauroExcelController {
               'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
         ..setAttribute('download', '$fileName')
         ..click();
+
+      return fileName;
     } else {
       final String path = (await getApplicationSupportDirectory()).path;
       final String fileName =
@@ -47,6 +57,7 @@ class BulbassauroExcelController {
       final File file = File(fileName);
       await file.writeAsBytes(bytes, flush: true);
       OpenFile.open(fileName);
+      return fileName;
     }
   }
 
@@ -151,7 +162,14 @@ class BulbassauroExcelController {
     }
 
     // Save the Excel file
-    salvarExcelWeb(workbook, 'relatorio_info.xlsx');
+    var file = await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
+
+    try {
+      // Enviar email
+      await enviarEmail(file);
+    } catch (e) {
+      print("Erro ao enviar email: $e");
+    }
 
     // Show success message
     BulbassauroExcelController().showMessage("Excel Salvo!");
@@ -195,7 +213,14 @@ class BulbassauroExcelController {
     sheet.getRangeByName('A2:F20').cellStyle.hAlign = HAlignType.center;
 
     // Save the Excel file
-    salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
+    var file = await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
+
+    try {
+      // Enviar email
+      await enviarEmail(file);
+    } catch (e) {
+      print("Erro ao enviar email: $e");
+    }
 
     // Show success message
     BulbassauroExcelController().showMessage("Excel Salvo!");

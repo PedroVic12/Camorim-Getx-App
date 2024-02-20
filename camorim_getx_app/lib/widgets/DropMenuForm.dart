@@ -1,7 +1,5 @@
-import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
-import 'package:camorim_getx_app/widgets/customText.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:camorim_getx_app/widgets/customText.dart';
 
 class DropMenuForm extends StatefulWidget {
   final TextEditingController textController;
@@ -9,10 +7,10 @@ class DropMenuForm extends StatefulWidget {
   final List<String> options;
 
   const DropMenuForm({
+    Key? key,
     required this.textController,
     required this.labelText,
     required this.options,
-    Key? key,
   }) : super(key: key);
 
   @override
@@ -20,92 +18,124 @@ class DropMenuForm extends StatefulWidget {
 }
 
 class _DropMenuFormState extends State<DropMenuForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String selectedValue = "";
+  @override
+  void initState() {
+    super.initState();
+    // Adiciona um ouvinte ao textController para reagir a mudanças.
+    widget.textController.addListener(_updateSelectedValueFromController);
+  }
+
+  @override
+  void dispose() {
+    // Remove o ouvinte quando o widget for desmontado para evitar vazamentos de memória.
+    widget.textController.removeListener(_updateSelectedValueFromController);
+    super.dispose();
+  }
+
+  // Atualiza o selectedValue baseado no valor atual do textController.
+  void _updateSelectedValueFromController() {
+    if (selectedValue != widget.textController.text) {
+      setState(() {
+        selectedValue = widget.textController.text;
+      });
+    }
+  }
 
   Future<void> _showOptionsDialog() async {
-    await showDialog<String>(
+    final selected = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
-        title: const Column(children: [
-          Divider(),
-          CustomText(
-            text: "Selecione uma Opção: ",
-            size: 20,
-            color: Colors.blue,
-          ),
-          Divider()
-        ]),
+        title: const Text("Selecione uma Opção:"),
         children: widget.options.map((String option) {
           return SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, option);
-              },
-              child: CustomText(text: option));
+            onPressed: () => Navigator.pop(context, option),
+            child: Text(option),
+          );
         }).toList(),
       ),
-    ).then((selectedValue) {
-      if (selectedValue != null && selectedValue.isNotEmpty) {
-        setState(() {
-          widget.textController.text = selectedValue;
-        });
-      }
-    });
+    );
+
+    if (selected != null) {
+      setState(() {
+        selectedValue = selected;
+        widget.textController.text = selected;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: caixaTextoAutoComplete(),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Autocomplete<String>(
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  return widget.options.where((String option) => option
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase()));
+                },
+                onSelected: (String selection) {
+                  setState(() {
+                    selectedValue = selection;
+                    widget.textController.text = selection;
+                  });
+                },
+                fieldViewBuilder: (BuildContext context,
+                    TextEditingController fieldTextEditingController,
+                    FocusNode fieldFocusNode,
+                    VoidCallback onFieldSubmitted) {
+                  // Synchronize the field controller with the state's text controller on rebuild
+                  fieldTextEditingController.text = selectedValue;
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: fieldTextEditingController,
+                      focusNode: fieldFocusNode,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.purple[50],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        label: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 12.0), // Seu valor de padding
+                          child: Text(
+                            widget.labelText,
+                            style: const TextStyle(
+                              color: Colors.purple,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: (10.0), horizontal: 10.0),
+                      ),
+                    ),
+                  );
+                },
               ),
-              InkWell(
-                onTap: _showOptionsDialog,
-                child: const CircleAvatar(
-                  backgroundColor: Colors.indigo,
-                  child: Icon(
-                    Icons.arrow_circle_down,
-                    color: Colors.black,
-                  ),
+            ),
+            InkWell(
+              onTap: _showOptionsDialog,
+              child: const CircleAvatar(
+                backgroundColor: Colors.indigo,
+                child: Icon(
+                  Icons.arrow_circle_down,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(width: 12),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget caixaTextoAutoComplete() {
-    return Autocomplete<String>(
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text.isEmpty) {
-          return const Iterable<String>.empty();
-        }
-        return widget.options.where((option) =>
-            option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-      },
-      onSelected: (String selectedOption) {
-        setState(() {
-          widget.textController.text =
-              selectedOption; // Atualiza o campo de texto
-        });
-      },
-      fieldViewBuilder:
-          (context, textEditingController, focusNode, onFieldSubmitted) {
-        return CaixaDeTexto(
-          controller: widget
-              .textController, // Assegura que o controller seja compartilhado
-          focusNode: focusNode,
-          labelText: widget.labelText,
-          // Outros parâmetros necessários para CaixaDeTexto
-        );
-      },
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/widgets/datetime_picker.dart';
 import 'package:camorim_getx_app/widgets/BotaoWidget.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
@@ -14,6 +15,10 @@ class FormsListRelatorioOS extends StatelessWidget {
   FormsListRelatorioOS({super.key});
 
   final CadastroController relatorio_controller = Get.put(CadastroController());
+  void _handleIntervalSelected(DateTime start, DateTime end) {
+    // Aqui você pode usar o intervalo de horário selecionado, por exemplo:
+    print('Intervalo selecionado: de $start até $end');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,9 +257,15 @@ class FormsListRelatorioOS extends StatelessWidget {
               ),
               Expanded(
                 child: CaixaDeTexto(
-                    controller: relatorio_controller.horarios,
-                    labelText: "Horários",
-                    onTap: () {}),
+                  onTap: () {},
+                  controller: relatorio_controller.horarios,
+                  labelText: "Horários",
+                ),
+              ),
+              Expanded(
+                child: DateTimeIntervalPickerWidget(
+                  onIntervalSelected: _handleIntervalSelected,
+                ),
               ),
             ],
           ),

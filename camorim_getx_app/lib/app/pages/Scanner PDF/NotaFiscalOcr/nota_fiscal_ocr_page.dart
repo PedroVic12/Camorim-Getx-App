@@ -240,14 +240,14 @@ class _NotaFiscalOcrPageState extends State<NotaFiscalOcrPage> {
                   labelText: "Data",
                   controller: nota_fiscal_controller.dataController),
               CaixaDeTexto(
+                  labelText: "Total",
+                  controller: nota_fiscal_controller.totalController),
+              CaixaDeTexto(
                   labelText: "Local",
                   controller: nota_fiscal_controller.localController),
               CaixaDeTexto(
                   labelText: "Produtos",
                   controller: nota_fiscal_controller.produtosController),
-              CaixaDeTexto(
-                  labelText: "Total",
-                  controller: nota_fiscal_controller.totalController),
             ],
           ),
 
