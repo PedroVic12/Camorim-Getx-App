@@ -51,8 +51,7 @@ class PdfViewScreen extends StatelessWidget {
             child: Text("Gerar PDF")),
         Container(
           height: 600,
-          child: SfPdfViewer.asset(
-              "./assets/RELAToRIO_ORDEMSERVICO.pdf"),
+          child: SfPdfViewer.asset("./assets/RELAToRIO_ORDEMSERVICO.pdf"),
         ),
         Obx(() => TableCustom(
               columns: const [

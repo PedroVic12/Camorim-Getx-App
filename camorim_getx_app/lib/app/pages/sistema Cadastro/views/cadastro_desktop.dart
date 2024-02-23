@@ -8,6 +8,7 @@ import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/sho
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/consulta_dadosPage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/forms_list.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/widgets/PdfLoaderWidget.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/FabMenuButton.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,7 +52,10 @@ class SistemaCadastroDesktop extends StatelessWidget {
                   child: ShowTableDadosCadastrados(),
                 ); // Terceira página
               } else if (navController.currentPageIndex.value == 3) {
-                return PdfViewScreen();
+                final downloader = PdfDownloader();
+                return PdfDownloadPage(
+                  downloader: downloader,
+                );
               } else if (navController.currentPageIndex.value == 4) {
                 return DataBaseRelatorioConsultaPage();
               } else {
@@ -66,7 +70,7 @@ class SistemaCadastroDesktop extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FabMenuButton(),
+      floatingActionButton: ThreeFloatingButtons(),
     );
   }
 
@@ -87,6 +91,10 @@ class SistemaCadastroDesktop extends StatelessWidget {
             child: Column(
               children: [
                 const Text('Setor de Manutenção e Engenharia'),
+                CircleAvatar(
+                  radius: 30,
+                  //backgroundImage: const AssetImage('images/camorim_logo.png'),
+                )
               ],
             ),
           ),
