@@ -7,6 +7,7 @@ import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
 import 'package:camorim_getx_app/widgets/DropdownWidget.dart';
 import 'package:camorim_getx_app/widgets/RadioButtonGroup.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -28,6 +29,7 @@ class FormsListRelatorioOS extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.vertical,
         children: [
+          cardinfo("ITENS OBRIGATORIOS"),
           Row(
             children: [
               Expanded(
@@ -250,63 +252,74 @@ class FormsListRelatorioOS extends StatelessWidget {
                   nivelSelecionado: relatorio_controller.optionSelected,
                 ),
               ),
-              Expanded(
-                child: CaixaDeTexto(
-                    controller: relatorio_controller.dataConclusao,
-                    labelText: 'DATA CONCLUSÃO'),
-              ),
-              Expanded(
-                child: CaixaDeTexto(
-                  onTap: () {},
-                  controller: relatorio_controller.horarios,
-                  labelText: "Horários",
-                ),
-              ),
-              Expanded(
-                child: DateTimeIntervalPickerWidget(
-                  onIntervalSelected: _handleIntervalSelected,
-                ),
-              ),
             ],
+          ),
+          Expanded(
+            child: CaixaDeTexto(
+                controller: relatorio_controller.dataConclusao,
+                labelText: 'DATA CONCLUSÃO'),
           ),
           CaixaDeTexto(
               controller: relatorio_controller.obs, labelText: 'OBSERVAÇÕES'),
+          cardinfo("Itens Opcionais"),
+          Expanded(
+            child: TimeRangePickerWidget(
+              onIntervalSelected: (TimeOfDay start, TimeOfDay end) {
+                TimeOfDay roomBooked = TimeOfDay.fromDateTime(DateTime.parse(
+                    '2021-10-10 ${start.hour}:${start.minute}:00Z'));
+
+                print('Intervalo selecionado: de $start até $end');
+                relatorio_controller.horarios.text = roomBooked.toString();
+              },
+            ),
+          ),
+          Expanded(
+            child: CaixaDeTexto(
+              onTap: () {},
+              controller: relatorio_controller.horarios,
+              labelText: "Horários",
+            ),
+          ),
           inserirFotoOuArquivo(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              BotaoPadrao(
-                  on_pressed: () {
-                    relatorio_controller.salvarDadosCadastradosRelatorio(
-                      context,
-                    );
-                    relatorio_controller.descFalha.clear();
-                    relatorio_controller.ACAOTEXT.clear();
-                    relatorio_controller.obs.clear();
-                    relatorio_controller.EQUIPAMENTO_TEXT.clear();
-                  },
-                  color: Colors.blue,
-                  text: 'Adicionar mais dados'),
-              BotaoPadrao(
-                  on_pressed: () {
-                    relatorio_controller.salvarDadosCadastradosRelatorio(
-                      context,
-                    );
-                    relatorio_controller.resetLabels();
-                  },
-                  color: Colors.green,
-                  text: 'Salvar'),
-              BotaoPadrao(
-                  on_pressed: () {
-                    relatorio_controller.resetLabels();
-                  },
-                  color: Colors.red,
-                  text: 'Limpar')
-            ],
-          )
+          btnsRows(context)
         ],
       ),
+    );
+  }
+
+  Widget btnsRows(context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        BotaoPadrao(
+            on_pressed: () {
+              relatorio_controller.salvarDadosCadastradosRelatorio(
+                context,
+              );
+              relatorio_controller.descFalha.clear();
+              relatorio_controller.ACAOTEXT.clear();
+              relatorio_controller.obs.clear();
+              relatorio_controller.EQUIPAMENTO_TEXT.clear();
+            },
+            color: Colors.blue,
+            text: 'Adicionar mais dados'),
+        BotaoPadrao(
+            on_pressed: () {
+              relatorio_controller.salvarDadosCadastradosRelatorio(
+                context,
+              );
+              relatorio_controller.resetLabels();
+            },
+            color: Colors.green,
+            text: 'Salvar'),
+        BotaoPadrao(
+            on_pressed: () {
+              relatorio_controller.resetLabels();
+            },
+            color: Colors.red,
+            text: 'Limpar')
+      ],
     );
   }
 
@@ -336,6 +349,24 @@ class FormsListRelatorioOS extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget cardinfo(txt) {
+    return Card(
+      color: Colors.redAccent.shade400,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            CustomText(
+              text: txt,
+              size: 20,
+              color: Colors.white,
+            )
+          ],
+        ),
       ),
     );
   }

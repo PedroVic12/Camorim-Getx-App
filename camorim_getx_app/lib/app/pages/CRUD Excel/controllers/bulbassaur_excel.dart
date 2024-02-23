@@ -3,38 +3,48 @@ import 'dart:io';
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
-import 'package:dio/dio.dart' as DioAPP;
+import 'package:dio/dio.dart' as DioApp;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
-import 'package:universal_html/html.dart' show AnchorElement;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart' as html;
 
 import '../../Scanner PDF/controller/nota_fiscal_controller.dart';
 
 class BulbassauroExcelController {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
   final CadastroController relatorio_controller = Get.put(CadastroController());
-  DioAPP.Dio dio = DioAPP.Dio();
+  DioApp.Dio dio = DioApp.Dio();
 
-  enviarEmail(String fileName) async {
-    var formData = DioAPP.FormData.fromMap({
-      "file": await DioAPP.MultipartFile.fromFile(fileName, filename: fileName),
-    });
-
+  Future<void> enviarEmail(List<int> fileBytes, String fileName) async {
     try {
-      var response = await dio.post(
-          "https://rayquaza-citta-server.onrender.com/send-email-files",
-          data: formData,
-          options: DioAPP.Options(headers: {
-            "Content-Type": "multipart/form-data",
-          }, responseType: DioAPP.ResponseType.json));
+      // Construct FormData manually
+      final DioApp.FormData formData = DioApp.FormData.fromMap({
+        'arquivo':
+            DioApp.MultipartFile.fromBytes(fileBytes, filename: fileName),
+      });
+
+      // Send the request using Dio
+      final response = await dio.post(
+        'https://rayquaza-citta-server.onrender.com/enviar-email-arquivos',
+        data: formData,
+        options: DioApp.Options(
+          headers: {'Content-Type': 'multipart/form-data'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("Email enviado com sucesso!");
+      } else {
+        print("Falha ao enviar email: ${response.statusCode}");
+      }
     } catch (e) {
-      print("Erro response $e");
+      print("Erro: $e");
     }
   }
 
@@ -43,21 +53,21 @@ class BulbassauroExcelController {
     final List<int> bytes = wb.saveAsStream();
     wb.dispose();
     if (kIsWeb) {
-      AnchorElement(
-          href:
-              'data:application/octet-stream;charset=utf-16le;base64,${base64.encode(bytes)}')
-        ..setAttribute('download', '$fileName')
+      final blob = html.Blob([bytes]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.AnchorElement(href: url)
+        ..setAttribute("download", fileName)
         ..click();
 
-      return fileName;
+      html.Url.revokeObjectUrl(url);
+      return bytes.toList();
     } else {
       final String path = (await getApplicationSupportDirectory()).path;
-      final String fileName =
-          Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
-      final File file = File(fileName);
+      final String filePath = '$path/$fileName';
+      final File file = File(filePath);
       await file.writeAsBytes(bytes, flush: true);
-      OpenFile.open(fileName);
-      return fileName;
+      OpenFile.open(filePath);
+      return await file.readAsBytes();
     }
   }
 
@@ -162,17 +172,39 @@ class BulbassauroExcelController {
     }
 
     // Save the Excel file
-    var file = await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
+    final List<int> fileBytes =
+        await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
 
     try {
       // Enviar email
-      await enviarEmail(file);
+      await enviarEmail(fileBytes, 'notas_fiscais.xlsx');
     } catch (e) {
       print("Erro ao enviar email: $e");
     }
 
     // Show success message
     BulbassauroExcelController().showMessage("Excel Salvo!");
+  }
+
+  getDadosToPdf() {
+    var dadosCadastrados = {};
+    for (final data in relatorio_controller.array_cadastro) {
+      dadosCadastrados["BARCO"] = data.rebocador;
+      dadosCadastrados["DATA_INICIO"] = data.dataInicial;
+      dadosCadastrados["DESC_FALHA"] = data.descFalha;
+      dadosCadastrados["EQUIPAMENTO"] = data.equipamento;
+      dadosCadastrados["MANUTENCAO"] = data.tipoManutencao;
+      dadosCadastrados["SERV_EXECUTADO"] = data.servicoExecutado;
+      dadosCadastrados["DATA_EXEC"] = data.dataInicial;
+      dadosCadastrados["RESPONSAVEL"] = data.funcionario.join(', ');
+      dadosCadastrados["OFICINA"] = data.oficina;
+      dadosCadastrados["FINALIZADO"] = data.status_finalizado.toString();
+      dadosCadastrados["DATA_CONCLUSAO"] = data.dataFinal.toString();
+      dadosCadastrados["FORA_OPERAÇÃO "] = "NÃO";
+      dadosCadastrados["OBS"] = data.obs;
+    }
+
+    return dadosCadastrados;
   }
 
   void salvarDadosNotaFiscal() async {
@@ -213,11 +245,11 @@ class BulbassauroExcelController {
     sheet.getRangeByName('A2:F20').cellStyle.hAlign = HAlignType.center;
 
     // Save the Excel file
-    var file = await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
-
+    final List<int> fileBytes =
+        await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
     try {
       // Enviar email
-      await enviarEmail(file);
+      await enviarEmail(fileBytes, 'Output.xlsx');
     } catch (e) {
       print("Erro ao enviar email: $e");
     }

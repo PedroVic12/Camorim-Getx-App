@@ -13,61 +13,25 @@ class ConsultaDash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CadastroController relatorio_controller =
-        Get.find<CadastroController>();
-
     return ListView(
-      scrollDirection: Axis.vertical,
       children: [
         AspectRatio(
-          aspectRatio: 3,
+          aspectRatio: 2,
           child: SizedBox(
             width: double.infinity,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4),
+                  crossAxisCount: 3),
               itemBuilder: (context, index) {
-                return InfoCard();
+                return InkWell(
+                  child: InfoCard(),
+                  onTap: () {},
+                );
               },
             ),
           ),
         ),
-        ConsultaDadosOS(),
-        Obx(() {
-          final model = relatorio_controller.currentModel.value;
-          final models = relatorio_controller.array_cadastro;
-          if (model != null) {
-            return Column(
-              children: models
-                  .map((element) => Card(
-                      color: Colors.lightBlue,
-                      child: ListTile(
-                        title: Text(element.equipamento),
-                        subtitle: Column(
-                          children: [
-                            Text(
-                              element.rebocador,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              element.descFalha,
-                              style: const TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            models.remove(element);
-                          },
-                        ),
-                      )))
-                  .toList(),
-            );
-          } else {
-            return const Text('Sem dados cadastrados :(');
-          }
-        }),
+        //ConsultaDadosOS(),
       ],
     );
   }

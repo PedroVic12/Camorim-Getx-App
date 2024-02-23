@@ -12,7 +12,8 @@ class ShowTableDadosCadastrados extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Column(
+    return Obx(() => ListView(
+          scrollDirection: Axis.vertical,
           children: [
             // Tabela com os dados cadastrados
             CustomText(

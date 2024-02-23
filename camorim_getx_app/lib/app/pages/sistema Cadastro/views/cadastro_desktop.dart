@@ -3,14 +3,17 @@
 import 'package:camorim_getx_app/app/controllers/PDF-Controller/relatorio_os_template.dart';
 import 'package:camorim_getx_app/app/controllers/imagem%20e%20pdf/pegando_arquivo_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/dataBaseRelatorioPage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/showTableCadastro.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/consulta_dadosPage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/forms_list.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
+import 'package:camorim_getx_app/widgets/FabMenuButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../CRUD Excel/controllers/excel_controller.dart';
 
@@ -49,6 +52,8 @@ class SistemaCadastroDesktop extends StatelessWidget {
                 ); // Terceira página
               } else if (navController.currentPageIndex.value == 3) {
                 return PdfViewScreen();
+              } else if (navController.currentPageIndex.value == 4) {
+                return DataBaseRelatorioConsultaPage();
               } else {
                 return Container(
                   color: Colors.blueGrey.shade300,
@@ -61,6 +66,7 @@ class SistemaCadastroDesktop extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FabMenuButton(),
     );
   }
 
@@ -102,12 +108,15 @@ class SistemaCadastroDesktop extends StatelessWidget {
                   break;
                 case 2:
                   title = "Relatório";
+
+                case 4:
+                  title = "repository";
                   break;
               }
               return ListTile(
                 trailing: Icon(Icons.arrow_forward_ios),
                 title: Text(
-                  'Página $index - $title',
+                  'Página ${index + 1} - $title',
                   style: TextStyle(
                     // Se o índice da página atual for igual ao índice do item, use vermelho; caso contrário, preto.
                     color: navController.currentPageIndex.value == index
@@ -177,21 +186,50 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.lightBlue,
-      child: ListTile(
-        title: Text('Equipamento'),
-        subtitle: Column(
-          children: [
-            Text('Rebocador'),
-            Text('Ação'),
-          ],
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () {},
-        ),
-      ),
+    final controller = Get.put(CadastroController());
+    return Obx(
+      () {
+        return ListView.builder(
+          //shrinkWrap: true, // Garante que o ListView não expanda infinitamente
+          itemCount: controller.relatorio_array.length,
+          itemBuilder: (context, index) {
+            final object = controller.relatorio_array[index];
+            //String formattedDate =                DateFormat('dd/MM/yyyy').format(object.dataInicial as DateTime);
+            if (controller.relatorio_array.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (controller.relatorio_array.length == 0) {
+              return const Center(
+                child: Text("Nenhum dado encontrado"),
+              );
+            }
+            return Card(
+              color: Colors.lightBlue,
+              child: ListTile(
+                title: Row(
+                  children: [
+                    Text(object.rebocador),
+                    Text(object.dataInicial),
+                  ],
+                ),
+                subtitle: Column(
+                  children: [
+                    Text(object.equipamento),
+                    Text(object.oficina),
+                    Text(object.descFalha),
+                    Text(object.status_finalizado.toString())
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {},
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

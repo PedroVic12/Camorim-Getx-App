@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as DioApp;
+import 'package:http/http.dart' as http;
 
 class CadastroController extends GetxController {
   final NivelRepository nivelRepository = NivelRepository();
@@ -32,12 +36,44 @@ class CadastroController extends GetxController {
 
   // Modelo atual
   var currentModel = Rx<CadastroModel?>(null);
+  final relatorio_array = <RelatorioOrdemServico>[].obs;
+  DioApp.Dio dio = DioApp.Dio();
 
   @override
   void onInit() {
     super.onInit();
     niveis.assignAll(nivelRepository.retornaNiveis());
     opcoes.assignAll(opcoesRepository.retornarOpcoes());
+    getDataBase();
+  }
+
+  Future<void> getDataBase() async {
+    try {
+      final resposta = await http
+          .get(Uri.parse("https://docker-raichu.onrender.com/repository-os"));
+
+      print(resposta.statusCode);
+
+      if (resposta.statusCode == 200) {
+        // Decodifica o JSON para uma lista de objetos
+        final List<dynamic> jsonData = jsonDecode(resposta.body)["data"];
+
+        final decodedReponse = utf8.decode(resposta.bodyBytes);
+        final dados = jsonDecode(decodedReponse);
+
+        print("\n\nDEBUG = ${dados["data"][0]}");
+        print(dados["data"].length);
+
+        // Mapeia a lista de objetos para uma lista de objetos do tipo RelatorioOrdemServico
+        relatorio_array.value = (dados["data"] as List)
+            .map((item) => RelatorioOrdemServico.fromJson(item ?? {}))
+            .toList();
+      }
+      update();
+    } catch (error) {
+      print("Erro ao carregar os dados ${error.toString()}");
+      Get.snackbar('Erro', error.toString());
+    }
   }
 
   void salvarDadosCadastradosRelatorio(context) async {
@@ -46,6 +82,10 @@ class CadastroController extends GetxController {
       gerarRelatorioPDF();
       enviarEmail();
       salvarBancoDeDados();
+      Get.snackbar('Sucesso', "Cadastro Feito!",
+          snackPosition: SnackPosition.TOP,
+          colorText: Colors.white,
+          backgroundColor: Colors.green);
     } on Exception catch (e) {
       print(e);
     }
@@ -63,20 +103,17 @@ class CadastroController extends GetxController {
 
   void salvar(BuildContext context) {
     if (EQUIPAMENTO_TEXT.text.isEmpty ||
-        nomeRebocadorText.text.isEmpty ||
         dataAbertura.text.isEmpty ||
         descFalha.text.isEmpty ||
         oficina.text.isEmpty) {
-      Get.snackbar(
-        "Erro",
-        "Todos os campos devem ser preenchidos",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Erro", "Todos os campos devem ser preenchidos",
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
       return;
     }
 
     final model = RelatorioOrdemServico(
-        rebocador: nomeRebocadorText.text,
+        numeroOS: '1',
+        rebocador: nomeRebocadorText.text.toString(),
         dataInicial: dataAbertura.text,
         descFalha: descFalha.text,
         equipamento: EQUIPAMENTO_TEXT.text,
@@ -86,16 +123,10 @@ class CadastroController extends GetxController {
         oficina: oficina.text,
         obs: obs.text,
         status_finalizado: nivelSelecionado,
+        foraOperacao: optionSelected,
         dataFinal: dataConclusao.text);
 
     array_cadastro.add(model);
-
-    // Show a success message,
-    Get.snackbar(
-      "Sucesso",
-      "Cadastro salvo com sucesso",
-      snackPosition: SnackPosition.BOTTOM,
-    );
   }
 
   void resetLabels() {
@@ -117,6 +148,7 @@ class CadastroController extends GetxController {
 }
 
 class RelatorioOrdemServico {
+  String numeroOS;
   String rebocador;
   String dataInicial;
   String descFalha;
@@ -127,9 +159,11 @@ class RelatorioOrdemServico {
   List<String> funcionario;
   String oficina;
   String obs;
+  RxString foraOperacao;
   RxString status_finalizado;
 
   RelatorioOrdemServico({
+    required this.numeroOS,
     required this.rebocador,
     required this.dataInicial,
     required this.descFalha,
@@ -140,9 +174,30 @@ class RelatorioOrdemServico {
     required this.oficina,
     required this.obs,
     required this.status_finalizado,
+    required this.foraOperacao,
     required this.dataFinal,
   });
 
+  factory RelatorioOrdemServico.fromJson(Map<String, dynamic> json) {
+    return RelatorioOrdemServico(
+      numeroOS: json['N_OS'].toString(),
+      rebocador: json['BARCO'].toString(),
+      dataInicial: json['DATA_INICIO'].toString(),
+      descFalha: json['DESC_FALHA'].toString(),
+      equipamento: json['EQUIPAMENTO'].toString(),
+      tipoManutencao: json['MANUTENCAO'].toString(),
+      servicoExecutado: json['SERV_EXECUTADO'].toString(),
+      funcionario:
+          json['RESPONSAVEL'] != null ? [json['RESPONSAVEL'].toString()] : [],
+      oficina: json['OFICINA'].toString(),
+      status_finalizado: RxString(json['FINALIZADO']),
+      dataFinal: json['DATA_CONCLUSAO'] != null
+          ? json['DATA_CONCLUSAO'].toString()
+          : null,
+      foraOperacao: RxString(json['FORA_OPERACAO']),
+      obs: json['OBS'].toString(),
+    );
+  }
   Map<String, dynamic> toMap() => {
         'rebocador': rebocador,
         'dataInicial': dataInicial,
