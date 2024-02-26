@@ -50,7 +50,9 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
               // Implemente a ação do primeiro botão aqui
             },
             heroTag: null,
-            child: const Icon(Icons.star),
+            child: Row(
+              children: [Icon(Icons.star), Text("pdf")],
+            ),
           ),
         const SizedBox(height: 8),
         if (_isOpen)

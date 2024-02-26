@@ -41,7 +41,6 @@ class SistemaCadastroPage extends StatelessWidget {
       body: ListView(
         scrollDirection: Axis.vertical,
         children: [
-          PegandoArquivosPage(),
           FormsListRelatorioOS(),
           //showTableDadosCadastrados(context)
         ],

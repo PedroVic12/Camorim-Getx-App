@@ -6,6 +6,7 @@ import 'package:camorim_getx_app/app/pages/Scanner%20PDF/ScannerOcrImgPdfPage.da
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/views/widget_extrairTexto.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_desktop.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/mobile_sistema_cadastro.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/responsive_layoutPage.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/TextLabel.dart';
@@ -140,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   if (index == 0) {
                     Get.to((ResponsiveLayout(
-                        mobileScaffold: SistemaCadastroPage(),
+                        mobileScaffold: SistemaCadastroMobile(),
                         desktopScaffold: SistemaCadastroDesktop())));
                   }
 

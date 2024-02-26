@@ -3,6 +3,7 @@
 import 'package:camorim_getx_app/app/controllers/PDF-Controller/relatorio_os_template.dart';
 import 'package:camorim_getx_app/app/controllers/imagem%20e%20pdf/pegando_arquivo_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/controller/pdf_loader_controller.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/dataBaseRelatorioPage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/showTableCadastro.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_page.dart';
