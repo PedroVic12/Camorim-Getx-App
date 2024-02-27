@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:camorim_getx_app/widgets/button_async.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
@@ -104,9 +105,9 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                           true; // Define isLoading como true para mostrar o CircularProgressIndicator
                     });
 
-                    //!função
+                    //!função aqui
                     var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-                    showPdfFile(fileBytes);
+                    showPdfCarousel(fileBytes, dataset);
 
                     setState(() {
                       isLoading =
@@ -151,7 +152,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
         ));
   }
 
-  Future showPdfFile(url) async {
+  Future showPdfFile(url, dataset) async {
     return Get.dialog(
       Dialog(
         child: Container(
@@ -178,9 +179,73 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                   ElevatedButton(
                     onPressed: () async {
                       var data = getDateTime(dataset);
-                      print("file = $data");
-                      await bulbassauro.enviarEmail(url, "relatorio_os.pdf");
-                      bulbassauro.showMessage("Email enviado");
+                      await bulbassauro.enviarEmail(url, data);
+                      bulbassauro.showMessage("Arquivo: $data, Email enviado");
+                      Get.back();
+                    },
+                    child: Text('Enviar Email'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> showPdfCarousel(
+      List<Uint8List> pdfBytesList, Map<String, dynamic> dataset) async {
+    await Get.dialog(
+      Dialog(
+        child: Container(
+          height: 900,
+          width: 600,
+          child: Column(
+            children: [
+              CustomText(text: "Relatório OS Digital gerado"),
+              Expanded(
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    aspectRatio: 16 / 9,
+                    viewportFraction: 0.8,
+                    initialPage: 0,
+                    enableInfiniteScroll: false,
+                    reverse: false,
+                    autoPlay: false,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: true,
+                    scrollDirection: Axis.horizontal,
+                  ),
+                  items: pdfBytesList.map((bytes) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return SfPdfViewer.memory(
+                          bytes,
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text('Fechar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      var data = getDateTime(dataset);
+                      // Implement your logic to send email for each PDF
+                      bulbassauro
+                          .showMessage("Arquivos enviados por email: $data");
                       Get.back();
                     },
                     child: Text('Enviar Email'),
@@ -235,11 +300,8 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
       onPressed: () async {
         var newDataset = salvarDadosRelatorioOS();
         print(newDataset);
-        print("\n");
-        print(dataset);
-
         var fileBytes = await bulbassauro.gerarOsDigital(newDataset);
-        showPdfFile(fileBytes);
+        showPdfFile(fileBytes, newDataset);
       },
       child: const Text('Gerar Relatório Digital'),
     );

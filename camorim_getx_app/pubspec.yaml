@@ -63,6 +63,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   syncfusion_flutter_pdfviewer: ^22.2.12
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:
