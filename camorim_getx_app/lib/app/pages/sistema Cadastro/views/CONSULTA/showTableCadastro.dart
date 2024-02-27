@@ -28,6 +28,14 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
 
   var dadosCadastrados = {};
 
+  @override
+  void initState() {
+    super.initState();
+    var statusServer =
+        bulbassauro.dio.get("https://rayquaza-citta-server.onrender.com/");
+    print(statusServer);
+  }
+
   var dataset = {
     "dados": {
       "EMBARCAÇÃO": "BALSA CAMORIM",
@@ -131,11 +139,21 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                 ElevatedButton(
                   onPressed: () async {
                     //relatorio_controller.salvar(context);
-                    List<int> fileBytesExcel =
-                        await bulbassauro.salvarDadosRelatorioOS();
                     var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-                    await bulbassauro.sendEmailFiles(fileBytes, fileBytesExcel,
-                        'Output.pdf', 'dados_cadastrados.xlsx');
+                    //showPdfFile(fileBytes, dataset);
+
+                    try {
+                      List<int> fileBytesExcel =
+                          await bulbassauro.salvarDadosRelatorioOS();
+
+                      await bulbassauro.sendEmailFiles(
+                          fileBytes,
+                          fileBytesExcel,
+                          'Output.pdf',
+                          'dados_cadastrados.xlsx');
+                    } catch (e) {
+                      print("Nao enviado: $e");
+                    }
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.indigo),
@@ -196,14 +214,15 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
 
   Future<void> showPdfCarousel(
       List<Uint8List> pdfBytesList, Map<String, dynamic> dataset) async {
-    await Get.dialog(
+    print("Numero de Documetnos gerados: ${pdfBytesList.length}");
+    return Get.dialog(
       Dialog(
         child: Container(
           height: 900,
           width: 600,
           child: Column(
             children: [
-              CustomText(text: "Relatório OS Digital gerado"),
+              CustomText(text: "Relatorio OS  Digtal gerado "),
               Expanded(
                 child: CarouselSlider(
                   options: CarouselOptions(
@@ -261,11 +280,11 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
 
   Widget gerarRelatorioDigital() {
     salvarDadosRelatorioOS() {
-      print(relatorio_controller.array_cadastro.length);
-
       if (relatorio_controller.array_cadastro.isEmpty) {
         return Text("Nenhum dado cadastrado");
       } else {
+        print(relatorio_controller.array_cadastro.length);
+        print("\n\nDatabase = ${relatorio_controller.array_cadastro}");
         for (var data in relatorio_controller.array_cadastro) {
           // Criar um novo mapa de dados para este item
           var dadosCadastrados = {
@@ -296,14 +315,22 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.green),
+        textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white)),
       ),
       onPressed: () async {
-        var newDataset = salvarDadosRelatorioOS();
-        print(newDataset);
-        var fileBytes = await bulbassauro.gerarOsDigital(newDataset);
-        showPdfFile(fileBytes, newDataset);
+        List<Uint8List> arrayDataset = [];
+
+        for (var i = 0; i < relatorio_controller.array_cadastro.length; i++) {
+          var newDataset = salvarDadosRelatorioOS();
+
+          var fileBytes = await bulbassauro.gerarOsDigital(newDataset);
+          arrayDataset.add(fileBytes);
+          //showPdfFile(fileBytes, newDataset);
+        }
+        //todo gerar um showPdfCarousel para cada OS gerada, adcioanr nados incrementar dados no mesmo documento
+        showPdfCarousel(arrayDataset, dataset);
       },
-      child: const Text('Gerar Relatório Digital'),
+      child: const Text('Gerar OS Digital'),
     );
   }
 

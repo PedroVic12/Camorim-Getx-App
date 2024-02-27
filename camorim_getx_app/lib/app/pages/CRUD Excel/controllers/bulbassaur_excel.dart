@@ -22,25 +22,35 @@ class BulbassauroExcelController {
   final CadastroController relatorio_controller = Get.put(CadastroController());
   DioApp.Dio dio = DioApp.Dio();
 
-  Future<void> sendEmailFiles(List<int> fileBytesPdf, List<int> fileBytesExcel,
-      String fileNamePdf, String fileNameExcel) async {
+  Future<void> sendEmailFiles(
+    List<int> fileBytesPdf,
+    List<int> fileBytesExcel,
+    String fileNamePdf,
+    String fileNameExcel,
+  ) async {
     try {
-      // Construir FormData manualmente com os dois arquivos
-      final formData = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'https://rayquaza-citta-server.onrender.com/enviar-email-arquivos'));
-      formData.files.add(http.MultipartFile.fromBytes(
-          'arquivo_pdf', fileBytesPdf,
-          filename: fileNamePdf));
-      formData.files.add(http.MultipartFile.fromBytes(
-          'arquivo_excel', fileBytesExcel,
-          filename: fileNameExcel));
+      // Construir FormData com os dois arquivos
+      DioApp.FormData formData = DioApp.FormData.fromMap({
+        'arquivo_pdf': DioApp.MultipartFile.fromBytes(
+          fileBytesPdf,
+          //filename: fileNamePdf,
+        ),
+        'arquivo_excel': DioApp.MultipartFile.fromBytes(
+          fileBytesExcel,
+          //filename: fileNameExcel,
+        ),
+      });
 
-      // Enviar a solicitação usando http.Client
-      final response = await http.Response.fromStream(await formData.send());
+      // Enviar a solicitação POST
+      DioApp.Response response = await dio.post(
+        'https://docker-raichu.onrender.com/enviar-email-arquivos',
+        data: formData,
+        //options: DioApp.Options(),
+      );
 
+      // Verificar o código de status da resposta
       if (response.statusCode == 200) {
+        print("Email enviado com sucesso!");
         showMessage("Email enviado!!!");
       } else {
         print("Falha ao enviar email: ${response.statusCode}");
@@ -87,10 +97,10 @@ class BulbassauroExcelController {
         var fileName =
             "${dataset["dados"]?["EMBARCAÇÃO"]} - ${dataset["dados"]?["EQUIPAMENTO"]} - ${formattedDate}.pdf";
 
-        print(fileName);
+        print("Arquivo ${fileName} gerado!");
 
         // Escrever os bytes do PDF no arquivo
-        final file = File("./$fileName");
+        //final file = File("./$fileName");
         //print("File = $file");
 
         return bytes;
@@ -250,10 +260,9 @@ class BulbassauroExcelController {
 
     // Save the Excel file
     final List<int> fileBytesExcel =
-        await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
+        await salvarExcelWeb(workbook, 'dados.xlsx');
 
     try {
-      //await enviarEmail(fileBytesExcel, 'notas_fiscais.xlsx');
       return fileBytesExcel;
     } catch (e) {
       print("Erro ao enviar email: $e");

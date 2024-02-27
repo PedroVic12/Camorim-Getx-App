@@ -1,8 +1,15 @@
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:camorim_getx_app/widgets/button_async.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
+import '../app/pages/CRUD Excel/controllers/bulbassaur_excel.dart';
 import '../app/pages/Scanner PDF/controller/nota_fiscal_controller.dart';
+import 'package:flutter/material.dart';
+
+import 'package:flutter/services.dart';
 
 class TableCustom extends StatelessWidget {
   final List<String> columns;

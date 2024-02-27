@@ -1,3 +1,4 @@
+import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:flutter/material.dart';
 
 class ButtonAsyncState extends StatefulWidget {
@@ -28,18 +29,20 @@ class _ButtonAsyncStateState extends State<ButtonAsyncState> {
           ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
+                const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
-                SizedBox(width: 10), // Espaçamento entre o ícone e o texto
-                Text(widget.text),
+                const SizedBox(
+                    width: 10), // Espaçamento entre o ícone e o texto
+                CustomText(text: widget.text, color: Colors.white, size: 16)
               ],
             )
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(widget.iconData),
-                SizedBox(width: 10), // Espaçamento entre o ícone e o texto
+                const SizedBox(
+                    width: 10), // Espaçamento entre o ícone e o texto
                 Text(widget.text),
               ],
             ),

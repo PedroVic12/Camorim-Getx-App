@@ -10,8 +10,11 @@ import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_pag
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/consulta_dadosPage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/forms_list.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/widgets/PdfLoaderWidget.dart';
+import 'package:camorim_getx_app/repository/views/table_database.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/FabMenuButton.dart';
+import 'package:camorim_getx_app/widgets/TableCustom.dart';
+import 'package:camorim_getx_app/widgets/table_excel_grid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,12 +56,10 @@ class SistemaCadastroDesktop extends StatelessWidget {
                   child: ShowTableDadosCadastrados(),
                 ); // Terceira página
               } else if (navController.currentPageIndex.value == 3) {
-                final downloader = PdfDownloader();
-                return PdfDownloadPage(
-                  downloader: downloader,
-                );
+                return DataView();
               } else if (navController.currentPageIndex.value == 4) {
-                return DataBaseRelatorioConsultaPage();
+                //return DataBaseRelatorioConsultaPage();
+                return EditableTable();
               } else {
                 return Container(
                   color: Colors.blueGrey.shade300,
@@ -117,6 +118,10 @@ class SistemaCadastroDesktop extends StatelessWidget {
                   break;
                 case 2:
                   title = "Relatório";
+                  break;
+                case 3:
+                  title = "Table DataBase";
+                  break;
 
                 case 4:
                   title = "repository";

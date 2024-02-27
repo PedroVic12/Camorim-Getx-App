@@ -1,4 +1,7 @@
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/excel_sample_crud.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:camorim_getx_app/widgets/TableCustom.dart';
+import 'package:camorim_getx_app/widgets/table_excel_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -76,6 +79,7 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
           FloatingActionButton(
             onPressed: () {
               // Implemente a ação do terceiro botão aqui
+              Get.to(EditableTable());
             },
             heroTag: null,
             child: const Icon(Icons.thumb_up),
