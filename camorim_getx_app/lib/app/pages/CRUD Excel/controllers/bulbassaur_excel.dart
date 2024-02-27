@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
@@ -21,6 +22,86 @@ class BulbassauroExcelController {
   final CadastroController relatorio_controller = Get.put(CadastroController());
   DioApp.Dio dio = DioApp.Dio();
 
+  Future<void> sendEmailFiles(List<int> fileBytesPdf, List<int> fileBytesExcel,
+      String fileNamePdf, String fileNameExcel) async {
+    try {
+      // Construir FormData manualmente com os dois arquivos
+      final formData = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              'https://rayquaza-citta-server.onrender.com/enviar-email-arquivos'));
+      formData.files.add(http.MultipartFile.fromBytes(
+          'arquivo_pdf', fileBytesPdf,
+          filename: fileNamePdf));
+      formData.files.add(http.MultipartFile.fromBytes(
+          'arquivo_excel', fileBytesExcel,
+          filename: fileNameExcel));
+
+      // Enviar a solicitação usando http.Client
+      final response = await http.Response.fromStream(await formData.send());
+
+      if (response.statusCode == 200) {
+        showMessage("Email enviado!!!");
+      } else {
+        print("Falha ao enviar email: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Erro: $e");
+    }
+  }
+
+  void saveBytesOnWeb(bytes, fileName) {
+    // Salvar o arquivo no disco
+    final blob = html.Blob([bytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..setAttribute("download", fileName)
+      ..click();
+
+    // Limpar a URL
+    html.Url.revokeObjectUrl(url);
+  }
+
+  gerarOsDigital(dataset) async {
+    try {
+      // Dados para enviar como JSON
+      Map<String, dynamic> requestData = dataset;
+
+      // Enviar solicitação POST para o servidor FastAPI
+      var response = await http.post(
+        Uri.parse('https://docker-raichu.onrender.com/gerar-pdf'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestData),
+      );
+
+      print('\nStatus code: ${response.statusCode}');
+
+      // Verificar se a solicitação foi bem-sucedida
+      if (response.statusCode == 200) {
+        // Converter a resposta em bytes
+        Uint8List bytes = response.bodyBytes;
+
+        var formattedDate =
+            dataset["dados"]?["DATA INICIO"]?.replaceAll("/", "_");
+
+        var fileName =
+            "${dataset["dados"]?["EMBARCAÇÃO"]} - ${dataset["dados"]?["EQUIPAMENTO"]} - ${formattedDate}.pdf";
+
+        print(fileName);
+
+        // Escrever os bytes do PDF no arquivo
+        final file = File("./$fileName");
+        //print("File = $file");
+
+        return bytes;
+      } else {
+        print('Erro ao baixar o PDF: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro: $e');
+    }
+  }
+
   Future<void> enviarEmail(List<int> fileBytes, String fileName) async {
     try {
       // Construct FormData manually
@@ -40,6 +121,7 @@ class BulbassauroExcelController {
 
       if (response.statusCode == 200) {
         print("Email enviado com sucesso!");
+        showMessage("Email enviado");
       } else {
         print("Falha ao enviar email: ${response.statusCode}");
       }
@@ -53,13 +135,7 @@ class BulbassauroExcelController {
     final List<int> bytes = wb.saveAsStream();
     wb.dispose();
     if (kIsWeb) {
-      final blob = html.Blob([bytes]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute("download", fileName)
-        ..click();
-
-      html.Url.revokeObjectUrl(url);
+      saveBytesOnWeb(bytes, fileName);
       return bytes.toList();
     } else {
       final String path = (await getApplicationSupportDirectory()).path;
@@ -80,7 +156,8 @@ class BulbassauroExcelController {
           backgroundColor: Colors.green);
     } catch (e) {
       // Adiciona Snackbar para notificar erro
-      Get.snackbar('Erro', 'Erro: $e', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Erro', 'Erro: $e',
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
     }
   }
 
@@ -124,7 +201,7 @@ class BulbassauroExcelController {
     workbook.dispose();
   }
 
-  void salvarDadosRelatorioOS() async {
+  salvarDadosRelatorioOS() async {
     final workbook = Workbook();
     final sheet = workbook.worksheets[0];
 
@@ -172,12 +249,12 @@ class BulbassauroExcelController {
     }
 
     // Save the Excel file
-    final List<int> fileBytes =
+    final List<int> fileBytesExcel =
         await salvarExcelWeb(workbook, 'notas_fiscais.xlsx');
 
     try {
-      // Enviar email
-      await enviarEmail(fileBytes, 'notas_fiscais.xlsx');
+      //await enviarEmail(fileBytesExcel, 'notas_fiscais.xlsx');
+      return fileBytesExcel;
     } catch (e) {
       print("Erro ao enviar email: $e");
     }

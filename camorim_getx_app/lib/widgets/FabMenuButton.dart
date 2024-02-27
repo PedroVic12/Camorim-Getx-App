@@ -1,4 +1,6 @@
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ThreeFloatingButtons extends StatefulWidget {
   const ThreeFloatingButtons({Key? key}) : super(key: key);
@@ -11,6 +13,8 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool _isOpen = false;
+  final CadastroController relatorio_controller =
+      Get.find<CadastroController>();
 
   @override
   void initState() {
@@ -59,6 +63,10 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
           FloatingActionButton(
             onPressed: () {
               // Implemente a ação do segundo botão aqui
+              relatorio_controller.salvarDadosCadastradosRelatorio(
+                context,
+              );
+              relatorio_controller.resetLabels();
             },
             heroTag: null,
             child: const Text("Salvar"),
