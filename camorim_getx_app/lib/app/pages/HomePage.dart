@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../widgets/customText.dart';
+import 'sistema Cadastro/views/mobile/mobile_cadastro_simples.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -141,7 +142,8 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   if (index == 0) {
                     Get.to((ResponsiveLayout(
-                        mobileScaffold: SistemaCadastroMobile(),
+                        //mobileScaffold: SistemaCadastroMobile(),
+                        mobileScaffold: MobileCadastroSimplesRelatorioDigital(),
                         desktopScaffold: SistemaCadastroDesktop())));
                   }
 

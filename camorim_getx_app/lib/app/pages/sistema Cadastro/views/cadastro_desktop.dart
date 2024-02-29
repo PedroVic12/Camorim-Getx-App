@@ -44,29 +44,30 @@ class SistemaCadastroDesktop extends StatelessWidget {
           buildDrawerDashboard(context, navController),
           Expanded(
             child: Obx(() {
-              if (navController.currentPageIndex.value == 1) {
-                return ConsultaDash(); // Primeira página
-              } else if (navController.currentPageIndex.value == 0) {
-                return Container(
+              switch (navController.currentPageIndex.value) {
+                case 0:
+                  return Container(
+                      color: Colors.blueGrey.shade300,
+                      child: FormsListRelatorioOS());
+                case 1:
+                  return ConsultaDash();
+                case 2:
+                  return Container(
+                    height: 900,
+                    child: ShowTableDadosCadastrados(),
+                  );
+                case 3:
+                  return DataView();
+                case 4:
+                  return EditableTable();
+
+                default:
+                  return Container(
                     color: Colors.blueGrey.shade300,
-                    child: FormsListRelatorioOS());
-              } else if (navController.currentPageIndex.value == 2) {
-                return Container(
-                  height: 900,
-                  child: ShowTableDadosCadastrados(),
-                ); // Terceira página
-              } else if (navController.currentPageIndex.value == 3) {
-                return DataView();
-              } else if (navController.currentPageIndex.value == 4) {
-                //return DataBaseRelatorioConsultaPage();
-                return EditableTable();
-              } else {
-                return Container(
-                  color: Colors.blueGrey.shade300,
-                  child: const Center(
-                    child: Text('Página não encontrada'),
-                  ),
-                );
+                    child: const Center(
+                      child: Text('Página não encontrada'),
+                    ),
+                  );
               }
             }),
           ),
@@ -125,6 +126,10 @@ class SistemaCadastroDesktop extends StatelessWidget {
 
                 case 4:
                   title = "repository";
+                  break;
+
+                case 5:
+                  title = "DataBase";
                   break;
               }
               return ListTile(

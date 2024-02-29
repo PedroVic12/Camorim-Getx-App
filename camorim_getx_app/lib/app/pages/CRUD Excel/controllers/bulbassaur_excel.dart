@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:core';
 
 import 'package:camorim_getx_app/app/pages/CRUD%20Excel/model/contact_model.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
@@ -21,6 +22,33 @@ class BulbassauroExcelController {
   final NotaFiscalController controller = Get.put(NotaFiscalController());
   final CadastroController relatorio_controller = Get.put(CadastroController());
   DioApp.Dio dio = DioApp.Dio();
+  final String urlRaichu = 'https://docker-raichu.onrender.com';
+
+  Future<void> uploadFiles(fileBytes) async {
+    for (var file in fileBytes) {
+      print(file.runtimeType);
+    }
+
+    // Construct FormData manually
+    final DioApp.FormData formData = DioApp.FormData.fromMap({
+      'arquivo':
+          DioApp.MultipartFile.fromBytes(fileBytes, filename: "fileName"),
+    });
+
+    // Send the request using Dio
+    final response = await dio.post(
+      '$urlRaichu/upload',
+      data: formData,
+      options: DioApp.Options(
+        headers: {'Content-Type': 'multipart/form-data'},
+      ),
+    );
+    print("resposta = ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      print("Email enviado com sucesso!");
+    }
+  }
 
   Future<void> sendEmailFiles(
     List<int> fileBytesPdf,
@@ -33,11 +61,11 @@ class BulbassauroExcelController {
       DioApp.FormData formData = DioApp.FormData.fromMap({
         'arquivo_pdf': DioApp.MultipartFile.fromBytes(
           fileBytesPdf,
-          //filename: fileNamePdf,
+          filename: fileNamePdf,
         ),
         'arquivo_excel': DioApp.MultipartFile.fromBytes(
           fileBytesExcel,
-          //filename: fileNameExcel,
+          filename: fileNameExcel,
         ),
       });
 
@@ -50,8 +78,7 @@ class BulbassauroExcelController {
 
       // Verificar o código de status da resposta
       if (response.statusCode == 200) {
-        print("Email enviado com sucesso!");
-        showMessage("Email enviado!!!");
+        print("\n\nEmail enviado com sucesso!");
       } else {
         print("Falha ao enviar email: ${response.statusCode}");
       }
@@ -112,7 +139,7 @@ class BulbassauroExcelController {
     }
   }
 
-  Future<void> enviarEmail(List<int> fileBytes, String fileName) async {
+  Future<void> enviarEmail(fileBytes, String fileName) async {
     try {
       // Construct FormData manually
       final DioApp.FormData formData = DioApp.FormData.fromMap({
@@ -259,8 +286,9 @@ class BulbassauroExcelController {
     }
 
     // Save the Excel file
-    final List<int> fileBytesExcel =
-        await salvarExcelWeb(workbook, 'dados.xlsx');
+    var fileBytesExcel = await salvarExcelWeb(workbook, 'dados.xlsx');
+
+    print("Arquivo excel salvo com sucesso!");
 
     try {
       return fileBytesExcel;

@@ -1,0 +1,71 @@
+import 'package:camorim_getx_app/repository/mvvc/model/realm_controller.txt';
+import 'package:camorim_getx_app/repository/mvvc/relatorio_model.txt';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class CadastroPage extends StatelessWidget {
+  final MongoRealmController controller = Get.put(MongoRealmController());
+  final TextEditingController descricaoController = TextEditingController();
+  final TextEditingController equipamentoController = TextEditingController();
+  final TextEditingController dataInicioController = TextEditingController();
+  final TextEditingController finalizadoController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Cadastro de Relatórios')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: descricaoController,
+              decoration: InputDecoration(labelText: 'Descrição'),
+            ),
+            TextFormField(
+              controller: equipamentoController,
+              decoration: InputDecoration(labelText: 'Equipamento'),
+            ),
+            TextFormField(
+              controller: dataInicioController,
+              decoration: InputDecoration(labelText: 'Data de Início'),
+            ),
+            TextFormField(
+              controller: finalizadoController,
+              decoration: InputDecoration(labelText: 'Finalizado'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.adicionarRelatorio(
+                  descricao: descricaoController.text,
+                  equipamento: equipamentoController.text,
+                  dataInicio: dataInicioController.text,
+                  finalizado: finalizadoController.text.toLowerCase() == 'true',
+                );
+              },
+              child: Text('Adicionar Relatório'),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: Obx(
+                () {
+                  return ListView.builder(
+                    itemCount: controller.relatorios.length,
+                    itemBuilder: (context, index) {
+                      final relatorio = controller.relatorios[index];
+                      return ListTile(
+                        title: Text(relatorio.descricao),
+                        subtitle: Text(relatorio.equipamento),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

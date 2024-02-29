@@ -26,7 +26,7 @@ class BotaoPadrao extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20))),
                 child: CustomText(
                   text: text,
-                  size: 20,
+                  size: 16,
                   color: Colors.white,
                   weight: FontWeight.bold,
                 ))));

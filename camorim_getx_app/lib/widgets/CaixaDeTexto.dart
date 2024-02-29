@@ -36,7 +36,7 @@ class CaixaDeTexto extends StatelessWidget {
               labelText,
               style: const TextStyle(
                 color: Colors.purple,
-                fontSize: 16,
+                fontSize: 14,
               ),
             ),
           ),

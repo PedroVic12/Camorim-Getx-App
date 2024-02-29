@@ -24,7 +24,7 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 800),
     );
   }
 
@@ -61,9 +61,11 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
               children: [Icon(Icons.star), Text("pdf")],
             ),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         if (_isOpen)
           FloatingActionButton(
+            splashColor: Colors.blue,
+            backgroundColor: Colors.greenAccent,
             onPressed: () {
               // Implemente a ação do segundo botão aqui
               relatorio_controller.salvarDadosCadastradosRelatorio(
@@ -74,7 +76,7 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
             heroTag: null,
             child: const Text("Salvar"),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         if (_isOpen)
           FloatingActionButton(
             onPressed: () {
@@ -84,6 +86,7 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
             heroTag: null,
             child: const Icon(Icons.thumb_up),
           ),
+        const SizedBox(height: 16),
         FloatingActionButton(
           onPressed: _toggle,
           child: AnimatedIcon(
@@ -91,6 +94,7 @@ class _ThreeFloatingButtonsState extends State<ThreeFloatingButtons>
             progress: _controller,
           ),
         ),
+        const SizedBox(height: 16),
       ],
     );
   }

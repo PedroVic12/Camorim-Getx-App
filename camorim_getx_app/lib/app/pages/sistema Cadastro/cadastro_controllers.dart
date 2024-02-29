@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:camorim_getx_app/app/pages/CRUD%20Excel/controllers/bulbassauro_controller.dart';
 import 'package:camorim_getx_app/app/pages/Relatorio%20OS/models/RelatorioModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 class CadastroController extends GetxController {
   final NivelRepository nivelRepository = NivelRepository();
+
+  
   final OpcoesRepository opcoesRepository = OpcoesRepository();
 
   final EQUIPAMENTO_TEXT = TextEditingController();
@@ -23,10 +26,12 @@ class CadastroController extends GetxController {
   final dataConclusao = TextEditingController();
   final obs = TextEditingController();
   final horarios = TextEditingController();
+  var contadorServices = 0.obs;
 
   var opcaoSelecionada = <String>[].obs;
   var opcoes = <String>[].obs;
   var niveis = <String>[].obs;
+  bool isLoading = false;
 
   final servicoFinalizado = false.obs;
   final _formKey = GlobalKey<FormState>();
@@ -61,8 +66,7 @@ class CadastroController extends GetxController {
         final decodedReponse = utf8.decode(resposta.bodyBytes);
         final dados = jsonDecode(decodedReponse);
 
-        print("\n\nDEBUG = ${dados["data"][0]}");
-        print(dados["data"].length);
+        print("Total de arquivos ${dados["data"].length}");
 
         // Mapeia a lista de objetos para uma lista de objetos do tipo RelatorioOrdemServico
         relatorio_array.value = (dados["data"] as List)
@@ -82,10 +86,20 @@ class CadastroController extends GetxController {
       gerarRelatorioPDF();
       enviarEmail();
       salvarBancoDeDados();
-      Get.snackbar('Sucesso', "Cadastro Feito!",
-          snackPosition: SnackPosition.TOP,
-          colorText: Colors.white,
-          backgroundColor: Colors.green);
+      Get.dialog(
+        AlertDialog(
+          title: const Text(
+              'Relatório de Ordem de Serviço cadastrada com sucesso'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } on Exception catch (e) {
       print(e);
     }
@@ -105,7 +119,9 @@ class CadastroController extends GetxController {
     if (EQUIPAMENTO_TEXT.text.isEmpty ||
         dataAbertura.text.isEmpty ||
         descFalha.text.isEmpty ||
-        oficina.text.isEmpty) {
+        oficina.text.isEmpty ||
+        nomeRebocadorText.text.isEmpty ||
+        funcionarios.text.isEmpty) {
       Get.snackbar("Erro", "Todos os campos devem ser preenchidos",
           snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
       return;
@@ -113,7 +129,7 @@ class CadastroController extends GetxController {
 
     final model = RelatorioOrdemServico(
         numeroOS: '1',
-        rebocador: nomeRebocadorText.text.toString(),
+        rebocador: nomeRebocadorText.text,
         dataInicial: dataAbertura.text,
         descFalha: descFalha.text,
         equipamento: EQUIPAMENTO_TEXT.text,
@@ -127,6 +143,8 @@ class CadastroController extends GetxController {
         dataFinal: dataConclusao.text);
 
     array_cadastro.add(model);
+
+    BulbassauroController().showMessage("Cadastro Feito com sucesso");
   }
 
   void resetLabels() {

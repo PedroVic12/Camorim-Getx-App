@@ -112,7 +112,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildAddButton(dataset),
+        //_buildAddButton(dataset),
         _buildExportExcelButton(),
         _buildSendFilesButton(),
         _buildGenerateReportButton(),
@@ -296,7 +296,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
   Future<void> _generateReportButtonPressed() async {
     var newDataset = _salvarDadosRelatorioOS();
     var fileBytes = await bulbassauro.gerarOsDigital(newDataset);
-    await _showPdfFile(fileBytes, newDataset);
+    await _showPdfCarousel(fileBytes, newDataset);
   }
 
   Map<String, dynamic> _salvarDadosRelatorioOS() {

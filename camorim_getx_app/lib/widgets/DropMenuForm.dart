@@ -19,6 +19,7 @@ class DropMenuForm extends StatefulWidget {
 
 class _DropMenuFormState extends State<DropMenuForm> {
   String selectedValue = "";
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +69,7 @@ class _DropMenuFormState extends State<DropMenuForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
+        Stack(
           children: [
             Expanded(
               child: Autocomplete<String>(
@@ -111,28 +112,40 @@ class _DropMenuFormState extends State<DropMenuForm> {
                             widget.labelText,
                             style: const TextStyle(
                               color: Colors.purple,
-                              fontSize: 16,
+                              fontSize: 12,
                             ),
                           ),
                         ),
                         contentPadding: EdgeInsets.symmetric(
-                            vertical: (10.0), horizontal: 10.0),
+                            vertical: (10.0), horizontal: (10.0)),
                       ),
                     ),
                   );
                 },
               ),
             ),
-            InkWell(
-              onTap: _showOptionsDialog,
-              child: const CircleAvatar(
-                backgroundColor: Colors.indigo,
-                child: Icon(
-                  Icons.arrow_circle_down,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+            Positioned(
+                right: 4,
+                top: 0,
+                bottom: 0,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: _showOptionsDialog,
+                      icon: const CircleAvatar(
+                        backgroundColor: Colors.indigo,
+                        child: Icon(
+                          Icons.arrow_circle_down,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 4,
+                    )
+                  ],
+                )),
           ],
         ),
       ],

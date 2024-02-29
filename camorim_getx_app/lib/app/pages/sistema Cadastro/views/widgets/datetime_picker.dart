@@ -30,10 +30,10 @@ class _TimeRangePickerWidgetState extends State<TimeRangePickerWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      //width: double.infinity,
       child: TextButton(
         onPressed: _selectTimeRange,
-        child:  Text(
+        child: Text(
           'Selecionar Intervalo de Horário',
           style: TextStyle(fontSize: 14),
         ),

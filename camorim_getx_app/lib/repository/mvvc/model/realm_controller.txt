@@ -1,0 +1,48 @@
+// Initialize Realm.
+import 'package:camorim_getx_app/repository/mvvc/relatorio_model.dart';
+import 'package:get/get.dart';
+import 'package:realm/realm.dart';
+
+final config = Configuration.local(
+  [RelatorioOrdemDeServicoEletricaModel.schema],
+);
+final realm = Realm(config);
+
+class RealmSetup {
+  static final _realm = Realm(config);
+
+  static Realm get realm => _realm;
+}
+
+class MongoRealmController extends GetxController {
+  final RxList<RelatorioOrdemDeServicoEletricaModel> relatorios =
+      <RelatorioOrdemDeServicoEletricaModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadRelatorios();
+  }
+
+  Future<void> _loadRelatorios() async {
+    // Read all data from Realm
+    final results =
+        RealmSetup.realm.all<RelatorioOrdemDeServicoEletricaModel>();
+    relatorios.assignAll(results);
+  }
+
+  void adicionarRelatorio({
+    required String descricao,
+    required String equipamento,
+    required String dataInicio,
+    required bool finalizado,
+  }) async {
+    // Create a new object
+
+    // Open Realm in a write transaction and add the object
+    await RealmSetup.realm.write(() => RealmSetup.realm.all());
+
+    // Update the list after adding the new item
+    _loadRelatorios();
+  }
+}

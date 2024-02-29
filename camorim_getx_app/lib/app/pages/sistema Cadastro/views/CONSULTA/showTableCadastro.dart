@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:camorim_getx_app/widgets/assinatura_widget.dart';
 import 'package:camorim_getx_app/widgets/button_async.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -55,12 +57,14 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
           'Foi aplicado 40m de cabo pp 4x16nn² novo e 30m cabo pp 7x1,00 para comando tambem novo.',
       'EQUIPE': 'ELÉTRICA',
       'LOCAL': 'NITEROI',
-      'RESPONSAVEL': 'PEDRO VERAS'
+      'RESPONSAVEL': 'PEDRO VICTOR Veras'
     }
   };
 
   @override
   Widget build(BuildContext context) {
+    var filesArrayBytes = [];
+
     return Obx(() => ListView(
           scrollDirection: Axis.vertical,
           children: [
@@ -115,7 +119,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
 
                     //!função aqui
                     var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-                    showPdfCarousel(fileBytes, dataset);
+                    showPdfFile(fileBytes, dataset);
 
                     setState(() {
                       isLoading =
@@ -139,18 +143,25 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                 ElevatedButton(
                   onPressed: () async {
                     //relatorio_controller.salvar(context);
-                    var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-                    //showPdfFile(fileBytes, dataset);
+                    // Gerar os arquivos em bytes
+                    var fileBytes1 = await bulbassauro.gerarOsDigital(dataset);
+                    var fileBytes2 = await bulbassauro.salvarDadosRelatorioOS();
 
                     try {
-                      List<int> fileBytesExcel =
-                          await bulbassauro.salvarDadosRelatorioOS();
+                      // Criar uma lista de arquivos a partir dos bytes
+                      List<File> files = [
+                        File.fromRawPath(Uint8List.fromList(fileBytes1)),
+                        File.fromRawPath(Uint8List.fromList(fileBytes2)),
+                      ];
 
-                      await bulbassauro.sendEmailFiles(
-                          fileBytes,
-                          fileBytesExcel,
-                          'Output.pdf',
-                          'dados_cadastrados.xlsx');
+                      // Enviar os arquivos para a API
+                      //await bulbassauro.uploadFiles(files);
+                      await bulbassauro.sendEmailFiles(fileBytes1, fileBytes2,
+                          'Output.pdf', 'dados_cadastrados.xlsx');
+
+                      //!funcinando
+                      //await bulbassauro.enviarEmail(fileBytes1, "arquivo.pdf");
+                      //await bulbassauro.enviarEmail(fileBytes2, "excel.xlsx");
                     } catch (e) {
                       print("Nao enviado: $e");
                     }
@@ -159,7 +170,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                     backgroundColor: MaterialStateProperty.all(Colors.indigo),
                   ),
                   child: const CustomText(
-                    text: "Save and send files",
+                    text: "Save and send files in email",
                     color: Colors.white,
                   ),
                 ),
@@ -173,47 +184,48 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
   Future showPdfFile(url, dataset) async {
     return Get.dialog(
       Dialog(
-        child: Container(
-          height: 900,
-          width: 600,
-          child: Column(
-            children: [
-              CustomText(text: "Relatorio OS  Digtal gerado "),
-              Expanded(
+        child: ListView(
+          scrollDirection: Axis.vertical,
+          children: [
+            CustomText(text: "Relatorio OS  Digtal gerado "),
+            Container(
+              height: 600,
+              width: 400,
+              child: Expanded(
                 child: SfPdfViewer.memory(
                   url,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: Text('Fechar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      var data = getDateTime(dataset);
-                      await bulbassauro.enviarEmail(url, data);
-                      bulbassauro.showMessage("Arquivo: $data, Email enviado");
-                      Get.back();
-                    },
-                    child: Text('Enviar Email'),
-                  ),
-                ],
-              )
-            ],
-          ),
+            ),
+            AssinaturaWidget(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text('Fechar'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    var data = getFileNameByData(dataset);
+                    await bulbassauro.enviarEmail(url, data);
+                    bulbassauro.showMessage("Arquivo: $data, Email enviado");
+                    Get.back();
+                  },
+                  child: Text('Enviar Email'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> showPdfCarousel(
-      List<Uint8List> pdfBytesList, Map<String, dynamic> dataset) async {
+  Future<void> showPdfCarousel(List<Uint8List> pdfBytesList) async {
     print("Numero de Documetnos gerados: ${pdfBytesList.length}");
     return Get.dialog(
       Dialog(
@@ -261,10 +273,8 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      var data = getDateTime(dataset);
                       // Implement your logic to send email for each PDF
-                      bulbassauro
-                          .showMessage("Arquivos enviados por email: $data");
+                      bulbassauro.showMessage("Arquivos enviados por email: ");
                       Get.back();
                     },
                     child: Text('Enviar Email'),
@@ -328,13 +338,13 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
           //showPdfFile(fileBytes, newDataset);
         }
         //todo gerar um showPdfCarousel para cada OS gerada, adcioanr nados incrementar dados no mesmo documento
-        showPdfCarousel(arrayDataset, dataset);
+        showPdfCarousel(arrayDataset);
       },
       child: const Text('Gerar OS Digital'),
     );
   }
 
-  getDateTime(dataset) {
+  getFileNameByData(dataset) {
     var formattedDate = dataset["dados"]?["DATA INICIO"]?.replaceAll("/", "_");
 
     var fileName =

@@ -1,0 +1,14 @@
+import 'package:get/get.dart';
+import 'package:realm/realm.dart';
+import 'package:ffi/ffi.dart' as ffi;
+part 'relatorio_model.g.dart';
+
+@RealmModel()
+class _RelatorioOrdemDeServicoEletricaModel {
+  @PrimaryKey() // Add PrimaryKey annotation for unique identification
+  late String id;
+  late String descricao;
+  late String equipamento;
+  late String dataInicio;
+  late bool finalizado;
+}

@@ -1,8 +1,11 @@
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/mobile_cadastro_simples.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/widgets/datetime_picker.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
+import 'package:camorim_getx_app/widgets/NavBarCustom.dart';
 import 'package:camorim_getx_app/widgets/RadioButtonGroup.dart';
+import 'package:camorim_getx_app/widgets/table_excel_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +24,6 @@ class SistemaCadastroMobile extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black87,
-      
       appBar: AppBar(
         title: const Text('Cadastro de Ordem de Serviço MOBILE'),
       ),
@@ -283,6 +285,30 @@ class SistemaCadastroMobile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        navBarItems: [
+          NavigationBarItem(
+              label: 'Excel Clone',
+              iconData: Icons.add,
+              onPress: () {
+                Get.to(EditableTable());
+              }),
+          
+          NavigationBarItem(
+              label: 'OCR',
+              iconData: Icons.date_range_outlined,
+              onPress: () {
+                Get.back();
+                //Get.to(NotaFiscalOcrPage());
+              }),
+          NavigationBarItem(
+              label: 'Dados Cadastrados',
+              iconData: Icons.search,
+              onPress: () {
+                Get.to(MobileCadastroSimplesRelatorioDigital());
+              }),
+        ],
       ),
     );
   }

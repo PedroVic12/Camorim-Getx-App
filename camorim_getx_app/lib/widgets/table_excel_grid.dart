@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/widgets/button_async.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
@@ -13,11 +15,13 @@ class DataRowModel {
   String embarcacao;
   String descricaoFalha;
   String equipamento;
+  bool isEditing; // Track editing state for each row
 
   DataRowModel({
     required this.embarcacao,
     required this.descricaoFalha,
     required this.equipamento,
+    this.isEditing = false,
   });
 }
 
@@ -83,8 +87,10 @@ class _EditableTableState extends State<EditableTable> {
     return ListView(
       scrollDirection: Axis.vertical,
       children: [
-        Text('Editable Table'),
-        //getDatabaseCloudExcel(),
+        CustomText(
+          text: 'Editable Table - Clone Excel + MongoDB + Onedrive',
+          size: 46,
+        ),
         buildColumsAndRows(),
         Divider(),
         botoes(),
@@ -97,24 +103,6 @@ class _EditableTableState extends State<EditableTable> {
             onPressed: () {
               setState(() {
                 _isEditing = !_isEditing;
-                if (_isEditing) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Modo de Edição Ativado'),
-                      content: Text('Agora você pode editar as células.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('OK'),
-                        ),
-                      ],
-                    ),
-                  );
-                  setState(() {});
-                }
               });
             },
             icon: Icon(_isEditing ? Icons.edit_off : Icons.edit),
@@ -242,50 +230,24 @@ class _EditableTableState extends State<EditableTable> {
       children: [
         ButtonAsyncState(
           onPressed: () async {
-            // Chamar uma função assíncrona aqui
             setState(() {
-              isLoading =
-                  true; // Define isLoading como true para mostrar o CircularProgressIndicator
-            });
-
-            //!função aqui
-            var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-            //showPdfCarousel(fileBytes, dataset);
-
-            setState(() {
-              isLoading =
-                  false; // Define isLoading como false para voltar ao ícone original
+              // Add a new row with default values
+              _data.add(DataRowModel(
+                embarcacao: "",
+                descricaoFalha: "",
+                equipamento: "",
+                isEditing: true, // Start in edit mode for the new row
+              ));
             });
           },
-          iconData: Icons.add, // Ícone original
+          iconData: Icons.add,
           text: 'Adicionar',
           isLoading: isLoading,
         ),
         ElevatedButton(
-          onPressed: () => bulbassauro.salvarDadosRelatorioOS(),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.indigo),
-          ),
-          child: const CustomText(
-            text: "Exportar Excel",
-            color: Colors.white,
-          ),
-        ),
-        ElevatedButton(
           onPressed: () async {
-            //relatorio_controller.salvar(context);
-            var fileBytes = await bulbassauro.gerarOsDigital(dataset);
-
-            showPdfFile(fileBytes, dataset);
-
-            try {
-              List<int> fileBytesExcel =
-                  await bulbassauro.salvarDadosRelatorioOS();
-              await bulbassauro.sendEmailFiles(fileBytes, fileBytesExcel,
-                  'Output.pdf', 'dados_cadastrados.xlsx');
-            } catch (e) {
-              print("Nao enviado: $e");
-            }
+            // Update the MongoDB Realm database
+            // Implement the logic here to update the database using the GetX controller or service
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.indigo),
@@ -295,7 +257,6 @@ class _EditableTableState extends State<EditableTable> {
             color: Colors.white,
           ),
         ),
-        gerarRelatorioDigital(),
       ],
     );
   }
@@ -377,6 +338,13 @@ class _EditableTableState extends State<EditableTable> {
             child: Text('Equipamento', style: TextStyle(color: Colors.white)),
           ),
         ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child: Text('Ações', style: TextStyle(color: Colors.white)),
+          ),
+        ),
       ],
       rows: _data
           .map(
@@ -384,7 +352,7 @@ class _EditableTableState extends State<EditableTable> {
               cells: [
                 DataCell(
                   TextFormField(
-                    readOnly: !_isEditing,
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
                     initialValue: dataRow.embarcacao,
                     onChanged: (value) {
                       dataRow.embarcacao = value;
@@ -393,7 +361,7 @@ class _EditableTableState extends State<EditableTable> {
                 ),
                 DataCell(
                   TextFormField(
-                    readOnly: !_isEditing,
+                    readOnly: !dataRow.isEditing,
                     initialValue: dataRow.descricaoFalha,
                     onChanged: (value) {
                       dataRow.descricaoFalha = value;
@@ -402,11 +370,22 @@ class _EditableTableState extends State<EditableTable> {
                 ),
                 DataCell(
                   TextFormField(
-                    readOnly: !_isEditing,
+                    readOnly: !dataRow.isEditing,
                     initialValue: dataRow.equipamento,
                     onChanged: (value) {
                       dataRow.equipamento = value;
                     },
+                  ),
+                ),
+                DataCell(
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        dataRow.isEditing =
+                            !dataRow.isEditing; // Toggle edit mode
+                      });
+                    },
+                    icon: Icon(dataRow.isEditing ? Icons.save : Icons.edit),
                   ),
                 ),
               ],

@@ -15,7 +15,7 @@ class TableCustom extends StatelessWidget {
   final List<String> columns;
   final List<List<String>> rows;
 
-  const TableCustom({super.key, required this.columns, required this.rows});
+  const TableCustom({Key? key, required this.columns, required this.rows});
 
   void onSort(int columnIndex, bool ascending) {
     var repository = Get.put(NotaFiscalRepository());
@@ -24,9 +24,20 @@ class TableCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Verifica se o número de colunas é maior que 6
+    bool hasHorizontalScroll = columns.length > 6;
+
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Table(
+        textDirection: TextDirection.ltr,
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        columnWidths: hasHorizontalScroll
+            ? {for (var i = 0; i < columns.length; i++) i: FlexColumnWidth(1)}
+            : {
+                for (var i = 0; i < columns.length; i++)
+                  i: IntrinsicColumnWidth()
+              },
         border: TableBorder.all(),
         children: [
           //! Colunas

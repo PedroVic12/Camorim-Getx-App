@@ -293,18 +293,53 @@ class FormsListRelatorioOS extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        BotaoPadrao(
-            on_pressed: () {
-              relatorio_controller.salvarDadosCadastradosRelatorio(
-                context,
-              );
-              relatorio_controller.descFalha.clear();
-              relatorio_controller.ACAOTEXT.clear();
-              relatorio_controller.obs.clear();
-              relatorio_controller.EQUIPAMENTO_TEXT.clear();
-            },
-            color: Colors.blue,
-            text: 'Adicionar mais dados'),
+        Obx(() {
+          if (relatorio_controller.contadorServices >= 0) {
+            return BotaoPadrao(
+                on_pressed: () {
+                  relatorio_controller.salvarDadosCadastradosRelatorio(
+                    context,
+                  );
+
+                  relatorio_controller.descFalha.clear();
+                  relatorio_controller.ACAOTEXT.clear();
+                  relatorio_controller.obs.clear();
+                  relatorio_controller.servicoFinalizado.value = false;
+                  relatorio_controller.dataConclusao.clear();
+
+                  relatorio_controller.contadorServices++;
+                },
+                color: Colors.blue,
+                text:
+                    'Adicionar mais dados - ($relatorio_controller.contadorServices)');
+          }
+
+          return BotaoPadrao(
+              on_pressed: () {
+                relatorio_controller.salvarDadosCadastradosRelatorio(
+                  context,
+                );
+
+                print(
+                    "Ultimo item cadastroado = ${relatorio_controller.array_cadastro.last} ");
+
+                for (var i;
+                    i < relatorio_controller.array_cadastro.length;
+                    i++) {
+                  print("Item $i = ${relatorio_controller.array_cadastro[i]}");
+                }
+
+                relatorio_controller.descFalha.clear();
+                relatorio_controller.ACAOTEXT.clear();
+                relatorio_controller.obs.clear();
+                relatorio_controller.servicoFinalizado.value = false;
+                relatorio_controller.dataConclusao.clear();
+
+                relatorio_controller.contadorServices++;
+              },
+              color: Colors.blue,
+              text: 'Adicionar mais dados');
+        }),
         BotaoPadrao(
             on_pressed: () {
               relatorio_controller.salvarDadosCadastradosRelatorio(
