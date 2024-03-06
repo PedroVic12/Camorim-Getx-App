@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:camorim_getx_app/widgets/customText.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart' as backend;
@@ -14,24 +16,36 @@ class TabelaController extends GetxController {
   final bulbassauro = Get.put(BulbassauroExcelController());
   backend.Dio dio = backend.Dio();
   final url = 'https://docker-raichu.onrender.com';
-  List<dynamic> mongoDB_array = [].obs;
+  var mongoDB_array = [].obs;
 
   @override
   void onInit() async {
     super.onInit();
     getAllDatabaseInfo();
+    checkStatusServer();
   }
 
   Future<void> getAllDatabaseInfo() async {
-    backend.Response response;
-    response = await dio.get("${url}/database");
+    try {
+      backend.Response response;
+      response = await dio.get("${url}/database");
+      if (response.statusCode == 200) {
+        // Convertendo as strings JSON para objetos Dart
+        var registros =
+            response.data.map((jsonString) => jsonDecode(jsonString)).toList();
 
-    if (response.statusCode == 200) {
-      print(response.data.runtimeType);
-      mongoDB_array.assignAll(response.data);
-      update();
-    } else {
-      print("Erro ao buscar os dados");
+        // Exibindo os registros
+        registros.forEach((registro) {
+          //print("\nRegister = $registro");
+        });
+        mongoDB_array.assignAll(registros);
+
+        update();
+      } else {
+        print("Erro ao buscar os dados: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Erro ao buscar os dados: $e");
     }
   }
 
@@ -141,8 +155,7 @@ class TabelaController extends GetxController {
     return fileName;
   }
 
-  Future<void> showPdfCarousel(
-      List<Uint8List> pdfBytesList, Map<String, dynamic> dataset) async {
+  Future<void> showPdfCarousel(List<Uint8List> pdfBytesList) async {
     await Get.dialog(
       Dialog(
         child: Container(
@@ -177,27 +190,12 @@ class TabelaController extends GetxController {
                   }).toList(),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: Text('Fechar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      var data = getDateTime(dataset);
-                      bulbassauro
-                          .showMessage("Arquivos enviados por email: $data");
-                      Get.back();
-                    },
-                    child: Text('Enviar Email'),
-                  ),
-                ],
-              )
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text('Fechar'),
+              ),
             ],
           ),
         ),

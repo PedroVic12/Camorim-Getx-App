@@ -71,58 +71,56 @@ class _DropMenuFormState extends State<DropMenuForm> {
       children: [
         Stack(
           children: [
-            Expanded(
-              child: Autocomplete<String>(
-                optionsBuilder: (TextEditingValue textEditingValue) {
-                  if (textEditingValue.text.isEmpty) {
-                    return const Iterable<String>.empty();
-                  }
-                  return widget.options.where((String option) => option
-                      .toLowerCase()
-                      .contains(textEditingValue.text.toLowerCase()));
-                },
-                onSelected: (String selection) {
-                  setState(() {
-                    selectedValue = selection;
-                    widget.textController.text = selection;
-                  });
-                },
-                fieldViewBuilder: (BuildContext context,
-                    TextEditingController fieldTextEditingController,
-                    FocusNode fieldFocusNode,
-                    VoidCallback onFieldSubmitted) {
-                  // Synchronize the field controller with the state's text controller on rebuild
-                  fieldTextEditingController.text = selectedValue;
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
+                }
+                return widget.options.where((String option) => option
+                    .toLowerCase()
+                    .contains(textEditingValue.text.toLowerCase()));
+              },
+              onSelected: (String selection) {
+                setState(() {
+                  selectedValue = selection;
+                  widget.textController.text = selection;
+                });
+              },
+              fieldViewBuilder: (BuildContext context,
+                  TextEditingController fieldTextEditingController,
+                  FocusNode fieldFocusNode,
+                  VoidCallback onFieldSubmitted) {
+                // Synchronize the field controller with the state's text controller on rebuild
+                fieldTextEditingController.text = selectedValue;
 
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: fieldTextEditingController,
-                      focusNode: fieldFocusNode,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.purple[50],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        label: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 12.0), // Seu valor de padding
-                          child: Text(
-                            widget.labelText,
-                            style: const TextStyle(
-                              color: Colors.purple,
-                              fontSize: 12,
-                            ),
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: fieldTextEditingController,
+                    focusNode: fieldFocusNode,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.purple[50],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      label: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0), // Seu valor de padding
+                        child: Text(
+                          widget.labelText,
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 12,
                           ),
                         ),
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: (10.0), horizontal: (10.0)),
                       ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: (10.0), horizontal: (10.0)),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
             Positioned(
                 right: 4,

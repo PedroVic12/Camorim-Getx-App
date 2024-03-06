@@ -30,7 +30,7 @@ class _GlassCardState extends State<GlassCard> {
         ),
         gradient: LinearGradient(colors: [
           Colors.white.withOpacity(0.2),
-          // Colors.blueGrey.withOpacity(0.12),
+          Colors.lightBlueAccent.withOpacity(0.12),
           Colors.white.withOpacity(0.2),
         ]),
         blur: 25,

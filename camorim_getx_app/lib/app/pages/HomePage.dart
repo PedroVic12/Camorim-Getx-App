@@ -28,6 +28,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List imagesSrc = ['path_to_images'];
 
+  var DATA_DEPLOY = "06/03/2024";
+
   List titulos = [
     'Ordem de Serviço',
     'Ferramentas',
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                             cor: Colors.white),
                         const SizedBox(height: 10),
                         Text(
-                          'Ultima atualização: ${DateTime.now()}',
+                          'Ultima atualização: ${DATA_DEPLOY}',
                           style: const TextStyle(
                             color: Colors.white54,
                             letterSpacing: 1,

@@ -12,6 +12,8 @@ import '../app/pages/CRUD Excel/controllers/bulbassaur_excel.dart';
 
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 
+import '../app/pages/sistema Cadastro/views/mobile/views/dados_mongo_dart_mobile.dart';
+
 class DataRowModel {
   String embarcacao;
   String descricaoFalha;

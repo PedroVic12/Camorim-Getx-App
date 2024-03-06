@@ -15,10 +15,17 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../../CRUD Excel/controllers/bulbassaur_excel.dart';
 
-class DatabaseMongoDBTableScreen extends StatelessWidget {
-  final TableController = Get.put(TabelaController());
-
+class DatabaseMongoDBTableScreen extends StatefulWidget {
   DatabaseMongoDBTableScreen({super.key});
+
+  @override
+  State<DatabaseMongoDBTableScreen> createState() =>
+      _DatabaseMongoDBTableScreenState();
+}
+
+class _DatabaseMongoDBTableScreenState
+    extends State<DatabaseMongoDBTableScreen> {
+  final TableController = Get.put(TabelaController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,115 +33,18 @@ class DatabaseMongoDBTableScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.greenAccent,
       appBar: AppBar(
-        title: const Text('Mongo DB - CRUD - Bulbassauro'),
+        title: const Text('Dados Cadastrados OS - Analise e edição'),
       ),
       body: ListView(
         scrollDirection: Axis.vertical,
         children: [
-          const CustomText(text: "Dados Cadastrados"),
           const GlassCard(
             child: BuildCustomTable(),
           ),
           buildButtons(TableController.dataset),
-          const Center(child: CustomText(text: "Banco de Dados MONGO")),
-          //TabelaDatabaseMongo(),
-          Container(height: 500, child: showMongoDatabase())
         ],
       ),
     );
-  }
-
-  Widget TabelaDatabaseMongo() {
-    return GetBuilder<TabelaController>(builder: (controller) {
-      final columns = [
-        "EMBARCAÇÃO",
-        "DESCRIÇÃO DA FALHA",
-        "EQUIPAMENTO",
-        "MANUTENÇÃO",
-        "SERVIÇO EXECUTADO",
-        "DATA DE ABERTURA",
-        "RESPONSAVEL EXECUÇÃO",
-        "OFICINA",
-        "FINALIZADO",
-        "DATA DE CONCLUSÃO",
-        "FORA DE OPERAÇÃO",
-        "OBSERVAÇÃO",
-        "AÇÕES",
-      ];
-      final rows = controller.mongoDB_array.map((data) {
-        return [
-          data.rebocador ?? "Sem dados",
-          data.descFalha ?? "Sem dados",
-          data.equipamento ?? "Sem dados",
-          data.tipoManutencao ?? "Sem dados",
-          data.servicoExecutado ?? "Sem dados",
-          data.dataFinal.toString() ?? "Sem dados",
-          data.funcionario.toString() ?? "Sem dados",
-          data.oficina ?? "Sem dados",
-          data.status_finalizado.toString() ?? "Sem dados",
-          data.dataFinal.toString() ?? "Sem dados",
-          data.status_finalizado.toString() ?? "Sem dados",
-          data.obs ?? "Sem dados",
-          '', // Espaço reservado para a coluna de edição
-        ];
-      }).toList();
-
-      print(rows);
-
-      List tableData = [];
-
-      if (controller.mongoDB_array.isEmpty) {
-        return const Center(
-          child: Text(
-            'Nenhum dado disponível. :(',
-            style: TextStyle(color: Colors.red),
-          ),
-        );
-      } else {
-        return Container(
-          color: const Color.fromARGB(255, 148, 137, 137),
-          child: Column(
-            children: [
-              showMongoDatabase(),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Gerar Carrousel Digital'),
-              ),
-              // Exibir o número de colunas e linhas
-              Text('Número de colunas: ${columns.length}'),
-              Text('Número de linhas: ${rows.length}'),
-            ],
-          ),
-        );
-      }
-    });
-  }
-
-  Widget showMongoDatabase() {
-    return GetBuilder<TabelaController>(builder: ((controller) {
-      if (controller.mongoDB_array.isEmpty) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      } else {
-        print("SetState =  ${controller.mongoDB_array.length}");
-
-        return ListView.builder(itemBuilder: (context, index) {
-          final obj = controller.mongoDB_array[index];
-          print(controller.mongoDB_array);
-          return Card(
-            child: CupertinoListTile(
-              title: CustomText(text: "obj.BARCO"),
-              subtitle: Column(children: [
-                //CustomText(text: obj.DESC_FALHA),
-                //CustomText(text: obj.OFICINA),
-                //CustomText(text: obj.FINALIZADO)
-              ]),
-            ),
-          );
-        });
-      }
-    }));
   }
 
   Widget buildButtons(dataset) {
@@ -143,7 +53,19 @@ class DatabaseMongoDBTableScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ElevatedButton(
-          onPressed: () async {},
+          onPressed: () async {
+            var dadosCadastrados =
+                TableController.relatorioController.array_cadastro;
+
+            print(dadosCadastrados);
+
+            var response =
+                await TableController.dio.post(TableController.url, data: []);
+
+            if (response.statusCode == 200) {
+              print("Cadastro");
+            }
+          },
           child: const Text("Salvar no Banco de dados"),
         ),
         _buildExportExcelButton(),
@@ -197,6 +119,159 @@ class DatabaseMongoDBTableScreen extends StatelessWidget {
         await TableController.showPdfFile(fileBytes, newDataset);
       },
       child: const Text('Gerar um Relatório Digital'),
+    );
+  }
+}
+
+class BuildCustomTable extends StatefulWidget {
+  const BuildCustomTable({Key? key}) : super(key: key);
+
+  @override
+  State<BuildCustomTable> createState() => _BuildCustomTableState();
+}
+
+class _BuildCustomTableState extends State<BuildCustomTable> {
+  @override
+  Widget build(BuildContext context) {
+    final relatorioController = Get.put(CadastroController());
+    final controller = Get.put(TabelaGridController());
+    final bulbassauro = Get.put(BulbassauroExcelController());
+
+    if (relatorioController.array_cadastro.isEmpty) {
+      return const Center(
+        child: Text(
+          'Sem dados Cadastrados no momento',
+          style: TextStyle(color: Colors.red),
+        ),
+      );
+    }
+
+    final columns = [
+      "EMBARCAÇÃO",
+      "DESCRIÇÃO DA FALHA",
+      "EQUIPAMENTO",
+      "MANUTENÇÃO",
+      "SERVIÇO EXECUTADO",
+      "DATA DE ABERTURA",
+      "RESPONSAVEL EXECUÇÃO",
+      "OFICINA",
+      "FINALIZADO",
+      "DATA DE CONCLUSÃO",
+      "FORA DE OPERAÇÃO",
+      "OBSERVAÇÃO",
+      "ARQUIVO",
+    ];
+
+    final rows = relatorioController.array_cadastro.map((data) {
+      return [
+        data.rebocador ?? "Sem dados",
+        data.descFalha ?? "Sem dados",
+        data.equipamento ?? "Sem dados",
+        data.tipoManutencao ?? "Sem dados",
+        data.servicoExecutado ?? "Sem dados",
+        data.dataFinal.toString() ?? "Sem dados",
+        data.funcionario.toString() ?? "Sem dados",
+        data.oficina ?? "Sem dados",
+        data.status_finalizado.toString() ?? "Sem dados",
+        data.dataFinal.toString() ?? "Sem dados",
+        data.status_finalizado.toString() ?? "Sem dados",
+        data.obs ?? "Sem dados",
+        "Arquivo"
+        // O ícone de download será adicionado automaticamente
+      ];
+    }).toList();
+    List<List<String?>> tableData = [];
+
+    return Column(
+      children: [
+        TabelaGrid(
+          columns: columns,
+          rows: rows
+              .map((row) => row.map((cell) => cell ?? '').toList())
+              .toList(),
+          onUpdate: (List<List<String?>> newData) {
+            setState(() {
+              tableData = newData;
+              print("Dados atualizados!");
+              print(tableData[0]);
+            });
+          },
+        ),
+
+        ElevatedButton(
+          onPressed: () async {
+            List<Uint8List> pdfBytesList = [];
+
+            for (var rowData in controller.table) {
+              var dataset = controller.salvarDadosRelatorioOSByIndex(
+                  controller.table, controller.table.indexOf(rowData));
+              Uint8List fileBytes = await bulbassauro.gerarOsDigital(dataset);
+              pdfBytesList.add(fileBytes);
+            }
+
+            await _showPdfCarousel(pdfBytesList);
+          },
+          child: Text('Gerar Carrossel Digital'),
+        ),
+        // Exibir o número de colunas e linhas
+        Text('Número de colunas: ${columns.length}'),
+        Text('Número de linhas: ${rows.length}'),
+      ],
+    );
+  }
+
+  Future<void> _generateReportButtonPressed() async {
+    List<Uint8List> pdfBytesList = [];
+
+    //await _showPdfCarousel(pdfBytesList);
+    await _showPdfCarousel(pdfBytesList);
+  }
+
+  Future<void> _showPdfCarousel(List<Uint8List> pdfBytesList) async {
+    await Get.dialog(
+      Dialog(
+        child: Container(
+          height: 900,
+          width: 600,
+          child: Column(
+            children: [
+              CustomText(text: "Relatório OS Digital gerado"),
+              Expanded(
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    aspectRatio: 16 / 9,
+                    viewportFraction: 0.8,
+                    initialPage: 0,
+                    enableInfiniteScroll: false,
+                    reverse: false,
+                    autoPlay: false,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: true,
+                    scrollDirection: Axis.horizontal,
+                  ),
+                  items: pdfBytesList.map((bytes) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return SfPdfViewer.memory(
+                          bytes,
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text('Fechar'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

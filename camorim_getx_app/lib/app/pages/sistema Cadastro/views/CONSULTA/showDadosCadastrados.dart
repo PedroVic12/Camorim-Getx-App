@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../CRUD Excel/controllers/bulbassaur_excel.dart';
+import '../mobile/views/dados_mongo_dart_mobile.dart';
 
 class ShowTableDadosCadastrados extends StatefulWidget {
   @override
