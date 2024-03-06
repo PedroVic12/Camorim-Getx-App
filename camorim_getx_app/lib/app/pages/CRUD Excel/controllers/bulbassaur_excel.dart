@@ -238,6 +238,68 @@ class BulbassauroExcelController {
     workbook.dispose();
   }
 
+  gerarExcelDadosRelatorioOS(array) async {
+    final workbook = Workbook();
+    final sheet = workbook.worksheets[0];
+
+    // Add headers
+    int lineHeader = 1;
+    sheet.getRangeByName('A$lineHeader').setText('EMBARCAÇÃO');
+    sheet.getRangeByName('B1').setText('DATA INICIO');
+    sheet.getRangeByName('C1').setText('DESCRIÇÃO DA FALHA');
+    sheet.getRangeByName('D1').setText('EQUIPAMENTO');
+    sheet.getRangeByName('E1').setText('MANUTENÇÃO');
+    sheet.getRangeByName('F1').setText('SERVIÇO EXECUTADO');
+    sheet.getRangeByName('G1').setText('DATA INICIO');
+    sheet.getRangeByName('H$lineHeader').setText('RESPONSAVEL');
+    sheet.getRangeByName('I$lineHeader').setText('OFICINA');
+    sheet.getRangeByName('J$lineHeader').setText('FINALIZADO');
+    sheet.getRangeByName('K$lineHeader').setText('DATA FINAL');
+    sheet.getRangeByName('L$lineHeader').setText('FORA DE OPERAÇÃO ');
+    sheet.getRangeByName('M$lineHeader').setText('OBS');
+
+    // formatação
+    sheet.getRangeByName('A1:M1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:M1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:M1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:M1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:M1').autoFitColumns();
+
+    // Add data from the list
+    int row = 2;
+    for (final data in array) {
+      sheet.getRangeByName('A$row').setText(data.rebocador);
+      sheet.getRangeByName('B$row').setText(data.dataInicial);
+      sheet.getRangeByName('C$row').setText(data.descFalha);
+      sheet.getRangeByName('D$row').setText(data.equipamento);
+      sheet.getRangeByName('E$row').setText(data.tipoManutencao);
+      sheet.getRangeByName('F$row').setText(data.servicoExecutado);
+      sheet.getRangeByName('G$row').setText(data.dataInicial);
+      sheet.getRangeByName('H$row').setText(data.funcionario.join(', '));
+      sheet.getRangeByName('I$row').setText(data.oficina);
+      sheet.getRangeByName('J$row').setText(data.status_finalizado.toString());
+      sheet.getRangeByName('K$row').setText(data.dataFinal.toString());
+      sheet.getRangeByName('L$row').setText("NÃO");
+      sheet.getRangeByName('M$row').setText(data.obs);
+
+      row++;
+    }
+
+    // Save the Excel file
+    var fileBytesExcel = await salvarExcelWeb(workbook, 'relatorio.xlsx');
+
+    print("Arquivo excel salvo com sucesso!");
+
+    try {
+      return fileBytesExcel;
+    } catch (e) {
+      print("Erro ao enviar email: $e");
+    }
+
+    // Show success message
+    BulbassauroExcelController().showMessage("Excel Salvo!");
+  }
+
   salvarDadosRelatorioOS() async {
     final workbook = Workbook();
     final sheet = workbook.worksheets[0];

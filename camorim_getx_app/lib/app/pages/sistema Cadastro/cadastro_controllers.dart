@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 class CadastroController extends GetxController {
   final NivelRepository nivelRepository = NivelRepository();
 
-  
   final OpcoesRepository opcoesRepository = OpcoesRepository();
 
   final EQUIPAMENTO_TEXT = TextEditingController();
@@ -217,17 +216,17 @@ class RelatorioOrdemServico {
     );
   }
   Map<String, dynamic> toMap() => {
-        'rebocador': rebocador,
-        'dataInicial': dataInicial,
-        'descFalha': descFalha,
-        'dataFinal': dataFinal,
-        'equipamento': equipamento,
-        'tipoManutencao': tipoManutencao,
-        'servicoExecutado': servicoExecutado,
-        'funcionario': funcionario,
-        'oficina': oficina,
-        'obs': obs,
-        'status_finalizado': status_finalizado,
+        'rebocador': rebocador.toString(),
+        'dataInicial': dataInicial.toString(),
+        'descFalha': descFalha.toString(),
+        'dataFinal': dataFinal.toString(),
+        'equipamento': equipamento.toString(),
+        'tipoManutencao': tipoManutencao.toString(),
+        'servicoExecutado': servicoExecutado.toString(),
+        'funcionario': funcionario.toString(),
+        'oficina': oficina.toString(),
+        'obs': obs.toString(),
+        'status_finalizado': status_finalizado.toString(),
       };
 }
 

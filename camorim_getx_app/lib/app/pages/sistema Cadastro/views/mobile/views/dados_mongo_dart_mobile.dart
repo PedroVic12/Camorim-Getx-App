@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:camorim_getx_app/app/pages/Tabela%20Banco%20Page/controllers/tabela_controller.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/views/DatabasePage.dart';
@@ -48,35 +50,45 @@ class _DatabaseMongoDBTableScreenState
   }
 
   Widget buildButtons(dataset) {
+    var dadosCadastrados = [];
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ElevatedButton(
           onPressed: () async {
-            var dadosCadastrados =
-                TableController.relatorioController.array_cadastro;
+            TableController.relatorioController.array_cadastro
+                .forEach((element) {
+              dadosCadastrados.add(json.encode(element.toMap()));
+            });
 
             print(dadosCadastrados);
 
-            var response =
-                await TableController.dio.post(TableController.url, data: []);
+            try {
+              var response = await TableController.dio.post(
+                  "${TableController.url}/add_relatorios",
+                  data: dadosCadastrados);
 
-            if (response.statusCode == 200) {
-              print("Cadastro");
+              if (response.statusCode == 200) {
+                print("Cadastro feito!");
+              }
+            } catch (e) {
+              print("Erro ao salvar os dados no banco! $e");
             }
           },
           child: const Text("Salvar no Banco de dados"),
         ),
-        _buildExportExcelButton(),
+        _buildExportExcelButton(dadosCadastrados),
         _buildSendFilesButton(),
       ],
     );
   }
 
-  Widget _buildExportExcelButton() {
+  Widget _buildExportExcelButton(array) {
     return ElevatedButton(
-      onPressed: () => TableController.bulbassauro.salvarDadosRelatorioOS(),
+      onPressed: () =>
+          TableController.bulbassauro.gerarExcelDadosRelatorioOS(array),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.indigo),
       ),

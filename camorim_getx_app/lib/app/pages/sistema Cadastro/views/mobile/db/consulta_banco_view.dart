@@ -29,6 +29,7 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
             height: MediaQuery.of(context).size.height,
             child: tabelaDatabaseMongo(context),
           ),
+          _buildExportExcelButton(TableController.mongoDB_array),
           const SizedBox(
             height: 5,
           ),
@@ -127,6 +128,20 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
         );
       }
     });
+  }
+
+  Widget _buildExportExcelButton(array) {
+    return ElevatedButton(
+      onPressed: () =>
+          TableController.bulbassauro.gerarExcelDadosRelatorioOS(array),
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.indigo),
+      ),
+      child: const CustomText(
+        text: "Exportar Excel",
+        color: Colors.white,
+      ),
+    );
   }
 
   Widget showMongoDatabase(context) {
