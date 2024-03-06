@@ -5,6 +5,8 @@ import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controlle
 import 'package:camorim_getx_app/widgets/TableCustom.dart';
 import 'package:camorim_getx_app/widgets/button_async.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
+import 'package:camorim_getx_app/widgets/glass_card_container.dart';
+import 'package:camorim_getx_app/widgets/tabela_excel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,6 +56,7 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
         children: [
           _buildTable(),
           _buildButtons(dataset),
+          GlassCard(child: BuildCustomTable())
         ],
       ),
     );
@@ -112,10 +115,9 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //_buildAddButton(dataset),
         _buildExportExcelButton(),
         _buildSendFilesButton(),
-        _buildGenerateReportButton(),
+        gerarRelatorioDigital(),
       ],
     );
   }
@@ -166,16 +168,16 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
     );
   }
 
-  Widget _buildGenerateReportButton() {
-    return gerarRelatorioDigital();
-  }
-
   Widget gerarRelatorioDigital() {
     return ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.green),
       ),
-      onPressed: _generateReportButtonPressed,
+      onPressed: () async {
+        var newDataset = _salvarDadosRelatorioOS();
+        Uint8List fileBytes = await bulbassauro.gerarOsDigital(newDataset);
+        await _showPdfFile(fileBytes, newDataset);
+      },
       child: const Text('Gerar Relatório Digital'),
     );
   }
@@ -286,17 +288,13 @@ class _ShowTableDadosCadastradosState extends State<ShowTableDadosCadastrados> {
     );
   }
 
+  Future<void> _generateReportButtonPressed() async {}
+
   Future<void> _sendFilesButtonPressed(dataset) async {
     List<int> fileBytesExcel = await bulbassauro.salvarDadosRelatorioOS();
     var fileBytes = await bulbassauro.gerarOsDigital(dataset);
     await bulbassauro.sendEmailFiles(
         fileBytes, fileBytesExcel, 'Output.pdf', 'dados_cadastrados.xlsx');
-  }
-
-  Future<void> _generateReportButtonPressed() async {
-    var newDataset = _salvarDadosRelatorioOS();
-    var fileBytes = await bulbassauro.gerarOsDigital(newDataset);
-    await _showPdfCarousel(fileBytes, newDataset);
   }
 
   Map<String, dynamic> _salvarDadosRelatorioOS() {

@@ -14,6 +14,7 @@ import 'package:camorim_getx_app/repository/views/table_database.dart';
 import 'package:camorim_getx_app/widgets/AppBarPersonalizada.dart';
 import 'package:camorim_getx_app/widgets/FabMenuButton.dart';
 import 'package:camorim_getx_app/widgets/TableCustom.dart';
+import 'package:camorim_getx_app/widgets/tabela_excel.dart';
 import 'package:camorim_getx_app/widgets/table_excel_grid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

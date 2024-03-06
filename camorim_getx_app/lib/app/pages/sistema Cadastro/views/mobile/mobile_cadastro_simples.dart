@@ -1,8 +1,11 @@
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/CONSULTA/showTableCadastro.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/forms_list.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/views/DatabasePage.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/views/consulta_grid.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/views/dados_mongo_dart_mobile.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/widgets/datetime_picker.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/widgets/galeria_fotos_array.dart';
 import 'package:camorim_getx_app/widgets/BotaoWidget.dart';
 import 'package:camorim_getx_app/widgets/CaixaDeTexto.dart';
 import 'package:camorim_getx_app/widgets/DropMenuForm.dart';
@@ -60,7 +63,7 @@ class _MobileCadastroSimplesRelatorioDigitalState
                   labelText: 'REBOCADOR',
                   options: const [
                     "MCC",
-                    "SLB MELODIA"
+                    "SLB MELODIA",
                     'AÇU',
                     "ATLÂNTICO",
                     'ÁGATA',
@@ -358,20 +361,16 @@ class _MobileCadastroSimplesRelatorioDigitalState
               label: 'Excel Clone',
               iconData: Icons.add,
               onPress: () {
-                Get.to(ConsultaMobileRelatorio());
+                Get.to(DatabaseMongoDBTableScreen());
               }),
           NavigationBarItem(
-              label: 'OCR',
+              label: 'OCR Page',
               iconData: Icons.date_range_outlined,
               onPress: () {
-                Get.to(ExampleUsage());
+                Get.to(PhotoGalleryScreen());
               }),
           NavigationBarItem(
-              label: 'Dados Cadastrados',
-              iconData: Icons.search,
-              onPress: () {
-                Get.to(ConsultarDatabaseRelatorio());
-              }),
+              label: 'Banco de Dados', iconData: Icons.search, onPress: () {}),
         ],
       ),
     );

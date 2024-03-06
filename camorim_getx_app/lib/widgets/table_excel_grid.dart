@@ -3,6 +3,7 @@
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/cadastro_controllers.dart';
 import 'package:camorim_getx_app/widgets/button_async.dart';
 import 'package:camorim_getx_app/widgets/customText.dart';
+import 'package:camorim_getx_app/widgets/tabela_excel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -76,6 +77,21 @@ class _EditableTableState extends State<EditableTable> {
         descricaoFalha: "Falha 2",
         equipamento: "Equipamento 2",
       ),
+      DataRowModel(
+        embarcacao: "Balsa 2",
+        descricaoFalha: "Falha 2",
+        equipamento: "Equipamento 2",
+      ),
+      DataRowModel(
+        embarcacao: "Balsa 2",
+        descricaoFalha: "Falha 2",
+        equipamento: "Equipamento 2",
+      ),
+      DataRowModel(
+        embarcacao: "Balsa 2",
+        descricaoFalha: "Falha 2",
+        equipamento: "Equipamento 2",
+      ),
     ];
     var statusServer =
         bulbassauro.dio.get("https://rayquaza-citta-server.onrender.com/");
@@ -84,30 +100,23 @@ class _EditableTableState extends State<EditableTable> {
 
   @override
   Widget build(BuildContext context) {
+    print(_data.length);
     return ListView(
       scrollDirection: Axis.vertical,
       children: [
         CustomText(
           text: 'Editable Table - Clone Excel + MongoDB + Onedrive',
-          size: 46,
+          size: 36,
         ),
-        buildColumsAndRows(),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: buildColumsAndRows(),
+        ),
         Divider(),
         botoes(),
-        Divider(),
-        Container(
-          height: 50,
-          width: 50,
-          color: Colors.blueGrey,
-          child: IconButton(
-            onPressed: () {
-              setState(() {
-                _isEditing = !_isEditing;
-              });
-            },
-            icon: Icon(_isEditing ? Icons.edit_off : Icons.edit),
-          ),
-        )
+        ElevatedButton(
+            onPressed: () => Get.to(BuildCustomTable), child: Text("Tabela")),
+        simpleTable()
       ],
     );
   }
@@ -309,6 +318,56 @@ class _EditableTableState extends State<EditableTable> {
     );
   }
 
+  Widget simpleTable() {
+    final CadastroController relatorio_controller =
+        Get.put(CadastroController());
+
+    return TabelaGrid(
+      onUpdate: (List<List<String?>> newData) {
+        setState(() {
+          _data = newData
+              .map((row) => DataRowModel(
+                    embarcacao: row[0] ?? "",
+                    descricaoFalha: row[1] ?? "",
+                    equipamento: row[2] ?? "",
+                  ))
+              .toList();
+        });
+      },
+      columns: [
+        "EMBARCAÇÃO",
+        "DESCRIÇÃO DA FALHA",
+        "EQUIPAMENTO",
+        "MANUTENÇÃO",
+        "SERVIÇO EXECUTADO",
+        "DATA DE ABERTURA",
+        "RESPONSAVEL EXECUÇÃO",
+        "OFICINA",
+        "FINALIZADO",
+        "DATA DE CONCLUSÃO",
+        "FORA DE OPERAÇÃO",
+        "OBSERVAÇÃO",
+        "ações"
+      ],
+      rows: relatorio_controller.array_cadastro.map((data) {
+        return [
+          data.rebocador,
+          data.descFalha,
+          data.equipamento,
+          data.tipoManutencao,
+          data.servicoExecutado,
+          data.dataFinal.toString(),
+          data.funcionario.toString(),
+          data.oficina,
+          data.status_finalizado.toString(),
+          data.dataFinal.toString(),
+          data.status_finalizado.toString(),
+          data.obs,
+        ];
+      }).toList(),
+    );
+  }
+
   Widget buildColumsAndRows() {
     return DataTable(
       decoration: BoxDecoration(
@@ -321,6 +380,14 @@ class _EditableTableState extends State<EditableTable> {
             padding: EdgeInsets.all(8),
             color: Colors.blue,
             child: Text('Embarcação', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child:
+                Text('DATA DE ABERTURA', style: TextStyle(color: Colors.white)),
           ),
         ),
         DataColumn(
@@ -342,7 +409,36 @@ class _EditableTableState extends State<EditableTable> {
           label: Container(
             padding: EdgeInsets.all(8),
             color: Colors.blue,
-            child: Text('Ações', style: TextStyle(color: Colors.white)),
+            child: Text('MANUTENÇÃO', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child: Text('SERVIÇO EXECUTAVEL',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child: Text('RESPONSAVEL', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child: Text('OFICINA', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            padding: EdgeInsets.all(8),
+            color: Colors.blue,
+            child: Text('FINALIZADO', style: TextStyle(color: Colors.white)),
           ),
         ),
       ],
@@ -350,6 +446,51 @@ class _EditableTableState extends State<EditableTable> {
           .map(
             (dataRow) => DataRow(
               cells: [
+                DataCell(
+                  TextFormField(
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
+                    initialValue: dataRow.embarcacao,
+                    onChanged: (value) {
+                      dataRow.embarcacao = value;
+                    },
+                  ),
+                ),
+                DataCell(
+                  TextFormField(
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
+                    initialValue: dataRow.embarcacao,
+                    onChanged: (value) {
+                      dataRow.embarcacao = value;
+                    },
+                  ),
+                ),
+                DataCell(
+                  TextFormField(
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
+                    initialValue: dataRow.embarcacao,
+                    onChanged: (value) {
+                      dataRow.embarcacao = value;
+                    },
+                  ),
+                ),
+                DataCell(
+                  TextFormField(
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
+                    initialValue: dataRow.embarcacao,
+                    onChanged: (value) {
+                      dataRow.embarcacao = value;
+                    },
+                  ),
+                ),
+                DataCell(
+                  TextFormField(
+                    readOnly: !dataRow.isEditing, // Toggle read-only mode
+                    initialValue: dataRow.embarcacao,
+                    onChanged: (value) {
+                      dataRow.embarcacao = value;
+                    },
+                  ),
+                ),
                 DataCell(
                   TextFormField(
                     readOnly: !dataRow.isEditing, // Toggle read-only mode

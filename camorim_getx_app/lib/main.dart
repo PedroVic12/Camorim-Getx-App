@@ -1,6 +1,8 @@
+import 'package:camorim_getx_app/app/controllers/relatorios/RelatorioController.dart';
 import 'package:camorim_getx_app/app/pages/HomePage.dart';
 import 'package:camorim_getx_app/app/pages/Scanner%20PDF/NotaFiscalOcr/nota_fiscal_ocr_page.dart';
 import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/cadastro_desktop.dart';
+import 'package:camorim_getx_app/app/pages/sistema%20Cadastro/views/mobile/views/DatabasePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';

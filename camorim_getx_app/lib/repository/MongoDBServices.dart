@@ -1,50 +1,39 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
-class MongoDBService {
-  late Db _db;
+class DataBaseMongoDB {
+  late Db db;
+  final dataBase = 'Relatorio_OS_DB';
+  final get_collection = "relatorio_records";
 
-  MongoDBService() {
-    _connectToDatabase();
+  DataBaseMongoDB(String uri) {
+    db = Db(uri);
   }
 
-  Future<void> _connectToDatabase() async {
-    try {
-      _db = await Db.create('mongodb://localhost:27017/my_database');
-      await _db.open();
-      print('Connected to MongoDB');
-    } catch (e) {
-      print('Error connecting to MongoDB: $e');
-    }
+  Future<void> connect() async {
+    await db.open();
+    print('Conectado ao banco de dados MongoDB');
   }
 
-  Future<void> insertData(Map<String, dynamic> data) async {
-    try {
-      await _db.collection('my_collection').insert(data);
-      print('Data inserted successfully');
-    } catch (e) {
-      print('Error inserting data: $e');
-    }
+  Future<void> criarDocumento(
+      Map<String, dynamic> documento, String collection) async {
+    await db.collection(collection).insert(documento);
+    print('Documento criado com sucesso');
   }
 
-  Future<List<Map<String, dynamic>>> fetchData() async {
-    try {
-      final data = await _db.collection('my_collection').find().toList();
-      return data.map((e) => e as Map<String, dynamic>).toList();
-    } catch (e) {
-      print('Error fetching data: $e');
-      return [];
-    }
-  }
-}
-
-class DataEditor {
-  final MongoDBService mongoDBService = MongoDBService();
-
-  Future<void> editData(Map<String, dynamic> newData) async {
-    // Implemente a lógica para editar os dados no banco de dados MongoDB
+  Future<void> deletarDocumento(
+      Map<String, dynamic> filtro, String collection) async {
+    await db.collection(collection).remove(filtro);
+    print('Documento deletado com sucesso');
   }
 
-  Future<void> deleteData(String id) async {
-    // Implemente a lógica para excluir os dados no banco de dados MongoDB
+  Future<List<Map<String, dynamic>>> recuperarTodosDocumentos(
+      String collection) async {
+    var result = await db.collection(collection).find().toList();
+    return result.map((doc) => doc as Map<String, dynamic>).toList();
+  }
+
+  Future<void> close() async {
+    await db.close();
+    print('Conexão com o banco de dados fechada');
   }
 }
