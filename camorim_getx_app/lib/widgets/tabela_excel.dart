@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,18 +22,18 @@ class TabelaGridController extends GetxController {
 
     var dadosCadastrados = {
       "dados": {
-        "EMBARCAÇÃO": data[0],
-        "DATA INICIO": data[5],
-        "DESCRIÇÃO DA FALHA": data[1],
-        "EQUIPAMENTO": data[2],
-        "MANUTENÇÃO": data[3],
-        "SERVIÇO EXECUTADO": data[4],
-        "FUNCIONARIOS": data[6],
-        "OFICINA": data[7],
-        "FINALIZADO": data[8],
-        "DATA FINAL": data[9],
-        "FORA DE OPERAÇÃO": data[10],
-        "OBS": data[11],
+        "EMBARCAÇÃO": data[1],
+        "DESCRIÇÃO DA FALHA": data[2],
+        "EQUIPAMENTO": data[3],
+        "MANUTENÇÃO": data[4],
+        "SERVIÇO EXECUTADO": data[5],
+        "DATA INICIO": data[6],
+        "FUNCIONARIOS": data[7],
+        "OFICINA": data[8],
+        "FINALIZADO": data[9],
+        "DATA FINAL": data[10],
+        "FORA DE OPERAÇÃO": data[11],
+        "OBS": data[12],
         "EQUIPE": "ELÉTRICA",
         "LOCAL": "NITEROI",
         "RESPONSAVEL": "RONDINELLI"
@@ -121,61 +122,82 @@ class _TabelaGridState extends State<TabelaGrid> {
                 final cellIndex = entry.key;
                 final cellValue = entry.value;
 
-                return DataCell(
-                  // Verifica se está em modo de edição e se é a célula a ser editada
-                  showEditIcon: _showIcon,
-                  onLongPress: () {
-                    setState(() {
-                      isEditing = true;
-                      editingRowIndex = index;
-                      editingCellIndex = cellIndex;
-                      _showIcon = true;
-                    });
-                  },
-                  GestureDetector(
-                    onTap: () {
+                if (cellIndex == 0) {
+                  // Se for a primeira coluna, adicione o botão IconButton
+                  return DataCell(
+                    IconButton(
+                      onPressed: () {
+                        // Obter o ID dos dados da linha
+                        String? barco = tableData[index][1];
+                        print(barco);
+
+                        //deleteDataFromMongoDB(id);
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
+                  );
+                } else {
+                  return DataCell(
+                    onLongPress: () {
                       setState(() {
-                        isEditing = false;
-                        editingRowIndex = -1;
-                        editingCellIndex = -1;
-                        _showIcon = false;
+                        isEditing = true;
+                        editingRowIndex = index;
+                        editingCellIndex = cellIndex;
+                        _showIcon = true;
                       });
                     },
-                    child: isEditing &&
-                            editingRowIndex == index &&
-                            editingCellIndex == cellIndex
-                        ? TextFormField(
-                            initialValue: cellValue ?? '',
-                            onChanged: (value) {
-                              setState(() {
-                                tableData[index][cellIndex] = value;
-                                print("\nDados sendo atualizados");
-                                print(tableData);
-                              });
-                            },
-                            autofocus: true,
-                            textAlign: TextAlign.center,
-                            readOnly: !isEditing, // Permitir edição
-                          )
-                        : cellIndex == widget.columns.length - 1
-                            ? IconButton(
-                                onPressed: () async {
-                                  var dataset =
-                                      controller.salvarDadosRelatorioOSByIndex(
-                                          tableData, index);
-                                  Uint8List fileBytes =
-                                      await bulbassauro.gerarOsDigital(dataset);
-                                  await controller.tableController
-                                      .showPdfFile(fileBytes, dataset);
-                                },
-                                icon: Icon(Icons.file_download),
-                              )
-                            : Text(
-                                cellValue ?? '',
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                  ),
-                );
+                    // Restante das células, conforme antes
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isEditing = false;
+                          editingRowIndex = -1;
+                          editingCellIndex = -1;
+                          _showIcon = false;
+                        });
+                      },
+                      child: isEditing &&
+                              editingRowIndex == index &&
+                              editingCellIndex == cellIndex
+                          ? TextFormField(
+                              initialValue: cellValue ?? '',
+                              onChanged: (value) {
+                                setState(() {
+                                  tableData[index][cellIndex] = value;
+                                  print("\nDados sendo atualizados");
+                                  print(tableData);
+                                });
+                              },
+                              autofocus: true,
+                              textAlign: TextAlign.center,
+                              readOnly: !isEditing, // Permitir edição
+                            )
+                          : cellIndex == widget.columns.length - 1
+                              ? IconButton(
+                                  onPressed: () async {
+                                    var dataset = controller
+                                        .salvarDadosRelatorioOSByIndex(
+                                            tableData, index);
+
+                                    //dataset = json.encode(dataset);
+
+                                    print(
+                                      "\nDataset selecionado = $dataset",
+                                    );
+                                    Uint8List fileBytes = await bulbassauro
+                                        .gerarOsDigital(dataset);
+                                    await controller.tableController
+                                        .showPdfFile(fileBytes, dataset);
+                                  },
+                                  icon: Icon(Icons.file_download),
+                                )
+                              : Text(
+                                  cellValue ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                    ),
+                  );
+                }
               }).toList(),
             );
           },

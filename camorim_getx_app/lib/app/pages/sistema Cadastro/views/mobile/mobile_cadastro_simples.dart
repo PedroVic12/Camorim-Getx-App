@@ -37,8 +37,10 @@ class _MobileCadastroSimplesRelatorioDigitalState
   Widget build(BuildContext context) {
     final CadastroController relatorio_controller =
         Get.put(CadastroController());
+
     void _handleIntervalSelected(DateTime start, DateTime end) {
-      // Aqui você pode usar o intervalo de horário selecionado, por exemplo:
+      List<String> horas = relatorio_controller.calcularHoras(start, end);
+      print('Horas dentro do intervalo selecionado: $horas');
       print('Intervalo selecionado: de $start até $end');
     }
 
@@ -119,6 +121,7 @@ class _MobileCadastroSimplesRelatorioDigitalState
                   "OPALA",
                   "ORION",
                   "OURO",
+                  "ONIX",
                   "PEGASUS",
                   "PEROLA",
                   "PERSIVAL",
@@ -181,6 +184,9 @@ class _MobileCadastroSimplesRelatorioDigitalState
                             // Define o texto do controlador com a data formatada
                             relatorio_controller.dataAbertura.text =
                                 formattedDate;
+
+                            relatorio_controller.dataConclusao.text =
+                                formattedDate;
                           });
                         }
                       },
@@ -219,7 +225,8 @@ class _MobileCadastroSimplesRelatorioDigitalState
                 labelText: 'EQUIPAMENTO',
                 options: const [
                   "ACOMODAÇÕES ",
-                  " AMARRAÇÃO E FUNDEIO",
+                  "ALARMES/SENSORES/SIRENES",
+                  "AMARRAÇÃO E FUNDEIO",
                   "AR CONDICIONADO ",
                   "BOMBAS ",
                   "CASCO ",
@@ -314,7 +321,6 @@ class _MobileCadastroSimplesRelatorioDigitalState
                   ),
                   Expanded(
                     child: CaixaDeTexto(
-                      onTap: () {},
                       controller: relatorio_controller.horarios,
                       labelText: "Horários",
                     ),

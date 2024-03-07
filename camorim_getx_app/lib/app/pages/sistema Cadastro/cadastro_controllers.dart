@@ -107,6 +107,37 @@ class CadastroController extends GetxController {
   void gerarRelatorioPDF() {
     // !Gerar relatório em PDF
   }
+  List<String> calcularHoras(DateTime start, DateTime end) {
+    List<String> horas = [];
+
+    // Obtém a hora e o minuto inicial
+    int horaInicio = start.hour;
+    int minutoInicio = start.minute;
+
+    // Obtém a hora e o minuto final
+    int horaFinal = end.hour;
+    int minutoFinal = end.minute;
+
+    // Adiciona as horas no formato desejado ao array
+    for (int hora = horaInicio; hora <= horaFinal; hora++) {
+      // Verifica se é a primeira hora e o minuto inicial
+      if (hora == horaInicio) {
+        horas.add('($hora:${minutoInicio.toString().padLeft(2, '0')})');
+      }
+      // Verifica se é a última hora e o minuto final
+      else if (hora == horaFinal) {
+        horas.add('($hora:${minutoFinal.toString().padLeft(2, '0')})');
+      }
+      // Para as horas intermediárias, adiciona o minuto completo
+      else {
+        for (int minuto = 0; minuto <= 59; minuto++) {
+          horas.add('($hora:${minuto.toString().padLeft(2, '0')})');
+        }
+      }
+    }
+
+    return horas;
+  }
 
   void enviarEmail() {}
 
@@ -168,8 +199,10 @@ class RelatorioOrdemServico {
   String numeroOS;
   String rebocador;
   String dataInicial;
+  String? horaInicial;
   String descFalha;
   String? dataFinal;
+  String? horaFinal;
   String equipamento;
   String tipoManutencao;
   String servicoExecutado;
@@ -216,17 +249,17 @@ class RelatorioOrdemServico {
     );
   }
   Map<String, dynamic> toMap() => {
-        'rebocador': rebocador.toString(),
-        'dataInicial': dataInicial.toString(),
-        'descFalha': descFalha.toString(),
-        'dataFinal': dataFinal.toString(),
-        'equipamento': equipamento.toString(),
-        'tipoManutencao': tipoManutencao.toString(),
-        'servicoExecutado': servicoExecutado.toString(),
-        'funcionario': funcionario.toString(),
-        'oficina': oficina.toString(),
-        'obs': obs.toString(),
-        'status_finalizado': status_finalizado.toString(),
+        'BARCO': rebocador.toString(),
+        'DATA_INICIO': dataInicial.toString(),
+        'DESC_FALHA': descFalha.toString(),
+        'DATA_CONCLUSAO': dataFinal.toString(),
+        'EQUIPAMENTO': equipamento.toString(),
+        'MANUTENCAO': tipoManutencao.toString(),
+        'SERV_EXECUTADO': servicoExecutado.toString(),
+        'RESPONSAVEL': funcionario.toString(),
+        'OFICINA': oficina.toString(),
+        'OBS': obs.toString(),
+        'FINALIZADO': status_finalizado.toString(),
       };
 }
 
@@ -250,7 +283,7 @@ class NivelRepository {
   List<String> retornaNiveis() {
     return [
       'SIM',
-      'NÂO',
+      'NÃO',
     ];
   }
 }
@@ -259,7 +292,7 @@ class OpcoesRepository {
   List<String> retornarOpcoes() {
     return [
       'SIM',
-      'NÂO',
+      'NÃO',
     ];
   }
 }

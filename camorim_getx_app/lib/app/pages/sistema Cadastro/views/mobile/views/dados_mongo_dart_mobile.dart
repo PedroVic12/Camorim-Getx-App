@@ -28,6 +28,7 @@ class DatabaseMongoDBTableScreen extends StatefulWidget {
 class _DatabaseMongoDBTableScreenState
     extends State<DatabaseMongoDBTableScreen> {
   final TableController = Get.put(TabelaController());
+  var dadosCadastrados = [];
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +51,6 @@ class _DatabaseMongoDBTableScreenState
   }
 
   Widget buildButtons(dataset) {
-    var dadosCadastrados = [];
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -79,16 +78,15 @@ class _DatabaseMongoDBTableScreenState
           },
           child: const Text("Salvar no Banco de dados"),
         ),
-        _buildExportExcelButton(dadosCadastrados),
+        _buildExportExcelButton(),
         _buildSendFilesButton(),
       ],
     );
   }
 
-  Widget _buildExportExcelButton(array) {
+  Widget _buildExportExcelButton() {
     return ElevatedButton(
-      onPressed: () =>
-          TableController.bulbassauro.gerarExcelDadosRelatorioOS(array),
+      onPressed: () => TableController.bulbassauro.gerarExcelDadosRelatorioOS(),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.indigo),
       ),
@@ -159,6 +157,7 @@ class _BuildCustomTableState extends State<BuildCustomTable> {
     }
 
     final columns = [
+      "OPTION",
       "EMBARCAÇÃO",
       "DESCRIÇÃO DA FALHA",
       "EQUIPAMENTO",
@@ -176,6 +175,7 @@ class _BuildCustomTableState extends State<BuildCustomTable> {
 
     final rows = relatorioController.array_cadastro.map((data) {
       return [
+        "icone",
         data.rebocador ?? "Sem dados",
         data.descFalha ?? "Sem dados",
         data.equipamento ?? "Sem dados",

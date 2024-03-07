@@ -33,14 +33,17 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
           const SizedBox(
             height: 5,
           ),
-          const Divider(),
+          const Divider(color: Colors.black),
           showMongoDatabase(context),
         ]));
   }
 
   Widget tabelaDatabaseMongo(context) {
+    final grid_controller = Get.put(TabelaGridController());
+
     return GetBuilder<TabelaController>(builder: (controller) {
       final colunas = [
+        "DELETAR",
         "EMBARCAÇÃO",
         "DESCRIÇÃO DA FALHA",
         "EQUIPAMENTO",
@@ -57,12 +60,13 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
       ];
       final linhas = controller.mongoDB_array.map((data) {
         return [
+          "",
           data["BARCO"].toString(),
           data["DESC_FALHA"].toString(),
           data["EQUIPAMENTO"].toString(),
           data["MANUTENCAO"].toString(),
           data["SERV_EXECUTADO"].toString(),
-          data["DATA_EXEC"].toString(),
+          data["DATA_INICIO"].toString(),
           data["RESPONSAVEL"].toString(),
           data["OFICINA"].toString(),
           data["FINALIZADO"].toString(),
@@ -77,10 +81,8 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
 
       if (controller.mongoDB_array.isEmpty) {
         return const Center(
-          child: Text(
-            'Nenhum dado disponível. :(',
-            style: TextStyle(color: Colors.red),
-          ),
+          child:
+              CircularProgressIndicator(), // Mostra um indicador de progresso
         );
       } else {
         return Container(
@@ -102,21 +104,23 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final controller = TabelaGridController();
-
                   List<Uint8List> pdfBytesList = [];
 
-                  for (var rowData in controller.table) {
-                    var dataset =
-                        await controller.salvarDadosRelatorioOSByIndex(
-                            controller.table,
-                            controller.table.indexOf(rowData));
-                    Uint8List fileBytes = await TableController.bulbassauro
-                        .gerarOsDigital(dataset);
-                    pdfBytesList.add(fileBytes);
-                  }
+                  try {
+                    for (var rowData in grid_controller.table) {
+                      var dataset =
+                          await grid_controller.salvarDadosRelatorioOSByIndex(
+                              grid_controller.table,
+                              grid_controller.table.indexOf(rowData));
+                      Uint8List fileBytes = await TableController.bulbassauro
+                          .gerarOsDigital(dataset);
+                      pdfBytesList.add(fileBytes);
+                    }
 
-                  await TableController.showPdfCarousel(pdfBytesList);
+                    await TableController.showPdfCarousel(pdfBytesList);
+                  } catch (e) {
+                    print("Erro ao gerar carrossel digital: $e");
+                  }
                 },
                 child: const Text('Gerar Carrousel Digital'),
               ),
@@ -133,7 +137,7 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
   Widget _buildExportExcelButton(array) {
     return ElevatedButton(
       onPressed: () =>
-          TableController.bulbassauro.gerarExcelDadosRelatorioOS(array),
+          TableController.bulbassauro.gerarExcelDatabaseMongoDB(array),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.indigo),
       ),
@@ -155,6 +159,7 @@ class _ConsultaBancoMongoDBState extends State<ConsultaBancoMongoDB> {
           );
         } else {
           print("SetState =  ${controller.mongoDB_array.length}");
+          print("\n\ndatabase =  ${TableController.mongoDB_array}");
 
           try {
             return ListView.builder(

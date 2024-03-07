@@ -102,7 +102,7 @@ class BulbassauroExcelController {
   gerarOsDigital(dataset) async {
     try {
       // Dados para enviar como JSON
-      Map<String, dynamic> requestData = dataset;
+      var requestData = dataset;
 
       // Enviar solicitação POST para o servidor FastAPI
       var response = await http.post(
@@ -125,10 +125,6 @@ class BulbassauroExcelController {
             "${dataset["dados"]?["EMBARCAÇÃO"]} - ${dataset["dados"]?["EQUIPAMENTO"]} - ${formattedDate}.pdf";
 
         print("Arquivo ${fileName} gerado!");
-
-        // Escrever os bytes do PDF no arquivo
-        //final file = File("./$fileName");
-        //print("File = $file");
 
         return bytes;
       } else {
@@ -238,9 +234,10 @@ class BulbassauroExcelController {
     workbook.dispose();
   }
 
-  gerarExcelDadosRelatorioOS(array) async {
+  gerarExcelDatabaseMongoDB(List array) async {
     final workbook = Workbook();
     final sheet = workbook.worksheets[0];
+    var dataAtualFormatada = DateTime.now().toString().split(" ")[0];
 
     // Add headers
     int lineHeader = 1;
@@ -251,44 +248,48 @@ class BulbassauroExcelController {
     sheet.getRangeByName('E1').setText('MANUTENÇÃO');
     sheet.getRangeByName('F1').setText('SERVIÇO EXECUTADO');
     sheet.getRangeByName('G1').setText('DATA INICIO');
-    sheet.getRangeByName('H$lineHeader').setText('RESPONSAVEL');
-    sheet.getRangeByName('I$lineHeader').setText('OFICINA');
-    sheet.getRangeByName('J$lineHeader').setText('FINALIZADO');
-    sheet.getRangeByName('K$lineHeader').setText('DATA FINAL');
-    sheet.getRangeByName('L$lineHeader').setText('FORA DE OPERAÇÃO ');
-    sheet.getRangeByName('M$lineHeader').setText('OBS');
+    sheet.getRangeByName('H1').setText('HORA INICIAL');
+    sheet.getRangeByName('I$lineHeader').setText('RESPONSAVEL');
+    sheet.getRangeByName('J$lineHeader').setText('OFICINA');
+    sheet.getRangeByName('K$lineHeader').setText('FINALIZADO');
+    sheet.getRangeByName('L$lineHeader').setText('DATA FINAL');
+    sheet.getRangeByName('M$lineHeader').setText('HORA FINAL');
+    sheet.getRangeByName('N$lineHeader').setText('FORA DE OPERAÇÃO ');
+    sheet.getRangeByName('O$lineHeader').setText('OBS');
+    sheet.getRangeByName('P$lineHeader').setText('CADASTRO DATE BY FLUTTER');
 
     // formatação
-    sheet.getRangeByName('A1:M1').cellStyle.fontSize = 14;
-    sheet.getRangeByName('A1:M1').cellStyle.bold = true;
-    sheet.getRangeByName('A1:M1').cellStyle.backColor = "#ff0000";
-    sheet.getRangeByName('A1:M1').cellStyle.fontColor = "#ffffff";
-    sheet.getRangeByName('A1:M1').autoFitColumns();
+    sheet.getRangeByName('A1:P1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:P1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:P1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:P1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:P1').autoFitColumns();
 
     // Add data from the list
     int row = 2;
-    for (final data in array) {
-      sheet.getRangeByName('A$row').setText(data.rebocador);
-      sheet.getRangeByName('B$row').setText(data.dataInicial);
-      sheet.getRangeByName('C$row').setText(data.descFalha);
-      sheet.getRangeByName('D$row').setText(data.equipamento);
-      sheet.getRangeByName('E$row').setText(data.tipoManutencao);
-      sheet.getRangeByName('F$row').setText(data.servicoExecutado);
-      sheet.getRangeByName('G$row').setText(data.dataInicial);
-      sheet.getRangeByName('H$row').setText(data.funcionario.join(', '));
-      sheet.getRangeByName('I$row').setText(data.oficina);
-      sheet.getRangeByName('J$row').setText(data.status_finalizado.toString());
-      sheet.getRangeByName('K$row').setText(data.dataFinal.toString());
-      sheet.getRangeByName('L$row').setText("NÃO");
-      sheet.getRangeByName('M$row').setText(data.obs);
+    for (var data in array) {
+      sheet.getRangeByName('A$row').setText(data["BARCO"]);
+      sheet.getRangeByName('B$row').setText(data["DATA_INICIO"]);
+      sheet.getRangeByName('C$row').setText(data["DESC_FALHA"]);
+      sheet.getRangeByName('D$row').setText(data["EQUIPAMENTO"]);
+      sheet.getRangeByName('E$row').setText(data["MANUTENCAO"]);
+      sheet.getRangeByName('F$row').setText(data["SERV_EXECUTADO"]);
+      sheet.getRangeByName('G$row').setText(data["DATA_EXEC"]);
+      sheet.getRangeByName('H$row').setText(data["HORA_INICIO"]);
+      sheet.getRangeByName('I$row').setText(data["RESPONSAVEL"].toString());
+      sheet.getRangeByName('J$row').setText(data["OFICINA"]);
+      sheet.getRangeByName('K$row').setText(data["FINALIZADO"].toString());
+      sheet.getRangeByName('L$row').setText(data["DATA_CONCLUSAO"].toString());
+      sheet.getRangeByName('M$row').setText(data["HORA_FINAL"].toString());
+      sheet.getRangeByName('N$row').setText(data["FORA_OPERACAO"]);
+      sheet.getRangeByName('O$row').setText(data["OBS"]);
+      sheet.getRangeByName('P$row').setText(dataAtualFormatada);
 
       row++;
     }
 
     // Save the Excel file
     var fileBytesExcel = await salvarExcelWeb(workbook, 'relatorio.xlsx');
-
-    print("Arquivo excel salvo com sucesso!");
 
     try {
       return fileBytesExcel;
@@ -297,7 +298,74 @@ class BulbassauroExcelController {
     }
 
     // Show success message
-    BulbassauroExcelController().showMessage("Excel Salvo!");
+    BulbassauroExcelController().showMessage(" Salvo!");
+  }
+
+  gerarExcelDadosRelatorioOS() async {
+    final workbook = Workbook();
+    final sheet = workbook.worksheets[0];
+    var dataAtualFormatada = DateTime.now().toString().split(" ")[0];
+
+    // Add headers
+    int lineHeader = 1;
+    sheet.getRangeByName('A$lineHeader').setText('EMBARCAÇÃO');
+    sheet.getRangeByName('B1').setText('DATA INICIO');
+    sheet.getRangeByName('C1').setText('DESCRIÇÃO DA FALHA');
+    sheet.getRangeByName('D1').setText('EQUIPAMENTO');
+    sheet.getRangeByName('E1').setText('MANUTENÇÃO');
+    sheet.getRangeByName('F1').setText('SERVIÇO EXECUTADO');
+    sheet.getRangeByName('G1').setText('DATA INICIO');
+    sheet.getRangeByName('H1').setText('HORA INICIAL');
+    sheet.getRangeByName('I$lineHeader').setText('RESPONSAVEL');
+    sheet.getRangeByName('J$lineHeader').setText('OFICINA');
+    sheet.getRangeByName('K$lineHeader').setText('FINALIZADO');
+    sheet.getRangeByName('L$lineHeader').setText('DATA FINAL');
+    sheet.getRangeByName('M$lineHeader').setText('HORA FINAL');
+    sheet.getRangeByName('N$lineHeader').setText('FORA DE OPERAÇÃO ');
+    sheet.getRangeByName('O$lineHeader').setText('OBS');
+    sheet.getRangeByName('P$lineHeader').setText('CADASTRO DATE BY FLUTTER');
+
+    // formatação
+    sheet.getRangeByName('A1:P1').cellStyle.fontSize = 14;
+    sheet.getRangeByName('A1:P1').cellStyle.bold = true;
+    sheet.getRangeByName('A1:P1').cellStyle.backColor = "#ff0000";
+    sheet.getRangeByName('A1:P1').cellStyle.fontColor = "#ffffff";
+    sheet.getRangeByName('A1:P1').autoFitColumns();
+
+    // Add data from the list
+    int row = 2;
+    for (final data in relatorio_controller.array_cadastro) {
+      sheet.getRangeByName('A$row').setText(data.rebocador);
+      sheet.getRangeByName('B$row').setText(data.dataInicial);
+      sheet.getRangeByName('C$row').setText(data.descFalha);
+      sheet.getRangeByName('D$row').setText(data.equipamento);
+      sheet.getRangeByName('E$row').setText(data.tipoManutencao);
+      sheet.getRangeByName('F$row').setText(data.servicoExecutado);
+      sheet.getRangeByName('G$row').setText(data.dataInicial);
+      sheet.getRangeByName('H$row').setText(data.horaInicial);
+      sheet.getRangeByName('I$row').setText(data.funcionario.join(', '));
+      sheet.getRangeByName('J$row').setText(data.oficina);
+      sheet.getRangeByName('K$row').setText(data.status_finalizado.toString());
+      sheet.getRangeByName('L$row').setText(data.dataFinal.toString());
+      sheet.getRangeByName('M$row').setText(data.horaInicial);
+      sheet.getRangeByName('N$row').setText("NÃO");
+      sheet.getRangeByName('O$row').setText(data.obs);
+      sheet.getRangeByName('P$row').setText(dataAtualFormatada);
+
+      row++;
+    }
+
+    // Save the Excel file
+    var fileBytesExcel = await salvarExcelWeb(workbook, 'relatorio.xlsx');
+
+    try {
+      return fileBytesExcel;
+    } catch (e) {
+      print("Erro ao enviar email: $e");
+    }
+
+    // Show success message
+    BulbassauroExcelController().showMessage(" Salvo!");
   }
 
   salvarDadosRelatorioOS() async {
