@@ -274,7 +274,7 @@ class _MobileCadastroSimplesRelatorioDigitalState
               selectedCards(),
               CaixaDeTexto(
                 controller: relatorio_controller.obs,
-                labelText: "Observações ",
+                labelText: "Observações",
                 height: 30,
               ),
               cardinfo("Itens Opcionais"),
@@ -286,10 +286,10 @@ class _MobileCadastroSimplesRelatorioDigitalState
                     child: TimeRangePickerWidget(
                       onIntervalSelected: (TimeOfDay start, TimeOfDay end) {
                         TimeOfDay roomBooked = TimeOfDay.fromDateTime(
-                            DateTime.parse(
-                                '2021-10-10 ${start.hour}:${start.minute}:00Z'));
+                            DateTime.parse('${start.hour}:${start.minute}'));
 
                         print('Intervalo selecionado: de $start até $end');
+                        print(roomBooked);
                         relatorio_controller.horarios.text =
                             roomBooked.toString();
                       },
@@ -305,8 +305,7 @@ class _MobileCadastroSimplesRelatorioDigitalState
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2001),
                           lastDate: DateTime(2030),
-                          locale: const Locale('pt',
-                              'BR'), // Define o local para Português do Brasil
+                          locale: const Locale('pt', 'BR'),
                         );
                         if (date != null) {
                           // Formata a data para o formato desejado
