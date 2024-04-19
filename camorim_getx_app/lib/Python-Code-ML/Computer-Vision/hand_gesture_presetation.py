@@ -9,7 +9,7 @@ class PresentationController:
     def __init__(self):
         self.width, self.height = 900, 450
         self.gestureThreshold = 300
-        self.folderPath = "camorim_getx_app/lib/Python-Code-ML/Computer-Vision/saida"
+        self.folderPath = "/home/pedrov/Documentos/GitHub/Camorim-Getx-App/camorim_getx_app/lib/Python-Code-ML/Computer-Vision/saida"
         self.detectorHand = HandDetector(detectionCon=0.8, maxHands=1)
         self.presentation = Presentation(self.folderPath, self.width, self.height)
         self.handGestureController = HandGestureController(
@@ -37,7 +37,7 @@ class PresentationController:
 
             # Reduz a apresentação
             img_reduzida = cv2.resize(self.presentation.imgCurrent, dsize=(1100, 700))
-            cv2.imshow("Slides like Steve Jobs", img_reduzida)
+            cv2.imshow("IA Apresetation", img_reduzida)
             cv2.imshow("Camera", img)
 
             # Controle de saída
@@ -156,23 +156,27 @@ class HandGestureController:
         except ValueError as e:
             print("Erro: ", e)
 
-        # Controle de delay para evitar múltiplas detecções
-        if self.buttonPressed:
-            self.counter += 1
-            if self.counter > self.delay:
-                self.counter = 0
-                self.buttonPressed = False
+        try:
+            # Controle de delay para evitar múltiplas detecções
+            if self.buttonPressed:
+                self.counter += 1
+                if self.counter > self.delay:
+                    self.counter = 0
+                    self.buttonPressed = False
 
-        for i in range(len(self.annotations)):
-            for j in range(len(self.annotations[1])):
-                if j != 0:
-                    cv2.line(
-                        presentation.imgCurrent,
-                        self.annotations[i][j - 1],
-                        self.annotations[i][j],
-                        (0, 0, 200),
-                        12,
-                    )
+            for i in range(len(self.annotations)):
+                for j in range(len(self.annotations[1])):
+                    if j != 0:
+                        cv2.line(
+                            presentation.imgCurrent,
+                            self.annotations[i][j - 1],
+                            self.annotations[i][j],
+                            (0, 0, 200),
+                            12,
+                        )
+
+        except:
+            print("Erro desconhecido")
 
     def desenharLinhas(self, img, width):
         cv2.line(
